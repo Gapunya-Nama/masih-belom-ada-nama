@@ -1,0 +1,132 @@
+<div class="bg-black">
+    <div class="card">
+        <div class="card-content">
+            <h3 class="card-title">
+                I don't know what I'm doing
+            </h3>
+            <h4 class="card-subtitle">
+                
+            </h4>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --border: #ffffff;
+        --g1: #3a7bd5; /* Blue */
+        --g2: #844685; /* Purple */
+        --g3: #f64f59; /* Pink */
+    }
+
+    /* Add the black background */
+    .bg-black {
+        background-color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        /* Full viewport height */
+        padding: 2rem;
+        /* Optional: adds space around the card */
+    }
+
+    .card {
+        aspect-ratio: 1 / 1.6;
+        border: 0.5vmin solid var(--border);
+        cursor: pointer;
+        position: relative;
+        width: 56vmin;
+    }
+
+    .card:before {
+        background: linear-gradient(130deg,
+                transparent 0% 33%,
+                var(--g1) 66%,
+                var(--g2) 83.5%,
+                var(--g3) 100%);
+        background-position: 0% 0%;
+        background-size: 300% 300%;
+        content: "";
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        transition: background-position 350ms ease;
+        width: 100%;
+        z-index: 1;
+    }
+
+    .card:hover:before {
+        background-position: 100% 100%;
+        transform: scale(1.08, 1.03);
+    }
+
+    .card-content {
+        position: relative;
+        z-index: 2;
+        background: radial-gradient(rgba(255, 255, 255, 0.2) 8%, transparent 8%);
+        background-position: 0% 0%;
+        background-size: 5vmin 5vmin;
+        height: calc(100% - 10vmin);
+        padding: 5vmin;
+        transition: background-position 350ms ease;
+        width: calc(100% - 10vmin);
+    }
+
+    .card:hover>.card-content {
+        background-position: -10% 0%;
+    }
+
+    .card-title,
+    .card-subtitle {
+        color: white;
+        font-family: "Anek Latin", sans-serif;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    .card-title {
+        font-size: 6vmin;
+        position: relative;
+        z-index: 3;
+    }
+
+    .card-subtitle {
+        font-size: 3vmin;
+        margin-top: 2vmin;
+    }
+
+    .card-subtitle-word {
+        display: inline-block;
+        margin: 0 0.3vmin;
+        opacity: 0;
+        position: relative;
+        transform: translateY(40%);
+        transition: none;
+    }
+
+    .card:hover > .card-content > .card-subtitle > .card-subtitle-word {
+        opacity: 1;
+        transform: translateY(0%);
+        transition: transform 200ms cubic-bezier(.90, .06, .15, .90);
+    }
+</style>
+
+<script>
+    const subtitle = document.getElementsByClassName("card-subtitle")[0];
+
+    const createWord = (text, index) => {
+        const word = document.createElement("span");
+        word.innerHTML = `${text} `;
+        word.classList.add("card-subtitle-word");
+        word.style.transitionDelay = `${index * 40}ms`; // Fixed backticks for variable interpolation
+        return word;
+    }
+
+    const addWord = (text, index) => subtitle.appendChild(createWord(text, index));
+
+    const createSubtitle = text => text.split(" ").map(addWord);
+
+    createSubtitle("But in a much more real sense, I have no idea what I'm doing");
+</script>
