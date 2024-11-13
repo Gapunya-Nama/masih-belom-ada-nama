@@ -1,19 +1,19 @@
 /* components/LoginCard.module.css */
 
 :root {
-  --border: white;
+  --border: black;
   --g1: #3a7bd5;
   --g2: #57cc99;
   --g3: #c7f9cc;
 }
 
-.bgBlack {
+/* .bgBlack {
   background-color: black;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-}
+} */
 
 .card {
   aspect-ratio: 1 / 1;
@@ -45,7 +45,8 @@
 .cardContent {
   position: relative;
   z-index: 2;
-  background: radial-gradient(rgba(255, 255, 255, 0.2) 8%, transparent 8%);
+  /* untuk warna ganti 3 value pertama transparansi diatur 0.2  ukuran diatur 8% pertama, transparansi ngatur ketajaman lingkaran*/
+  background: radial-gradient(rgba(0, 0, 0, 0.2) 8%, transparent 8%); 
   background-position: 0% 0%;
   background-size: 5vmin 5vmin;
   height: 100%;
@@ -67,14 +68,14 @@
   font-size: 6vmin;
   position: relative;
   z-index: 3;
-  color: white;
+  color: black;
 }
 
 .cardSubtitle,
 .defaultText {
   font-size: 3vmin;
   margin-top: 2vmin;
-  color: white;
+  color: black;
 }
 
 .cardSubtitleWord {

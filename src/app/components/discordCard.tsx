@@ -1,8 +1,9 @@
 'use client'
 import React, { useEffect, useRef } from 'react';
-import styles from '@/app/components/login.module.css';
+import styles from '@/app/components/discordCard.module.css';
+import InputField from './inputField';
 
-const Login: React.FC = () => {
+const DiscordCard: React.FC = () => {
   const subtitleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -27,21 +28,20 @@ const Login: React.FC = () => {
   }, []);
 
   return (
-    <div className={styles.bgBlack}>
-      <div className={styles.card}>
-        <div className={styles.cardContent}>
-          <h3 className={styles.cardTitle}>Login</h3>
-          <Divider />
-          <h4 className={`${styles.cardSubtitle} ${styles.hoverHidden}`} ref={subtitleRef}>Ini defaultnya mau apa</h4>
-          <h4 className={styles.cardSubtitle} ref={subtitleRef}></h4>
-        </div>
+    <div className={styles.card}>
+      <div className={styles.cardContent}>
+        <h3 className={styles.cardTitle}>Login</h3>
+        <Divider />
+        <h4 className={`${styles.cardSubtitle} ${styles.hoverHidden}`} ref={subtitleRef}>Ini defaultnya mau apa</h4>
+        <h4 className={styles.cardSubtitle} ref={subtitleRef}></h4>
+        <InputField label='Username'/>
       </div>
     </div>
   );
 };
 
 const Divider = () => {
-    return <div className={styles.divider}></div>;
+  return <div className={styles.divider}></div>;
 };
 
-export default Login;
+export default DiscordCard;
