@@ -1,15 +1,13 @@
 "use client";
 
-import DiscordCard from '@/app/components/discordCard';
+import DiscordCard from "@/app/components/discordCard";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
   CarouselApi
-} from "@/components/ui/carousel";
-import React from 'react';
+} from "@/components/ui/carousel"; // Assuming shadcn components follow this structure
+import React from "react";
 
 export function Home() {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -24,41 +22,75 @@ export function Home() {
     setCount(api.scrollSnapList().length);
     setCurrent(api.selectedScrollSnap() + 1);
 
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
+    const handleSelect = () => setCurrent(api.selectedScrollSnap() + 1);
+    api.on("select", handleSelect);
+
+    return () => {
+      api.off("select", handleSelect);
+    };
   }, [api]);
 
-  return (
-    <div className="relative">
-      <Carousel setApi={setApi}>
-        <CarouselContent>
-          <CarouselItem className="flex justify-center items-center">
-            <DiscordCard />
-          </CarouselItem>
-          <CarouselItem className="flex justify-center items-center">
-            <DiscordCard />
-          </CarouselItem>
-          <CarouselItem className="flex justify-center items-center">
-            <DiscordCard />
-          </CarouselItem>
-        </CarouselContent>
+  const handlePrevious = () => {
+    if (api) {
+      if (current === 1) {
+        api.scrollTo(count - 1);
+      } else {
+        api.scrollPrev();
+      }
+    }
+  };
 
-        {/* Next and Previous Buttons */}
-        <CarouselPrevious className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full hover:bg-gray-300">
-          Prev
-        </CarouselPrevious>
-        <CarouselNext className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full hover:bg-gray-300">
-          Next
-        </CarouselNext>
+  const handleNext = () => {
+    if (api) {
+
+      if (current === count) {
+        api.scrollTo(0);
+      } else {
+        api.scrollNext();
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <Carousel setApi={setApi}>
+        <CarouselContent className="mb-4">
+
+          <CarouselItem className="flex justify-center items-center">
+            <DiscordCard />
+          </CarouselItem>
+
+
+          <CarouselItem className="flex justify-center items-center">
+            <h1 className="text-9xl font-bold text-[#2ECC71]">Sijarta</h1>
+          </CarouselItem>
+
+
+          <CarouselItem className="flex justify-center items-center">
+            <DiscordCard />
+          </CarouselItem>
+
+        </CarouselContent>
       </Carousel>
 
-      {/* Pagination Indicator */}
-      <div className="text-center mt-4">
-        {current} / {count}
+      <div className="flex justify-center space-x-4 mt-4">
+        <button
+          onClick={handlePrevious}
+          className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+        >
+          Previous
+        </button>
+        <button
+          onClick={handleNext}
+          className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+        >
+          Next
+        </button>
       </div>
+
+
     </div>
   );
-};
+}
 
 export default Home;
