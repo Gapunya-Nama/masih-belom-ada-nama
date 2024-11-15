@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu } from 'lucide-react';
+import { Icon, Menu, Brush } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { UserProfile } from './navigation/UserProfile';
@@ -36,7 +36,8 @@ export default function Navbar() {
           </SheetContent>
         </Sheet>
 
-        <div className="ml-4">
+        <div className="ml-4 flex items-center">
+          <Brush className="h-6 w-6 mr-2 text-[#2ECC71]" aria-hidden="true" />
           <span className="text-lg font-bold text-[#2ECC71]">Sijarta</span>
         </div>
       </div>
