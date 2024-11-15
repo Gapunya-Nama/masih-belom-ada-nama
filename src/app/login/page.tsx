@@ -6,11 +6,12 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselApi
-} from "@/components/ui/carousel"; // Assuming shadcn components follow this structure
+} from "@/components/ui/carousel";
 import React from "react";
 
 export function Home() {
   const [api, setApi] = React.useState<CarouselApi>();
+  const [isMounted, setIsMounted] = React.useState(false); 
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
 
@@ -20,6 +21,8 @@ export function Home() {
     }
 
     setCount(api.scrollSnapList().length);
+    api.scrollTo(1);
+    setIsMounted(true);
     setCurrent(api.selectedScrollSnap() + 1);
 
     const handleSelect = () => setCurrent(api.selectedScrollSnap() + 1);
@@ -52,17 +55,44 @@ export function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div>
       <Carousel setApi={setApi}>
         <CarouselContent className="mb-4">
 
-          <CarouselItem className="flex justify-center items-center">
+          <CarouselItem className="flex flex-col justify-center items-center">
             <DiscordCard />
+            <div className="space-x-4">
+            <button
+              onClick={handlePrevious}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Previous
+            </button>
+            <button
+              onClick={handleNext}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Next
+            </button>
+            </div>
           </CarouselItem>
 
 
-          <CarouselItem className="flex justify-center items-center">
-            <h1 className="text-9xl font-bold text-[#2ECC71]">Sijarta</h1>
+          <CarouselItem className="flex flex-col justify-center items-center h-screen">
+            <h1 className="text-9xl font-bold text-[#2ECC71] py-10">Sijarta</h1>
+            <div className="space-x-4">
+            <button
+              onClick={handlePrevious}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Register
+            </button>
+            <button
+              onClick={handleNext}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Login
+            </button></div>
           </CarouselItem>
 
 
@@ -73,7 +103,7 @@ export function Home() {
         </CarouselContent>
       </Carousel>
 
-      <div className="flex justify-center space-x-4 mt-4">
+      {/* <div className="flex justify-center space-x-4 mt-4">
         <button
           onClick={handlePrevious}
           className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
@@ -86,7 +116,7 @@ export function Home() {
         >
           Next
         </button>
-      </div>
+      </div> */}
 
 
     </div>
