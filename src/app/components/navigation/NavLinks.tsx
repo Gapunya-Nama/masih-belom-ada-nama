@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, CreditCard, Package, Tag, UserCircle } from 'lucide-react';
+import { Home, WalletIcon, Package, Tag, UserCircle } from 'lucide-react';
 
 export const navLinks = [
   { name: 'Homepage', href: '/homepage', icon: Home },
-  { name: 'MyPay', href: '/mypay', icon: CreditCard },
+  { name: 'MyPay', href: '/mypay', icon: WalletIcon },
   { name: 'View Pemesanan Jasa', href: '/orders', icon: Package },
   { name: 'Diskon', href: '/discounts', icon: Tag },
   { name: 'Profile', href: '/profile', icon: UserCircle },
