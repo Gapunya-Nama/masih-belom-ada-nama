@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Home, WalletIcon, Package, Briefcase, Tag, UserCircle } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 export const navLinks = [
   { name: 'Homepage', href: '/homepage', icon: Home },
@@ -12,7 +13,26 @@ export const navLinks = [
   { name: 'Profile', href: '/profile', icon: UserCircle },
 ];
 
-export function NavLinks({ closeSidebar }: { closeSidebar: () => void }) {
+export function NavLinks({ closeSidebar }: Readonly<{ closeSidebar: () => void }>) {
+  const router = useRouter();
+
+  const handleLinkClick = async (href: string) => {
+    try {
+      router.push(href); 
+      await new Promise((resolve) => {
+        const onRouteChange = () => {
+          resolve(true);
+          router.events?.off('routeChangeComplete', onRouteChange); 
+        };
+        router.events?.on('routeChangeComplete', onRouteChange);
+      });
+    } catch (error) {
+      console.error("Fetch failed:", error);
+    } finally {
+      closeSidebar(); 
+    }
+  };
+
   return (
     <div className="flex-1 overflow-auto py-4">
       <div className="space-y-1 px-4">
@@ -22,7 +42,7 @@ export function NavLinks({ closeSidebar }: { closeSidebar: () => void }) {
             <Link
               key={link.href}
               href={link.href}
-              onClick={closeSidebar} // Close sidebar when a link is clicked
+              onClick={() => handleLinkClick(link.href)} // Close sidebar when a link is clicked
               className="flex items-center space-x-3 text-black hover:text-[#2ECC71] hover:bg-blue-50 px-4 py-3 rounded-lg transition-colors"
             >
               <Icon className="h-5 w-5" aria-hidden="true" />

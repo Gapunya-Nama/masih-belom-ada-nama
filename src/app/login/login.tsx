@@ -7,7 +7,7 @@ import { Leaf } from "lucide-react";
 import { useState } from "react";
 
 export default function LoginPage() {
-  const [selectedRole, setSelectedRole] = useState<"user" | "worker" | null>(null);
+  const [showLogin,isLoginShown] = useState(false);
 
   return (
     <main className="flex items-center justify-center p-4">
@@ -21,21 +21,20 @@ export default function LoginPage() {
             <h1 className="text-2xl font-semibold tracking-tight">
               Welcome back
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Please select your role and sign in to continue
-            </p>
           </div>
 
-          <RoleSelector
-            selectedRole={selectedRole}
-            onRoleSelect={setSelectedRole}
-          />
+          <button onClick={() => isLoginShown(!showLogin)}>
+            Login
+          </button>
 
-          {selectedRole && (
+          {showLogin && (
             <div className="w-full">
-              <LoginForm role={selectedRole} />
+              <LoginForm />
             </div>
           )}
+          <p className="text-sm text-muted-foreground">
+              Please select your role and sign in to continue     
+          </p>
         </div>
       </Card>
     </main>
