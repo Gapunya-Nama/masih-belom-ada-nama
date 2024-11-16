@@ -1,6 +1,6 @@
 "use client";
 
-import DiscordCard from "@/app/components/discordCard";
+import DiscordCard from "./components/discordCard";
 import {
   Carousel,
   CarouselContent,

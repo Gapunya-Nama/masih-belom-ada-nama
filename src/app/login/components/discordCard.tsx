@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef } from 'react';
-import styles from '@/app/components/discordCard.module.css';
+import styles from './discordCard.module.css';
 import InputField from './inputField';
 
 
