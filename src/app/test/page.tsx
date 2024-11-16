@@ -16,6 +16,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -44,7 +49,7 @@ export default function InputForm() {
   }
 
   return (
-    <Form {...form}>
+    <><Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
         <FormField
           control={form.control}
@@ -60,10 +65,15 @@ export default function InputForm() {
               </FormDescription>
               <FormMessage />
             </FormItem>
-          )}
-        />
+          )} />
         <Button type="submit">Submit</Button>
       </form>
-    </Form>
+    </Form><Collapsible>
+        <CollapsibleTrigger>Can I use this in my project?</CollapsibleTrigger>
+        <CollapsibleContent>
+          Yes. Free to use for personal and commercial projects. No attribution
+          required.
+        </CollapsibleContent>
+      </Collapsible></>
   )
 }

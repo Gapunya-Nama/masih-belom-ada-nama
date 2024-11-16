@@ -1,6 +1,5 @@
 "use client";
 
-import DiscordCard from "@/app/components/discordCard";
 import {
   Carousel,
   CarouselContent,
@@ -8,10 +7,11 @@ import {
   CarouselApi
 } from "@/components/ui/carousel";
 import React from "react";
+import LoginPage from "./login";
 
-export function Home() {
+function Home() {
   const [api, setApi] = React.useState<CarouselApi>();
-  const [isMounted, setIsMounted] = React.useState(false); 
+  const [, setIsMounted] = React.useState(false); 
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
 
@@ -60,7 +60,6 @@ export function Home() {
         <CarouselContent className="mb-4">
 
           <CarouselItem className="flex flex-col justify-center items-center">
-            <DiscordCard />
             <div className="space-x-4">
             <button
               onClick={handlePrevious}
@@ -78,7 +77,7 @@ export function Home() {
           </CarouselItem>
 
 
-          <CarouselItem className="flex flex-col justify-center items-center h-screen">
+          <CarouselItem className="bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background flex flex-col justify-center items-center h-screen">
             <h1 className="text-9xl font-bold text-[#2ECC71] py-10">Sijarta</h1>
             <div className="space-x-4">
             <button
@@ -96,8 +95,23 @@ export function Home() {
           </CarouselItem>
 
 
-          <CarouselItem className="flex justify-center items-center">
-            <DiscordCard />
+          <CarouselItem className="bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background flex flex-col justify-center items-center">
+            <LoginPage/>
+            <div className="space-x-4">
+            
+            <button
+              onClick={handlePrevious}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Previous
+            </button>
+            <button
+              onClick={handleNext}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Next
+            </button>
+            </div>
           </CarouselItem>
 
         </CarouselContent>

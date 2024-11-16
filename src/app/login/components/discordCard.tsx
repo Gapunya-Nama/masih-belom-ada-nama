@@ -1,13 +1,7 @@
 'use client'
 import React, { useEffect, useRef } from 'react';
-import styles from '@/app/components/discordCard.module.css';
+import styles from './discordCard.module.css';
 import InputField from './inputField';
-import ToggleElement from './toggleElement';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
 
 
 const DiscordCard: React.FC = ({ }) => {
@@ -41,13 +35,6 @@ const DiscordCard: React.FC = ({ }) => {
         <Divider />
         <h4 className={`${styles.cardSubtitle} ${styles.hoverHidden}`} ref={subtitleRef}>Ini defaultnya mau apa</h4>
         <h4 className={styles.cardSubtitle} ref={subtitleRef}></h4>
-        <Collapsible>
-          <CollapsibleTrigger>Can I use this in my project?</CollapsibleTrigger>
-          <CollapsibleContent>
-            Yes. Free to use for personal and commercial projects. No attribution
-            required.
-          </CollapsibleContent>
-        </Collapsible>
 
         <InputField label='Username' />
       </div>

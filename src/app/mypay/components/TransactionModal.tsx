@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -34,17 +34,24 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
   const [selectedBank, setSelectedBank] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
 
+  // Adjust padding on the body to prevent layout shift
+  useEffect(() => {
+    if (isOpen) {
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+      document.body.style.overflow = "hidden";
+    } else {
+      // Add a slight delay before removing the padding and overflow
+      const timeoutId = setTimeout(() => {
+        document.body.style.paddingRight = "";
+        document.body.style.overflow = "";
+      }, 200); // Delay of 200ms for a smoother transition
+      return () => clearTimeout(timeoutId); // Clear timeout if component unmounts
+    }
+  }, [isOpen]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle transaction submission here
-    console.log({
-      transactionType,
-      amount,
-      selectedService,
-      phoneNumber,
-      selectedBank,
-      accountNumber,
-    });
     onClose();
   };
 
@@ -53,16 +60,14 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
       case "TopUp":
         return (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="amount">Top Up Amount</Label>
-              <Input
-                id="amount"
-                type="number"
-                placeholder="Enter amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
+            <Label htmlFor="amount">Top Up Amount</Label>
+            <Input
+              id="amount"
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
             <Button type="submit" className="w-full">Top Up</Button>
           </div>
         );
@@ -70,21 +75,19 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
       case "Payment":
         return (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="service">Select Service</Label>
-              <Select value={selectedService} onValueChange={setSelectedService}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select service" />
-                </SelectTrigger>
-                <SelectContent>
-                  {services.map((service) => (
-                    <SelectItem key={service.id} value={service.id}>
-                      {service.name} - Rp {service.price.toLocaleString("id-ID")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Label htmlFor="service">Select Service</Label>
+            <Select value={selectedService} onValueChange={setSelectedService}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select service" />
+              </SelectTrigger>
+              <SelectContent>
+                {services.map((service) => (
+                  <SelectItem key={service.id} value={service.id}>
+                    {service.name} - Rp {service.price.toLocaleString("id-ID")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button type="submit" className="w-full">Pay</Button>
           </div>
         );
@@ -92,26 +95,22 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
       case "Transfer":
         return (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="phone">Recipient Phone Number</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="Enter phone number"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="amount">Transfer Amount</Label>
-              <Input
-                id="amount"
-                type="number"
-                placeholder="Enter amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
+            <Label htmlFor="phone">Recipient Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="Enter phone number"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+            <Label htmlFor="amount">Transfer Amount</Label>
+            <Input
+              id="amount"
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
             <Button type="submit" className="w-full">Transfer</Button>
           </div>
         );
@@ -119,41 +118,35 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
       case "Withdrawal":
         return (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="bank">Select Bank</Label>
-              <Select value={selectedBank} onValueChange={setSelectedBank}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select bank" />
-                </SelectTrigger>
-                <SelectContent>
-                  {banks.map((bank) => (
-                    <SelectItem key={bank.id} value={bank.id}>
-                      {bank.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="account">Account Number</Label>
-              <Input
-                id="account"
-                type="text"
-                placeholder="Enter account number"
-                value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="amount">Withdrawal Amount</Label>
-              <Input
-                id="amount"
-                type="number"
-                placeholder="Enter amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
+            <Label htmlFor="bank">Select Bank</Label>
+            <Select value={selectedBank} onValueChange={setSelectedBank}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select bank" />
+              </SelectTrigger>
+              <SelectContent>
+                {banks.map((bank) => (
+                  <SelectItem key={bank.id} value={bank.id}>
+                    {bank.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Label htmlFor="account">Account Number</Label>
+            <Input
+              id="account"
+              type="text"
+              placeholder="Enter account number"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+            />
+            <Label htmlFor="amount">Withdrawal Amount</Label>
+            <Input
+              id="amount"
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
             <Button type="submit" className="w-full">Withdraw</Button>
           </div>
         );
