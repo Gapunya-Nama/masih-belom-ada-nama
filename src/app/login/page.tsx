@@ -1,6 +1,5 @@
 "use client";
 
-import DiscordCard from "./components/discordCard";
 import {
   Carousel,
   CarouselContent,
@@ -60,7 +59,6 @@ function Home() {
         <CarouselContent className="mb-4">
 
           <CarouselItem className="flex flex-col justify-center items-center">
-            <DiscordCard />
             <div className="space-x-4">
             <button
               onClick={handlePrevious}
@@ -97,7 +95,6 @@ function Home() {
 
 
           <CarouselItem className="flex flex-col justify-center items-center">
-          <DiscordCard />
             <div className="space-x-4">
             <button
               onClick={handlePrevious}
