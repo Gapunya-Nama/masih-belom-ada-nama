@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/carousel";
 import React from "react";
 
-export function Home() {
+function Home() {
   const [api, setApi] = React.useState<CarouselApi>();
-  const [isMounted, setIsMounted] = React.useState(false); 
+  const [, setIsMounted] = React.useState(false); 
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
 
