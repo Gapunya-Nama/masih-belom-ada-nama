@@ -1,20 +1,5 @@
 /* components/LoginCard.module.css */
 
-:root {
-  --border: black;
-  --g1: #3a7bd5;
-  --g2: #57cc99;
-  --g3: #c7f9cc;
-}
-
-/* .bgBlack {
-  background-color: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-} */
-
 .card {
   aspect-ratio: 1 / 1;
   border: 0.5vmin solid var(--border);
