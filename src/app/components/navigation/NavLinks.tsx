@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Home, WalletIcon, Package, Briefcase, Tag, UserCircle } from 'lucide-react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 
 export const navLinks = [
   { name: 'Homepage', href: '/homepage', icon: Home },
@@ -13,24 +13,15 @@ export const navLinks = [
   { name: 'Profile', href: '/profile', icon: UserCircle },
 ];
 
-export function NavLinks({ closeSidebar }: Readonly<{ closeSidebar: () => void }>) {
+export function NavLinks({ closeSidebar }: { closeSidebar: () => void }) {
   const router = useRouter();
 
-  const handleLinkClick = async (href: string) => {
-    try {
-      router.push(href); 
-      await new Promise((resolve) => {
-        const onRouteChange = () => {
-          resolve(true);
-          router.events?.off('routeChangeComplete', onRouteChange); 
-        };
-        router.events?.on('routeChangeComplete', onRouteChange);
-      });
-    } catch (error) {
-      console.error("Fetch failed:", error);
-    } finally {
-      closeSidebar(); 
-    }
+  const handleLinkClick = (href: string) => {
+    closeSidebar();
+    router?.push(href).catch((err) => {
+      console.error('Navigation error:', err); 
+    });
+    
   };
 
   return (
@@ -39,15 +30,18 @@ export function NavLinks({ closeSidebar }: Readonly<{ closeSidebar: () => void }
         {navLinks.map((link) => {
           const Icon = link.icon;
           return (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => handleLinkClick(link.href)} // Close sidebar when a link is clicked
-              className="flex items-center space-x-3 text-black hover:text-[#2ECC71] hover:bg-blue-50 px-4 py-3 rounded-lg transition-colors"
-            >
-              <Icon className="h-5 w-5" aria-hidden="true" />
-              <span className="font-medium">{link.name}</span>
-            </Link>
+            <div key={link.href}>
+              <Link
+                href={link.href}
+                onClick={(e) => {
+                  handleLinkClick(link.href); // Custom navigation logic
+                }}
+                className="flex items-center space-x-3 text-black hover:text-[#2ECC71] hover:bg-blue-50 px-4 py-3 rounded-lg transition-colors"
+              >
+                <Icon className="h-5 w-5" aria-hidden="true" />
+                <span className="font-medium">{link.name}</span>
+              </Link>
+            </div>
           );
         })}
       </div>
