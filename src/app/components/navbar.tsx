@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Menu, Brush } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -8,10 +9,14 @@ import { NavLinks } from './navigation/NavLinks';
 import { LogoutButton } from './navigation/LogoutButton';
 
 export default function Navbar() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const closeSidebar = () => setIsSheetOpen(false);
+
   return (
     <nav className="fixed top-0 left-0 h-16 w-full border-b bg-white z-50">
       <div className="h-full px-4 flex items-center">
-        <Sheet>
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
             <Button 
               variant="ghost" 
@@ -27,10 +32,9 @@ export default function Navbar() {
             className="w-[300px] sm:w-[400px] p-0"
             aria-label="Navigation menu"
           >
-            
             <div className="h-full flex flex-col">
               <UserProfile />
-              <NavLinks />
+              <NavLinks closeSidebar={closeSidebar} />
               <LogoutButton />
             </div>
           </SheetContent>
