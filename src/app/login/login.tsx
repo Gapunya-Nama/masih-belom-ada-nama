@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState<"user" | "worker" | null>(null);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background flex items-center justify-center p-4">
+    <main className="flex items-center justify-center p-4">
       <Card className="w-full max-w-lg p-8">
         <div className="flex flex-col items-center space-y-6">
           <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">

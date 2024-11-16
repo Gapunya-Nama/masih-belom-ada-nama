@@ -7,6 +7,7 @@ import {
   CarouselApi
 } from "@/components/ui/carousel";
 import React from "react";
+import LoginPage from "./login";
 
 function Home() {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -76,7 +77,7 @@ function Home() {
           </CarouselItem>
 
 
-          <CarouselItem className="flex flex-col justify-center items-center h-screen">
+          <CarouselItem className="bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background flex flex-col justify-center items-center h-screen">
             <h1 className="text-9xl font-bold text-[#2ECC71] py-10">Sijarta</h1>
             <div className="space-x-4">
             <button
@@ -94,8 +95,10 @@ function Home() {
           </CarouselItem>
 
 
-          <CarouselItem className="flex flex-col justify-center items-center">
+          <CarouselItem className="bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background flex flex-col justify-center items-center">
+            <LoginPage/>
             <div className="space-x-4">
+            
             <button
               onClick={handlePrevious}
               className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
