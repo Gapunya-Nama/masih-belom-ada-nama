@@ -1,6 +1,7 @@
 "use client";
 
 import { EditWorkerProfile } from "./EditWorkerProfile";
+import { WorkerProfileRead } from "./WorkerProfile";
 // import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -25,7 +26,7 @@ export default function WorkerProfilePage() {
           </div>
         </div>
         
-        <EditWorkerProfile />
+        <WorkerProfileRead />
       </div>
     </main>
   );

@@ -1,10 +1,11 @@
 "use client";
 
-import { UserProfile } from "./UserProfile";
+import { EditUserProfile } from "./EditUserProfile";
 // import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import Link from "next/link";
+import { UserProfileRead } from "./UserProfile";
 
 export default function UserProfilePage() {
   return (
@@ -25,7 +26,7 @@ export default function UserProfilePage() {
           </div>
         </div>
         
-        <UserProfile />
+        <UserProfileRead />
       </div>
     </main>
   );
