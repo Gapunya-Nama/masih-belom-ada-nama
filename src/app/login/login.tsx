@@ -1,7 +1,6 @@
 "use client";
 
 import { LoginForm } from "./components/auth/login-form";
-import { RoleSelector } from "./components/auth/role-seletor";
 import { Card } from "@/components/ui/card";
 import { Leaf } from "lucide-react";
 import { useState } from "react";
