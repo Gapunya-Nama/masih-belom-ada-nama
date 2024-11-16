@@ -18,6 +18,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/hooks/use-toast";
 import { authenticateUser, getDashboardPath } from "@/lib/auth";
+import { useAuth } from "@/context/auth-context";
 
 const loginSchema = z.object({
     Pno: z.string().min(10, "Nomor Tlp harus 10 digits").regex(/^\d+$/, "Nomor Telfon hanya boleh memiliki angka"),
@@ -31,6 +32,7 @@ export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
+    const { login } = useAuth();
 
 
     const form = useForm<z.infer<typeof loginSchema>>({
@@ -46,12 +48,14 @@ export function LoginForm() {
             setIsLoading(true);
             const user = await authenticateUser(values.Pno, values.password);
 
+            login(user);
+
             toast({
                 title: "Login successful!",
                 description: `Welcome back, ${user.name}`,
             });
 
-            router.push(getDashboardPath(user.role));
+            router.push("/homepage");
         } catch (error) {
             toast({
                 variant: "destructive",
