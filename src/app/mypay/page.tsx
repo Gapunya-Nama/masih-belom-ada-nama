@@ -72,7 +72,7 @@ export default function MyPay() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-[#F3F3F3]">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center gap-2">
           <WalletIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
