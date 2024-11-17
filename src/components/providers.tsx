@@ -1,6 +1,6 @@
 "use client";
 
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/app/components/navbar";
 import { useAuth } from "@/context/auth-context";
 import { usePathname } from "next/navigation"; 
@@ -29,7 +29,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   if (!authChecked) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p>{<Loader2 className="mr-2 h-4 w-4 animate-spin" />}</p>
+        <p>{<Loader2 className="mr-2 h-8 w-8 animate-spin" />}</p>
       </div>
     );
   }
@@ -38,7 +38,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <>
       {isAuthenticated && <Navbar />}
       {children}
-      <Toaster />
+      
     </>
   );
 }

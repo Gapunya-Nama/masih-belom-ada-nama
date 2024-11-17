@@ -34,13 +34,13 @@ export default function RootLayout({
         <div className="fixed top-0 left-0 w-full z-50">
           
         </div>
-        <div className="pt-16">
         <AuthProvider>
           <Providers>
             {children}
+            <Toaster/>
           </Providers>
         </AuthProvider>
-        </div>
+        
       </body>
     </html>
   );

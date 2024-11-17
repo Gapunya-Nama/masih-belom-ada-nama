@@ -23,6 +23,7 @@ export default function Home() {
   };
 
   return (
+    <div className="pt-16">
     <div className="min-h-screen bg-[#F3F3F3]">
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-4xl font-bold text-center text-[#2ECC71] mb-8">
@@ -48,6 +49,7 @@ export default function Home() {
           ))}
         </div>
       </div>
+    </div>
     </div>
   );
 }

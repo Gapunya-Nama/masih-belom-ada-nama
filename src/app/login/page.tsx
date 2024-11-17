@@ -8,10 +8,12 @@ import {
 } from "@/components/ui/carousel";
 import React from "react";
 import LoginPage from "./login";
+import { Button } from "@/components/ui/button";
+import RegisterPage from "../register/page";
 
 function Home() {
   const [api, setApi] = React.useState<CarouselApi>();
-  const [, setIsMounted] = React.useState(false); 
+  const [, setIsMounted] = React.useState(false);
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
 
@@ -54,25 +56,38 @@ function Home() {
     }
   };
 
-  return (
-    <div>
-      <Carousel setApi={setApi}>
-        <CarouselContent className="mb-4">
+  const goToLogin = () => {
+    if (api) {
+      api.scrollTo(2);
+    }
+  };
 
-          <CarouselItem className="flex flex-col justify-center items-center">
-            <div className="space-x-4">
-            <button
-              onClick={handlePrevious}
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              Previous
-            </button>
-            <button
-              onClick={handleNext}
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              Next
-            </ button>
+  const goToRegister = () => {
+    if (api) {
+      api.scrollTo(0);
+    }
+  };
+
+  return (
+    <div className="h-screen">
+      <Carousel setApi={setApi} className="h-full">
+        <CarouselContent className="h-full">
+
+          <CarouselItem className="bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background flex flex-col justify-center items-center">
+            <RegisterPage />
+            <div className="mt-4 space-x-4">
+              <Button
+                onClick={handlePrevious}
+                variant="outline"
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={handleNext}
+                variant="outline"
+              >
+                Next
+              </Button>
             </div>
           </CarouselItem>
 
@@ -80,58 +95,43 @@ function Home() {
           <CarouselItem className="bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background flex flex-col justify-center items-center h-screen">
             <h1 className="text-9xl font-bold text-[#2ECC71] py-10">Sijarta</h1>
             <div className="space-x-4">
-            <button
-              onClick={handlePrevious}
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              Register
-            </button>
-            <button
-              onClick={handleNext}
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              Login
-            </button></div>
+              <Button
+                onClick={goToRegister}
+                variant="outline"
+                className="bg-green-600 text-white hover:bg-green-700"
+              >
+                Register
+              </Button>
+              <Button
+                onClick={goToLogin}
+                variant="outline"
+              >
+                Login
+              </Button>
+            </div>
           </CarouselItem>
 
 
           <CarouselItem className="bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background flex flex-col justify-center items-center">
-            <LoginPage/>
-            <div className="space-x-4">
-            
-            <button
-              onClick={handlePrevious}
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              Previous
-            </button>
-            <button
-              onClick={handleNext}
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              Next
-            </button>
+            <LoginPage />
+            <div className="mt-4 space-x-4">
+              <Button
+                onClick={handlePrevious}
+                variant="outline"
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={handleNext}
+                variant="outline"
+              >
+                Next
+              </Button>
             </div>
           </CarouselItem>
 
         </CarouselContent>
       </Carousel>
-
-      {/* <div className="flex justify-center space-x-4 mt-4">
-        <button
-          onClick={handlePrevious}
-          className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-        >
-          Previous
-        </button>
-        <button
-          onClick={handleNext}
-          className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-        >
-          Next
-        </button>
-      </div> */}
-
 
     </div>
   );
