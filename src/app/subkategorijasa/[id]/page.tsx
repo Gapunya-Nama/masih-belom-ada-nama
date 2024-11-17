@@ -1,6 +1,6 @@
-import { subcategories } from './data/subcategories';
-import SubCategoryUser from './components/SubCategoryUser';
-import SubCategoryWorker from './components/SubCategoryWorker';
+import { subcategories } from '../data/subcategories';
+import SubCategoryUser from '../components/SubCategoryUser';
+import SubCategoryWorker from '../components/SubCategoryWorker';
 
 export function generateStaticParams() {
   return subcategories.map((subcategory) => ({
