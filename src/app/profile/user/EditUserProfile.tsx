@@ -30,7 +30,11 @@ const userFormSchema = z.object({
   address: z.string().min(5, "Address must be at least 5 characters"),
 });
 
-export function EditUserProfile() {
+interface UserProfileProps {
+  onCancel: () => void;
+}
+
+export function UserProfile({ onCancel }: UserProfileProps) {
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -45,18 +49,12 @@ export function EditUserProfile() {
   function onSubmit(values: z.infer<typeof userFormSchema>) {
     toast.success("Profile updated successfully!");
     console.log(values);
+    onCancel();
   }
 
   return (
     <Card className="border-none shadow-none">
       <CardContent className="p-0">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold">Personal Information</h2>
-          <p className="text-sm text-muted-foreground">
-            Update your personal details and contact information
-          </p>
-        </div>
-        <Separator className="mb-6" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
@@ -69,9 +67,6 @@ export function EditUserProfile() {
                     <FormControl>
                       <Input placeholder="Enter your full name" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      This is your public display name
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -113,9 +108,6 @@ export function EditUserProfile() {
                     <FormControl>
                       <Input placeholder="+62" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Your primary contact number
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -144,17 +136,20 @@ export function EditUserProfile() {
                     <FormControl>
                       <Input placeholder="Enter your complete address" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Your residential address for correspondence
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="flex justify-end">
-              <Button type="submit" className="w-full md:w-auto">
+            <div className="flex justify-end gap-4">
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+              >
                 Save Changes
               </Button>
             </div>
