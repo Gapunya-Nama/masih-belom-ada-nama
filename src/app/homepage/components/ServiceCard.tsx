@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 
 interface Subcategory {
   id: number;
@@ -14,6 +16,7 @@ interface ServiceCardProps {
 }
 
 export function ServiceCard({ name, subcategories, onSubcategoryClick }: ServiceCardProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -36,7 +39,7 @@ export function ServiceCard({ name, subcategories, onSubcategoryClick }: Service
                   {subcategory.name}
                 </button>
                 <button
-                  onClick={() => alert(`Pesan Jasa untuk ${subcategory.name}`)}
+                  onClick={() => router.push(`/subkategorijasa/${subcategory.id}`)}
                   className="ml-4 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-150"
                 >
                   Pesan

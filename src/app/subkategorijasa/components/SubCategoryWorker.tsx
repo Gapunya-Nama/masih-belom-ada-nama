@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from '@/components/hooks/use-toast';
 import { SubCategory } from '../types';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -27,11 +28,17 @@ export default function SubCategoryWorker({ subcategory }: Props) {
           </div>
           {!isJoined && (
             <Button
-              onClick={() => setIsJoined(true)}
+              onClick={() => {
+                setIsJoined(true);
+                toast({
+                  title:`Success`,
+                  description: `Berhasil bergabung sebagai pekerja di subkatergori ${subcategory.name}`, 
+                });
+              }}
               className="bg-[#2ECC71] hover:bg-[#27AE60]"
             >
               Bergabung Sebagai Pekerja
-            </Button>
+          </Button>
           )}
         </div>
       </div>
