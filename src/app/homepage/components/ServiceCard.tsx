@@ -28,13 +28,20 @@ export function ServiceCard({ name, subcategories, onSubcategoryClick }: Service
         <CollapsibleContent>
           <div className="divide-y divide-gray-100">
             {subcategories.map((subcategory) => (
-              <button
-                key={subcategory.id}
-                onClick={() => onSubcategoryClick(subcategory.id)}
-                className="w-full text-left p-4 hover:bg-gray-50 transition-colors duration-150"
-              >
-                {subcategory.name}
-              </button>
+              <div key={subcategory.id} className="p-4 flex justify-between items-center">
+                <button
+                  onClick={() => onSubcategoryClick(subcategory.id)}
+                  className="text-left hover:bg-gray-50 transition-colors duration-150 flex-grow"
+                >
+                  {subcategory.name}
+                </button>
+                <button
+                  onClick={() => alert(`Pesan Jasa untuk ${subcategory.name}`)}
+                  className="ml-4 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-150"
+                >
+                  Pesan
+                </button>
+              </div>
             ))}
           </div>
         </CollapsibleContent>
