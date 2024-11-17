@@ -1,13 +1,9 @@
+'use client';
 import { subcategories } from '../data/subcategories';
 import SubCategoryUser from '../components/SubCategoryUser';
 import SubCategoryWorker from '../components/SubCategoryWorker';
 import { useAuth } from '@/context/auth-context';
 
-export function generateStaticParams() {
-  return subcategories.map((subcategory) => ({
-    id: subcategory.id,
-  }));
-}
 
 interface Props {
   params: { id: string };
@@ -31,5 +27,5 @@ export default function SubCategoryPage({ params, searchParams }: Props) {
     return <SubCategoryWorker subcategory={subcategory} />;
   }
 
-  return <SubCategoryWorker subcategory={subcategory} />;
+  return <SubCategoryUser subcategory={subcategory} />;
 }
