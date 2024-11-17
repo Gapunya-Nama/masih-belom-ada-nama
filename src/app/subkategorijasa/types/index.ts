@@ -23,6 +23,7 @@ export interface Testimonial {
 }
 
 export interface SubCategory {
+  idKategori: string;
   id: string;
   name: string;
   description: string;

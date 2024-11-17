@@ -1,6 +1,7 @@
 import { subcategories } from '../data/subcategories';
 import SubCategoryUser from '../components/SubCategoryUser';
 import SubCategoryWorker from '../components/SubCategoryWorker';
+import { useAuth } from '@/context/auth-context';
 
 export function generateStaticParams() {
   return subcategories.map((subcategory) => ({
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function SubCategoryPage({ params, searchParams }: Props) {
+  const { user } = useAuth();
   const subcategory = subcategories.find((s) => s.id === params.id);
   const isWorkerView = searchParams.view === 'worker';
 
@@ -21,9 +23,13 @@ export default function SubCategoryPage({ params, searchParams }: Props) {
     return <div>Subkategori tidak ditemukan</div>;
   }
 
-  return isWorkerView ? (
-    <SubCategoryWorker subcategory={subcategory} />
-  ) : (
-    <SubCategoryUser subcategory={subcategory} />
-  );
+  if (!user) {
+    return <div>User not found</div>;
+  }
+
+  if (user.role === 'worker') {
+    return <SubCategoryWorker subcategory={subcategory} />;
+  }
+
+  return <SubCategoryWorker subcategory={subcategory} />;
 }
