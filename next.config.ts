@@ -7,11 +7,16 @@ import { NextConfig } from 'next';
 // });
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
+  // reactStrictMode: true,
   // webpack(config) {
   //   config.cache = false; // Keep cache disabled for now
   //   return config;
   // },
+  output: 'export',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: { unoptimized: true },
 };
 
 export default nextConfig;

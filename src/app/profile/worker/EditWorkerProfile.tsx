@@ -51,7 +51,11 @@ const banks = [
   "Bank CIMB Niaga",
 ];
 
-export function EditWorkerProfile() {
+interface WorkerProfileProps {
+  onCancel: () => void;
+}
+
+export function WorkerProfile({ onCancel }: WorkerProfileProps) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof workerFormSchema>>({
@@ -72,6 +76,7 @@ export function EditWorkerProfile() {
   function onSubmit(values: z.infer<typeof workerFormSchema>) {
     toast.success("Profile updated successfully!");
     console.log(values);
+    onCancel();
   }
 
   const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,13 +94,6 @@ export function EditWorkerProfile() {
   return (
     <Card className="border-none shadow-none">
       <CardContent className="p-0">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold">Worker Information</h2>
-          <p className="text-sm text-muted-foreground">
-            Manage your work profile and payment details
-          </p>
-        </div>
-        <Separator className="mb-6" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div>
@@ -290,8 +288,14 @@ export function EditWorkerProfile() {
               </div>
             </div>
 
-            <div className="flex justify-end">
-              <Button type="submit" className="w-full md:w-auto">
+            <div className="flex justify-end gap-4">
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+              >
                 Save Changes
               </Button>
             </div>

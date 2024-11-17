@@ -1,103 +1,90 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Wallet } from "lucide-react";
 
-export function UserProfileRead() {
-  // Example data for display purposes
-  const workerData = {
+interface UserProfileViewProps {
+  onEdit: () => void;
+}
+
+export function UserProfileView({ onEdit }: UserProfileViewProps) {
+  // Mock data - in a real app, this would come from your backend
+  const userData = {
     name: "John Doe",
-    level: "Gold",
+    level: "Gold Member",
     gender: "Male",
-    noHP: "+62 123 456 789",
+    phone: "+62 812 3456 7890",
     birthDate: "1990-01-01",
-    address: "Jl. Sudirman, Jakarta, Indonesia",
-    bankName: "Bank BCA",
-    accountNumber: "1234567890",
-    npwp: "123-456-789-0123",
-    saldoMyPay: "Rp 1,500,000",
+    address: "123 Main Street, City",
+    balance: 1500000,
   };
 
   return (
     <Card className="border-none shadow-none">
       <CardContent className="p-0">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold">Worker Information</h2>
-          <p className="text-sm text-muted-foreground">
-            View your work profile and payment details
-          </p>
-        </div>
-        <Separator className="mb-6" />
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-base font-medium mb-4">Personal Details</h3>
-            <div className="grid gap-6">
-              {/* Name and Level */}
-              <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-8">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-4 text-sm md:grid-cols-2">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium">Full Name</label>
-                  <p className="text-sm">{workerData.name}</p>
+                  <dt className="font-medium text-gray-500 dark:text-gray-400">Name</dt>
+                  <dd className="mt-1 text-base">{userData.name}</dd>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium">Level</label>
-                  <p className="text-sm">{workerData.level}</p>
+                  <dt className="font-medium text-gray-500 dark:text-gray-400">Level</dt>
+                  <dd className="mt-1 text-base">{userData.level}</dd>
+                </div>
+
+                <div>
+                  <dt className="font-medium text-gray-500 dark:text-gray-400">Gender</dt>
+                  <dd className="mt-1 text-base">{userData.gender}</dd>
                 </div>
               </div>
 
-              {/* Gender and Phone Number */}
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium">Gender</label>
-                  <p className="text-sm">{workerData.gender}</p>
+                  <dt className="font-medium text-gray-500 dark:text-gray-400">Phone Number</dt>
+                  <dd className="mt-1 text-base">{userData.phone}</dd>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium">Phone Number</label>
-                  <p className="text-sm">{workerData.noHP}</p>
-                </div>
-              </div>
 
-              {/* Birth Date and Address */}
-              <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium">Birth Date</label>
-                  <p className="text-sm">{workerData.birthDate}</p>
+                  <dt className="font-medium text-gray-500 dark:text-gray-400">Birth Date</dt>
+                  <dd className="mt-1 text-base">{userData.birthDate}</dd>
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium">Address</label>
-                  <p className="text-sm">{workerData.address}</p>
+
+                <div>
+                  <dt className="font-medium text-gray-500 dark:text-gray-400">Address</dt>
+                  <dd className="mt-1 text-base">{userData.address}</dd>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div>
-            <h3 className="text-base font-medium mb-4">Payment Information</h3>
-            <div className="grid gap-6">
-              {/* Bank Name and Account Number */}
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium">Bank Name</label>
-                  <p className="text-sm">{workerData.bankName}</p>
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-green-100 p-2 dark:bg-green-900">
+                  <Wallet className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">
-                    Account Number
-                  </label>
-                  <p className="text-sm">{workerData.accountNumber}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    MyPay Balance
+                  </p>
+                  <p className="text-lg font-semibold">
+                    Rp {userData.balance.toLocaleString()}
+                  </p>
                 </div>
               </div>
 
-              {/* NPWP and Saldo MyPay */}
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium">NPWP</label>
-                  <p className="text-sm">{workerData.npwp}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">Saldo MyPay</label>
-                  <p className="text-sm">{workerData.saldoMyPay}</p>
-                </div>
-              </div>
+              <Button
+                onClick={onEdit}
+                className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+              >
+                Update Profile
+              </Button>
             </div>
           </div>
         </div>

@@ -1,124 +1,149 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Star, Wallet } from "lucide-react";
+import Image from "next/image";
 
-export function WorkerProfileRead() {
-  // Example data for display purposes
+interface WorkerProfileViewProps {
+  onEdit: () => void;
+}
+
+export function WorkerProfileView({ onEdit }: WorkerProfileViewProps) {
+  // Mock data - in a real app, this would come from your backend
   const workerData = {
-    name: "John Doe",
-    gender: "Male",
-    noHP: "+62 123 456 789",
-    birthDate: "1990-01-01",
-    address: "Jl. Sudirman, Jakarta, Indonesia",
-    saldoMyPay: "Rp 1,500,000",
+    name: "Jane Smith",
+    gender: "Female",
+    phone: "+62 812 3456 7890",
+    birthDate: "1992-05-15",
+    address: "456 Worker Street, City",
+    balance: 2500000,
     bankName: "Bank BCA",
     accountNumber: "1234567890",
-    npwp: "123-456-789-0123",
-    rating: "4.8/5",
-    completedOrders: 120,
-    serviceCategories: ["Kategori Jasa 1", "Kategori Jasa 2"],
-    photoUrl: "/default-photo.png", // Example photo placeholder
+    npwp: "12.345.678.9-012.345",
+    rating: 4.8,
+    completedOrders: 156,
+    photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&auto=format&fit=crop&crop=face",
+    categories: [
+      "House Cleaning",
+      "Laundry Service"
+    ]
   };
 
   return (
     <Card className="border-none shadow-none">
       <CardContent className="p-0">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold">Worker Information</h2>
-          <p className="text-sm text-muted-foreground">
-            View your work profile and payment details
-          </p>
-        </div>
-        <Separator className="mb-6" />
-        <div className="grid md:grid-cols-3 gap-4">
-          {/* Left Side: Worker Information */}
-          <div className="md:col-span-2 space-y-4">
-            {/* Name and Gender */}
-            <div>
-              <label className="block text-sm font-medium">Name</label>
-              <p className="text-sm">{workerData.name}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Gender</label>
-              <p className="text-sm">{workerData.gender}</p>
+        <div className="grid gap-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="md:col-span-2">
+              <div className="grid grid-cols-1 gap-x-8 gap-y-4 text-sm md:grid-cols-2">
+                <div className="space-y-4">
+                  <div>
+                    <dt className="font-medium text-gray-500 dark:text-gray-400">Name</dt>
+                    <dd className="mt-1 text-base">{workerData.name}</dd>
+                  </div>
+
+                  <div>
+                    <dt className="font-medium text-gray-500 dark:text-gray-400">Gender</dt>
+                    <dd className="mt-1 text-base">{workerData.gender}</dd>
+                  </div>
+
+                  <div>
+                    <dt className="font-medium text-gray-500 dark:text-gray-400">Phone Number</dt>
+                    <dd className="mt-1 text-base">{workerData.phone}</dd>
+                  </div>
+
+                  <div>
+                    <dt className="font-medium text-gray-500 dark:text-gray-400">Birth Date</dt>
+                    <dd className="mt-1 text-base">{workerData.birthDate}</dd>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <dt className="font-medium text-gray-500 dark:text-gray-400">Address</dt>
+                    <dd className="mt-1 text-base">{workerData.address}</dd>
+                  </div>
+
+                  <div>
+                    <dt className="font-medium text-gray-500 dark:text-gray-400">Bank Name</dt>
+                    <dd className="mt-1 text-base">{workerData.bankName}</dd>
+                  </div>
+
+                  <div>
+                    <dt className="font-medium text-gray-500 dark:text-gray-400">Account Number</dt>
+                    <dd className="mt-1 text-base">{workerData.accountNumber}</dd>
+                  </div>
+
+                  <div>
+                    <dt className="font-medium text-gray-500 dark:text-gray-400">NPWP</dt>
+                    <dd className="mt-1 text-base">{workerData.npwp}</dd>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Phone Number and Birth Date */}
-            <div>
-              <label className="block text-sm font-medium">Phone Number</label>
-              <p className="text-sm">{workerData.noHP}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Birth Date</label>
-              <p className="text-sm">{workerData.birthDate}</p>
-            </div>
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative h-48 w-48 overflow-hidden rounded-lg border-2 border-muted">
+                <Image
+                  src={workerData.photoUrl}
+                  alt="Profile photo"
+                  fill
+                  className="object-cover"
+                />
+              </div>
 
-            {/* Address */}
-            <div>
-              <label className="block text-sm font-medium">Address</label>
-              <p className="text-sm">{workerData.address}</p>
-            </div>
+              <div className="flex items-center gap-1">
+                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                <span className="text-lg font-semibold">{workerData.rating}</span>
+              </div>
 
-            {/* Saldo MyPay */}
-            <div>
-              <label className="block text-sm font-medium">Saldo MyPay</label>
-              <p className="text-sm">{workerData.saldoMyPay}</p>
-            </div>
-
-            {/* Bank Details */}
-            <div>
-              <label className="block text-sm font-medium">Bank Name</label>
-              <p className="text-sm">{workerData.bankName}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Account Number</label>
-              <p className="text-sm">{workerData.accountNumber}</p>
-            </div>
-
-            {/* NPWP */}
-            <div>
-              <label className="block text-sm font-medium">NPWP</label>
-              <p className="text-sm">{workerData.npwp}</p>
-            </div>
-
-            {/* Rating */}
-            <div>
-              <label className="block text-sm font-medium">Rating</label>
-              <p className="text-sm">{workerData.rating}</p>
-            </div>
-
-            {/* Completed Orders */}
-            <div>
-              <label className="block text-sm font-medium">
-                Completed Orders
-              </label>
-              <p className="text-sm">{workerData.completedOrders}</p>
-            </div>
-
-            {/* Service Categories */}
-            <div>
-              <label className="block text-sm font-medium">Service Categories</label>
-              <ul className="text-sm list-disc list-inside">
-                {workerData.serviceCategories.map((category, index) => (
-                  <li key={index}>{category}</li>
-                ))}
-              </ul>
+              <p className="text-sm text-muted-foreground">
+                {workerData.completedOrders} Orders Completed
+              </p>
             </div>
           </div>
 
-          {/* Right Side: Photo */}
-          <div className="flex flex-col items-center">
-            <div className="relative w-40 h-40 rounded-full overflow-hidden border-2 border-muted mb-4">
-              <img
-                src={workerData.photoUrl}
-                alt="Worker photo"
-                className="w-full h-full object-cover"
-              />
+          <Separator />
+
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Service Categories</h3>
+            <div className="flex flex-wrap gap-2">
+              {workerData.categories.map((category, index) => (
+                <div
+                  key={index}
+                  className="rounded-full bg-green-100 px-4 py-2 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-200"
+                >
+                  {category}
+                </div>
+              ))}
             </div>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-              Update
-            </button>
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-green-100 p-2 dark:bg-green-900">
+                <Wallet className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  MyPay Balance
+                </p>
+                <p className="text-lg font-semibold">
+                  Rp {workerData.balance.toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            <Button
+              onClick={onEdit}
+              className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+            >
+              Update Profile
+            </Button>
           </div>
         </div>
       </CardContent>
