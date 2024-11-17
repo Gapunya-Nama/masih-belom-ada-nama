@@ -6,7 +6,7 @@ import { Leaf } from "lucide-react";
 import { useState } from "react";
 
 export default function LoginPage() {
-  const [showLogin,isLoginShown] = useState(false);
+  const [showLogin, isLoginShown] = useState(false);
 
   return (
     <main className="flex items-center justify-center p-4">
@@ -15,7 +15,7 @@ export default function LoginPage() {
           <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
             <Leaf className="h-6 w-6 text-green-600 dark:text-green-400" />
           </div>
-          
+
           <div className="space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
               Welcome back
@@ -32,7 +32,13 @@ export default function LoginPage() {
             </div>
           )}
           <p className="text-sm text-muted-foreground">
-              Please select your role and sign in to continue     
+            Don't want to login / register continue as {" "}
+            <a
+              href="/homepage"
+              className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+            >
+              Guest
+            </a>
           </p>
         </div>
       </Card>

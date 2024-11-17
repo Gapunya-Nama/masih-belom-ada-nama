@@ -72,6 +72,7 @@ export default function MyPay() {
   });
 
   return (
+    <div className="pt-16">
     <div className="min-h-screen bg-[#F3F3F3]">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center gap-2">
@@ -130,6 +131,7 @@ export default function MyPay() {
               <div className="flex items-center gap-2">
                 <label className="text-sm text-gray-700 dark:text-gray-300">From</label>
                 <input
+                  aria-label="filter by date"
                   type="date"
                   className="p-2 border rounded-md dark:bg-gray-700 dark:text-white"
                   value={filterFromDate}
@@ -139,6 +141,7 @@ export default function MyPay() {
               <div className="flex items-center gap-2">
                 <label className="text-sm text-gray-700 dark:text-gray-300">To</label>
                 <input
+                  aria-label="set date"
                   type="date"
                   className="p-2 border rounded-md dark:bg-gray-700 dark:text-white"
                   value={filterToDate}
@@ -146,6 +149,7 @@ export default function MyPay() {
                 />
               </div>
               <select
+                aria-label="Filter by Category"
                 className="p-2 border rounded-md dark:bg-gray-700 dark:text-white"
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
@@ -197,6 +201,7 @@ export default function MyPay() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+    </div>
     </div>
   );
 }
