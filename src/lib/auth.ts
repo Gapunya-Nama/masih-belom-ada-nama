@@ -42,6 +42,18 @@ export const getDashboardPath = (role: Role): string => {
   return paths[role];
 };
 
+const ROLE_PERMISSIONS: Record<Role, string[]> = {
+  user: ['viewProfile', 'editProfile', ], // Hak akses untuk user biasa
+  worker: ['viewProfile', 'editTasks'], // Hak akses untuk pekerja
+  guest: ['viewProfile'],               // Hak akses untuk tamu
+};
+
+export const canAccess = (role: Role, action: string): boolean => {
+  const permissions = ROLE_PERMISSIONS[role] || [];
+  return permissions.includes(action);
+};
+
+
 export const authenticateUser = async (
   Pno: string,
   password: string,
