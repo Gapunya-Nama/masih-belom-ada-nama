@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, WalletIcon, Package, Briefcase, Tag, UserCircle } from 'lucide-react';
+import { Home, WalletIcon, Package, Briefcase, Tag, UserCircle, TextSearch, LogIn, ClipboardList, ClipboardCheck } from 'lucide-react';
 import { useRouter } from 'next/compat/router';
+import { useAuth } from '@/context/auth-context';
 
-export const navLinks = [
+export const navLinksUser = [
   { name: 'Homepage', href: '/homepage', icon: Home },
   { name: 'MyPay', href: '/mypay', icon: WalletIcon },
   { name: 'View Pemesanan Jasa', href: '/orders', icon: Package },
@@ -13,8 +14,29 @@ export const navLinks = [
   { name: 'Profile', href: '/profile', icon: UserCircle },
 ];
 
+export const navLinksWorker = [
+  { name: 'Homepage', href: '/homepage', icon: Home },
+  { name: "Kelola Pekerjaan Saya", href: '/pekerjaanjasa', icon: ClipboardList},
+  { name: "Kelola Status Pekerjaan", href: '/statuspekerjaanjasa', icon: ClipboardCheck},
+  { name: 'MyPay', href: '/mypay', icon: WalletIcon },
+  { name: 'Profile', href: '/profile', icon: UserCircle },
+]
+
+export const links = () => {
+  const { user } = useAuth();
+  if (user?.role === 'worker') {
+    return navLinksWorker;
+  } else if (user?.role === 'user') {
+    return navLinksUser;
+  } else{
+    return [{ name: 'Login', href: '/login', icon: LogIn }];
+  }
+
+}
+
 export function NavLinks({ closeSidebar }: { closeSidebar: () => void }) {
   const router = useRouter();
+  const navLinks = links();
 
   const handleLinkClick = (href: string) => {
     closeSidebar();
