@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>({
-    user: null,
+    user: guestUser,
     isAuthenticated: false,
   });
 
@@ -34,7 +34,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const isGuest = !authState.isAuthenticated && authState.user?.id === "guest";
-  const isUnknown = authState.user === null;
 
   return (
     <AuthContext.Provider value={{ ...authState, login, logout,isGuest }}>
