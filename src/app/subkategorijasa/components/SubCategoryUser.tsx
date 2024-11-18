@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { SubCategory } from '../types';
+import { SubCategory } from '../data/subcategories';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Star, User } from 'lucide-react';
@@ -30,7 +30,7 @@ export default function SubCategoryUser({ subcategory }: Props) {
           <h2 className="text-2xl font-semibold mb-4">Pekerja Tersedia</h2>
           <div className="space-y-4">
             {subcategory.workers.map((worker) => (
-              <Link href={`/worker/${worker.id}`} key={worker.id}>
+              <Link href={`/profile`} key={worker.id}>
                 <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
                   <div className="flex items-center space-x-4">
                     <div className="h-12 w-12 rounded-full bg-[#F3F3F3] flex items-center justify-center">

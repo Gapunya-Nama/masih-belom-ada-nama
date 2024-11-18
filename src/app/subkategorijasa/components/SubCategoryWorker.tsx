@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from '@/components/hooks/use-toast';
-import { SubCategory } from '../types';
+import { SubCategory } from '../data/subcategories';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Star, User } from 'lucide-react';

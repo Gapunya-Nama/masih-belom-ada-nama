@@ -3,6 +3,7 @@ import { subcategories } from '../data/subcategories';
 import SubCategoryUser from '../components/SubCategoryUser';
 import SubCategoryWorker from '../components/SubCategoryWorker';
 import { useAuth } from '@/context/auth-context';
+import { toast } from '@/components/hooks/use-toast';
 
 
 interface Props {
@@ -25,7 +26,12 @@ export default function SubCategoryPage({ params, searchParams }: Props) {
 
   if (user.role === 'worker') {
     return <SubCategoryWorker subcategory={subcategory} />;
-  }
-
-  return <SubCategoryUser subcategory={subcategory} />;
+  } else if (user.role === 'user') {
+    return <SubCategoryUser subcategory={subcategory} />;
+  } else {
+    toast({
+      title: `Error`,
+      description: `Anda perlu login untuk mengakses halaman ini.`,
+    });
+ }
 }
