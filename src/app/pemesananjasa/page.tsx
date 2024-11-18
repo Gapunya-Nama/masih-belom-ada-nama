@@ -66,12 +66,12 @@ const OrderView = () => {
     console.log('Cancelling order:', orderId);
   };
 
-  const handleCreateTestimonial = (order) => {
+  const handleCreateTestimonial = (order: any) => {
     setSelectedOrder(order);
     setShowTestimonialModal(true);
   };
 
-  const handleTestimonialSubmit = (testimonialData) => {
+  const handleTestimonialSubmit = (testimonialData: any) => {
     console.log('Testimonial submitted:', testimonialData);
     setShowTestimonialModal(false);
   };
@@ -85,6 +85,7 @@ const OrderView = () => {
   });
 
   return (
+    <div className="pt-16">
     <div className="min-h-screen bg-[#F3F3F3] py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold mb-8">Daftar Pesanan Jasa</h1>
@@ -95,6 +96,7 @@ const OrderView = () => {
             {/* Subcategory Filter */}
             <div className="relative">
               <select
+                aria-label='subcategory'
                 value={selectedSubcategory}
                 onChange={(e) => setSelectedSubcategory(e.target.value)}
                 className="w-full appearance-none rounded-lg border border-gray-300 px-4 py-2 pr-10 focus:border-[#2ECC71] focus:outline-none focus:ring-1 focus:ring-[#2ECC71]"
@@ -111,6 +113,7 @@ const OrderView = () => {
             {/* Status Filter */}
             <div className="relative">
               <select
+              aria-label='status'
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="w-full appearance-none rounded-lg border border-gray-300 px-4 py-2 pr-10 focus:border-[#2ECC71] focus:outline-none focus:ring-1 focus:ring-[#2ECC71]"
@@ -158,6 +161,7 @@ const OrderView = () => {
         onSubmit={handleTestimonialSubmit}
         order={selectedOrder}
       />
+    </div>
     </div>
   );
 };

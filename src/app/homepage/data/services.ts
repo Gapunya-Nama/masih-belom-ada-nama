@@ -1,29 +1,27 @@
-export const services = [
-    {
-      id: 1,
-      name: "Kategori Jasa 1",
-      subcategories: [
-        { id: 1, name: "Subkategori Jasa 1" },
-        { id: 2, name: "Subkategori Jasa 2" },
-        { id: 3, name: "Subkategori Jasa 3" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Kategori Jasa 2",
-      subcategories: [
-        { id: 4, name: "Subkategori Jasa 1" },
-        { id: 5, name: "Subkategori Jasa 2" },
-        { id: 6, name: "Subkategori Jasa 3" },
-      ],
-    },
-    {
-      id: 3,
-      name: "Kategori Jasa 3",
-      subcategories: [
-        { id: 7, name: "Subkategori Jasa 1" },
-        { id: 8, name: "Subkategori Jasa 2" },
-        { id: 9, name: "Subkategori Jasa 3" },
-      ],
-    },
-  ];
+import { subcategories } from '@/app/subkategorijasa/data/subcategories';
+import { SubCategory } from '@/app/subkategorijasa/types/index';
+
+// Define the Service type
+interface Service {
+  id: number;
+  name: string;
+  subcategories: SubCategory[];
+}
+
+export const services: Service[] = [
+  {
+    id: 1,
+    name: 'Kategori Jasa 1',
+    subcategories: subcategories.filter(sub => sub.idKategori === '1'),
+  },
+  {
+    id: 2,
+    name: 'Kategori Jasa 2',
+    subcategories: subcategories.filter(sub => sub.idKategori === '2'),
+  },
+  {
+    id: 3,
+    name: 'Kategori Jasa 3',
+    subcategories: subcategories.filter(sub => sub.idKategori === '3'),
+  },
+];
