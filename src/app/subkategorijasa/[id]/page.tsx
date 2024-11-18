@@ -26,6 +26,11 @@ export default function SubCategoryPage({ params, searchParams }: Props) {
   if (user.role === 'worker') {
     return <SubCategoryWorker subcategory={subcategory} />;
   }
-
-  return <SubCategoryUser subcategory={subcategory} />;
+  else if (user.role === 'user') {
+    return <SubCategoryUser subcategory={subcategory} />;
+  }
+  else {
+    alert('You need to log in to access this page.');
+    return null;
+  }
 }
