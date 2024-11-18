@@ -8,9 +8,9 @@ import { useAuth } from '@/context/auth-context';
 export const navLinksUser = [
   { name: 'Homepage', href: '/homepage', icon: Home },
   { name: 'MyPay', href: '/mypay', icon: WalletIcon },
-  { name: 'View Pemesanan Jasa', href: '/jobs', icon: Package },
+  { name: 'View Pemesanan Jasa', href: '/pemesananjasa', icon: Package },
   // { name: 'View Pekerjaan Jasa', href: '/jobs', icon: Briefcase },
-  { name: 'Diskon', href: '/discounts', icon: Tag },
+  { name: 'diskon', href: '/discounts', icon: Tag },
   { name: 'Profile', href: '/profile', icon: UserCircle },
 ];
 

@@ -85,6 +85,7 @@ const OrderView = () => {
   });
 
   return (
+    <div className="pt-16">
     <div className="min-h-screen bg-[#F3F3F3] py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold mb-8">Daftar Pesanan Jasa</h1>
@@ -160,6 +161,7 @@ const OrderView = () => {
         onSubmit={handleTestimonialSubmit}
         order={selectedOrder}
       />
+    </div>
     </div>
   );
 };

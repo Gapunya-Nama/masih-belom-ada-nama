@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 
 export default function Home() {
   return (
+    <div className="pt-16">
     <main className="flex-1">
       <div className="container py-8 space-y-8">
         <header className="space-y-4">
@@ -25,5 +26,6 @@ export default function Home() {
         </section>
       </div>
     </main>
+    </div>
   );
 }

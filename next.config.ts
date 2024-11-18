@@ -11,8 +11,8 @@ const nextConfig: NextConfig = {
   // webpack(config) {
   //   config.cache = false; // Keep cache disabled for now
   //   return config;
-  // },
-  output: 'export',
+  // // },
+  // output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
