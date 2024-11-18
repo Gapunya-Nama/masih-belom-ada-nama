@@ -22,8 +22,12 @@ export default function SubCategoryPage({ params, searchParams }: Props) {
   }
 
   return isWorkerView ? (
+    <div className="pt-16">
     <SubCategoryWorker subcategory={subcategory} />
+    </div>
   ) : (
+    <div className="pt-16">
     <SubCategoryUser subcategory={subcategory} />
+    </div>
   );
 }
