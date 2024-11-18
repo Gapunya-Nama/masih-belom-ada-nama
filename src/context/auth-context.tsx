@@ -6,7 +6,16 @@ import type { User, AuthState } from "@/lib/roles";
 interface AuthContextType extends AuthState {
   login: (user: User) => void;
   logout: () => void;
+  isGuest: boolean;
 }
+
+const guestUser: User = {
+  id: "guest",
+  name: "Guest",
+  role: "guest",
+  Pno: ""
+};
+
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -21,11 +30,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
-    setAuthState({ user: null, isAuthenticated: false });
+    setAuthState({ user: guestUser, isAuthenticated: false });
   }, []);
 
+  const isGuest = !authState.isAuthenticated && authState.user?.id === "guest";
+  const isUnknown = authState.user === null;
+
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout }}>
+    <AuthContext.Provider value={{ ...authState, login, logout,isGuest }}>
       {children}
     </AuthContext.Provider>
   );

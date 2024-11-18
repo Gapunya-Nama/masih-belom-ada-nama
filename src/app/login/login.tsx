@@ -22,7 +22,7 @@ export default function LoginPage() {
             </h1>
           </div>
 
-          <button onClick={() => isLoginShown(!showLogin)}>
+          <button onClick={() => isLoginShown(!showLogin)} className="hover:text-green-600">
             Login
           </button>
 
