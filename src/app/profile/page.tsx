@@ -18,5 +18,5 @@ export default function ProfilePage() {
       );
   }
 
-  return user.role === "worker" ? <WorkerProfilePage /> : <UserProfilePage />;
+  return user.role === "worker" ? <div className="pt-16"><WorkerProfilePage /></div> : <div className="pt-16"><UserProfilePage /></div>;
 }
