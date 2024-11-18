@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { ServiceSession } from '../types';
+import { ServiceSession } from '../data/subcategories';
 import {
   Dialog,
   DialogContent,

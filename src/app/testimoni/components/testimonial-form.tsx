@@ -35,6 +35,7 @@ export function TestimonialForm() {
             <div className="flex gap-1">
               {Array.from({ length: 5 }).map((_, index) => (
                 <button
+                  aria-label="send info"
                   key={index}
                   type="button"
                   className="focus:outline-none"

@@ -3,6 +3,8 @@ import { subcategories } from '../data/subcategories';
 import SubCategoryUser from '../components/SubCategoryUser';
 import SubCategoryWorker from '../components/SubCategoryWorker';
 import { useAuth } from '@/context/auth-context';
+import { toast } from '@/components/hooks/use-toast';
+import { useRouter } from "next/navigation";
 
 
 interface Props {
@@ -13,6 +15,7 @@ interface Props {
 export default function SubCategoryPage({ params, searchParams }: Props) {
   const { user } = useAuth();
   const subcategory = subcategories.find((s) => s.id === params.id);
+  const router = useRouter();
   const isWorkerView = searchParams.view === 'worker';
 
   if (!subcategory) {
@@ -24,8 +27,14 @@ export default function SubCategoryPage({ params, searchParams }: Props) {
   }
 
   if (user.role === 'worker') {
-    return <SubCategoryWorker subcategory={subcategory} />;
-  }
-
-  return <SubCategoryUser subcategory={subcategory} />;
+    return <div className="pt-16"><SubCategoryWorker subcategory={subcategory} /></div>;
+  } else if (user.role === 'user') {
+    return <div className="pt-16"><SubCategoryUser subcategory={subcategory} /></div>;
+  } else {
+    toast({
+      title: `Error`,
+      description: `Anda perlu login untuk mengakses halaman ini.`,
+    });
+    router.push("/login")
+ }
 }

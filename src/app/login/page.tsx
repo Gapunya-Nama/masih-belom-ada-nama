@@ -9,7 +9,7 @@ import {
 import React from "react";
 import LoginPage from "./login";
 import { Button } from "@/components/ui/button";
-import RegisterPage from "../register/page";
+import RegisterPage from "../register/register";
 
 function Home() {
   const [api, setApi] = React.useState<CarouselApi>();

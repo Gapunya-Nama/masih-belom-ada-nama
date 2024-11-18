@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 
 
 interface Subcategory {
@@ -16,6 +17,7 @@ interface ServiceCardProps {
 }
 
 export function ServiceCard({ name, subcategories, onSubcategoryClick }: ServiceCardProps) {
+  const { user } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -42,7 +44,7 @@ export function ServiceCard({ name, subcategories, onSubcategoryClick }: Service
                   onClick={() => router.push(`/subkategorijasa/${subcategory.id}`)}
                   className="ml-4 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-150"
                 >
-                  Pesan
+                  Lihat Selengkapnya
                 </button>
               </div>
             ))}
