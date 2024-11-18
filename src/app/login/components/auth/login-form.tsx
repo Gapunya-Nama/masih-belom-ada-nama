@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/hooks/use-toast";
-import { authenticateUser, getDashboardPath } from "@/lib/auth";
+import { authenticateUser } from "@/lib/auth";
 import { useAuth } from "@/context/auth-context";
 
 const loginSchema = z.object({
