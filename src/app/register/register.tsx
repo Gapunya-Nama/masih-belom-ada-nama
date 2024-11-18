@@ -62,7 +62,7 @@ const workerSchema = z.object({
 });
 
 interface RegisterFormProps {
-    role: "user" | "worker";
+    role: "user" | "worker" | null;
 }
 
 export function RegisterForm({ role }: RegisterFormProps) {
