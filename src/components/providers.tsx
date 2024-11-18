@@ -8,17 +8,18 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isGuest } = useAuth();
+  const { isAuthenticated } = useAuth();
   const pathname = usePathname(); 
   const [authChecked, setAuthChecked] = useState(false); 
+  
 
   useEffect(() => {
     // Define public routes
-    const publicRoutes = ["/login", "/logout", "/register", "/homepage"];
+    const publicRoutes = ["/login", "/logout", "/homepage"];
     const isPublicRoute = publicRoutes.some((route) => pathname?.startsWith(route));
 
     if (!authChecked && isAuthenticated !== undefined) {
-      if (!isAuthenticated && !isGuest && !isPublicRoute) {
+      if (!isAuthenticated && !isPublicRoute) {
 
         window.location.href = "/login";
       }
@@ -36,7 +37,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {isAuthenticated && <Navbar /> || isGuest && <Navbar />}
+      {pathname !== "/login" && <Navbar />} 
       {children}
       
     </>
