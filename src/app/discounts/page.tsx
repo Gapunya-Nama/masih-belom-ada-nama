@@ -1,5 +1,6 @@
 import { VoucherList } from './components/voucher-list';
 import { PromoList } from './components/promo-list';
+import { Toaster } from "sonner";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold tracking-tight">Available Vouchers</h2>
           <VoucherList />
+          <Toaster />
         </section>
 
         <section className="space-y-6">
