@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Menu, Brush } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { UserProfile } from './navigation/UserProfile';
+import { UserProfile } from './navigation/NavProfile';
 import { NavLinks } from './navigation/NavLinks';
 import { LogoutButton } from './navigation/LogoutButton';
 
