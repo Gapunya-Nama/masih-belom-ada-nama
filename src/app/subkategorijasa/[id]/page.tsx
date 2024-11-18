@@ -27,9 +27,9 @@ export default function SubCategoryPage({ params, searchParams }: Props) {
   }
 
   if (user.role === 'worker') {
-    return <SubCategoryWorker subcategory={subcategory} />;
+    return <div className="pt-16"><SubCategoryWorker subcategory={subcategory} /></div>;
   } else if (user.role === 'user') {
-    return <SubCategoryUser subcategory={subcategory} />;
+    return <div className="pt-16"><SubCategoryUser subcategory={subcategory} /></div>;
   } else {
     toast({
       title: `Error`,

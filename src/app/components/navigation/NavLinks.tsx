@@ -16,7 +16,7 @@ export const navLinksUser = [
 export const navLinksWorker = [
   { name: 'Homepage', href: '/homepage', icon: Home },
   { name: "Kelola Pekerjaan Saya", href: '/jobs', icon: ClipboardList},
-  { name: "Kelola Status Pekerjaan", href: '/statuspekerjaanjasa', icon: ClipboardCheck},
+  { name: "Kelola Status Pekerjaan", href: '/jobs', icon: ClipboardCheck},
   { name: 'MyPay', href: '/mypay', icon: WalletIcon },
   { name: 'Profile', href: '/profile', icon: UserCircle },
 ]
