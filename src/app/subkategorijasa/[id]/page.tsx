@@ -4,13 +4,8 @@ import SubCategoryUser from '../components/SubCategoryUser';
 import SubCategoryWorker from '../components/SubCategoryWorker';
 import { useAuth } from '@/context/auth-context';
 import { toast } from '@/components/hooks/use-toast';
-<<<<<<< HEAD
 import { use } from 'react';
 import { useEffect } from 'react';
-=======
-import { useRouter } from "next/navigation";
-
->>>>>>> 6e8b4a12f77fe4b5e7e1f9908a5dc04dfec5e4f8
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -22,7 +17,6 @@ export default function SubCategoryPage({ params: paramsPromise, searchParams: s
   const params = use(paramsPromise);
   const searchParams = use(searchParamsPromise);
   const subcategory = subcategories.find((s) => s.id === params.id);
-  const router = useRouter();
   const isWorkerView = searchParams.view === 'worker';
 
   useEffect(() => {
@@ -45,17 +39,6 @@ export default function SubCategoryPage({ params: paramsPromise, searchParams: s
   if (user.role === 'worker') {
     return <div className="pt-16"><SubCategoryWorker subcategory={subcategory} /></div>;
   } else if (user.role === 'user') {
-<<<<<<< HEAD
     return <SubCategoryUser subcategory={subcategory} />;
   }
-=======
-    return <div className="pt-16"><SubCategoryUser subcategory={subcategory} /></div>;
-  } else {
-    toast({
-      title: `Error`,
-      description: `Anda perlu login untuk mengakses halaman ini.`,
-    });
-    router.push("/login")
- }
->>>>>>> 6e8b4a12f77fe4b5e7e1f9908a5dc04dfec5e4f8
 }
