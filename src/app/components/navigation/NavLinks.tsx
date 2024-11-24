@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, WalletIcon, Package, Briefcase, Tag, UserCircle, TextSearch, LogIn, ClipboardList, ClipboardCheck } from 'lucide-react';
+import { Home, WalletIcon, Package, Tag, UserCircle, LogIn, ClipboardList, ClipboardCheck, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/compat/router';
 import { useAuth } from '@/context/auth-context';
 
@@ -28,7 +28,7 @@ export const links = () => {
   } else if (user?.role === 'user') {
     return navLinksUser;
   } else{
-    return [{ name: 'Login', href: '/login', icon: LogIn }];
+    return [{ name: 'Login', href: '/login', icon: LogIn }, { name: 'Registrasi', href: '/login', icon: UserPlus }];
   }
 
 }
