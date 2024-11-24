@@ -79,8 +79,7 @@ const OrderView = () => {
   const filteredOrders = orders.filter(order => {
     const matchesSubcategory = selectedSubcategory === "Semua" || order.subcategory === selectedSubcategory;
     const matchesStatus = selectedStatus === "Semua" || order.status === selectedStatus;
-    const matchesSearch = order.subcategory.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         order.worker.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = order.subcategory.toLowerCase().includes(searchQuery.toLowerCase()) || order.worker.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSubcategory && matchesStatus && matchesSearch;
   });
 
