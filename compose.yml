@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: gaPunyaNama
+      POSTGRES_PASSWORD: masihGapunyaNama
+      POSTGRES_DB: dbGapunyanama
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db_awal:/docker-entrypoint-initdb.d/
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  sijarta:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://gaPunyaNama:masihGapunyaNama@db:5432/dbGapunyanama
+    depends_on:
+      - db
+
+# volumes:
+#   db_data: nyalakan saat ingin database persistency
