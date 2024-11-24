@@ -4,20 +4,14 @@ import SubCategoryUser from '../components/SubCategoryUser';
 import SubCategoryWorker from '../components/SubCategoryWorker';
 import { useAuth } from '@/context/auth-context';
 import { toast } from '@/components/hooks/use-toast';
-import { use } from 'react';
 import { useEffect } from 'react';
+import { useParams } from 'next/navigation';
 
-interface Props {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ view?: 'worker' | 'user' }>;
-}
-
-export default function SubCategoryPage({ params: paramsPromise, searchParams: searchParamsPromise }: Props) {
+export default function SubCategoryPage() {
   const { user } = useAuth();
-  const params = use(paramsPromise);
-  const searchParams = use(searchParamsPromise);
-  const subcategory = subcategories.find((s) => s.id === params.id);
-  const isWorkerView = searchParams.view === 'worker';
+  const params = useParams();
+  const { id } = params;
+  const subcategory = subcategories.find((s) => s.id === id);
 
   useEffect(() => {
     if (user != null && user.role != 'worker' && user.role != 'user') {
