@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   db:
@@ -23,6 +22,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: sijarta
     restart: always
     ports:
       - "3000:3000"
