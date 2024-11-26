@@ -24,11 +24,14 @@ docker-compose down
 ### **Membersihkan Komputer dari Sisa Docker**
 
 ```bash
+# Mematikan semua image yang ada
+docker-compose down
+
 # Melihat semua image yang ada
 docker images
 
 # Membersihkan image yang tidak digunakan
-docker image prune -a
+docker image prune -a -f
 
 # Melihat daftar volume yang ada
 docker volume ls
