@@ -1,23 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, WalletIcon, Package, Briefcase, Tag, UserCircle, TextSearch, LogIn, ClipboardList, ClipboardCheck } from 'lucide-react';
+import { Home, WalletIcon, Package, Tag, UserCircle, LogIn, ClipboardList, ClipboardCheck, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/compat/router';
 import { useAuth } from '@/context/auth-context';
 
 export const navLinksUser = [
   { name: 'Homepage', href: '/homepage', icon: Home },
   { name: 'MyPay', href: '/mypay', icon: WalletIcon },
-  { name: 'View Pemesanan Jasa', href: '/pemesananjasa', icon: Package },
-  // { name: 'View Pekerjaan Jasa', href: '/jobs', icon: Briefcase },
-  { name: 'diskon', href: '/discounts', icon: Tag },
+  { name: 'Kelola Pesanan Saya', href: '/pemesananjasa', icon: Package },
+  { name: 'Diskon', href: '/discounts', icon: Tag },
   { name: 'Profile', href: '/profile', icon: UserCircle },
 ];
 
 export const navLinksWorker = [
   { name: 'Homepage', href: '/homepage', icon: Home },
-  { name: "Kelola Pekerjaan Saya", href: '/pekerjaanjasa', icon: ClipboardList},
-  { name: "Kelola Status Pekerjaan", href: '/statuspekerjaanjasa', icon: ClipboardCheck},
+  { name: "Kelola Pekerjaan Saya", href: '/jobs', icon: ClipboardList},
+  { name: "Kelola Status Pekerjaan", href: '/jobs', icon: ClipboardCheck},
   { name: 'MyPay', href: '/mypay', icon: WalletIcon },
   { name: 'Profile', href: '/profile', icon: UserCircle },
 ]
@@ -29,7 +28,7 @@ export const links = () => {
   } else if (user?.role === 'user') {
     return navLinksUser;
   } else{
-    return [{ name: 'Login', href: '/login', icon: LogIn }];
+    return [{ name: 'Login', href: '/login', icon: LogIn }, { name: 'Registrasi', href: '/login', icon: UserPlus }];
   }
 
 }

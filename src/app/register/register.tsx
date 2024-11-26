@@ -31,6 +31,7 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { RoleSelector } from "./components/role-selector";
 import React from "react";
+import Link from "next/link";
 
 const banks = [
     "GoPay",
@@ -62,7 +63,7 @@ const workerSchema = z.object({
 });
 
 interface RegisterFormProps {
-    role: "user" | "worker";
+    role: "user" | "worker" | null;
 }
 
 export function RegisterForm({ role }: RegisterFormProps) {
@@ -341,12 +342,12 @@ export function RegisterForm({ role }: RegisterFormProps) {
 
                     <p className="text-center text-sm text-muted-foreground">
                         Already have an account?{" "}
-                        <a
+                        <Link
                             href="/"
                             className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
                         >
                             Sign in
-                        </a>
+                        </Link>
                     </p>
                 </div>
             </form>

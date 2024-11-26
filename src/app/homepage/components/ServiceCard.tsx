@@ -2,22 +2,36 @@ import React, { useState } from 'react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
+import { toast } from '@/components/hooks/use-toast';
 
 
 interface Subcategory {
-  id: number;
+  id: string;
   name: string;
 }
 
 interface ServiceCardProps {
   name: string;
   subcategories: Subcategory[];
-  onSubcategoryClick: (subcategoryId: number) => void;
+  onSubcategoryClick: (subcategoryId: string) => void;
 }
 
 export function ServiceCard({ name, subcategories, onSubcategoryClick }: ServiceCardProps) {
+  const { user } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleViewMoreClick = (subcategoryId: string) => {
+    if (user && user.role !== 'worker' && user.role !== 'user') {      
+      toast({
+        title: `Error`,
+        description: `Anda perlu login untuk mengakses halaman ini.`,
+      });
+    } else {
+      router.push(`/subkategorijasa/${subcategoryId}`);
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -39,10 +53,10 @@ export function ServiceCard({ name, subcategories, onSubcategoryClick }: Service
                   {subcategory.name}
                 </button>
                 <button
-                  onClick={() => router.push(`/subkategorijasa/${subcategory.id}`)}
+                  onClick={() => handleViewMoreClick(subcategory.id)}
                   className="ml-4 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-150"
                 >
-                  Pesan
+                  Lihat Selengkapnya
                 </button>
               </div>
             ))}
