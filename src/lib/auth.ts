@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { AuthState } from "./roles";
 export type Role = 'user' | 'worker' | 'guest';
 export type Gender = 'Male' | 'Female';
 
@@ -94,20 +96,66 @@ export const canAccess = (role: Role, action: string): boolean => {
   return permissions.includes(action);
 };
 
+// export const authenticateUser = async (
+//   Pno: string,
+//   password: string,
+// ): Promise<AuthCombined> => {
+//   // Simulate API call delay
+//   await new Promise((resolve) => setTimeout(resolve, 1000));
+
+//   const user = TEST_USERS.find(u => u.Pno === Pno);
+
+//   if (!user || user.password !== password) {
+//     throw new Error('Invalid credentials');
+//   }
+
+//   // Return user without password
+//   const { password: _, ...userWithoutPassword } = user;
+//   return userWithoutPassword as AuthCombined;
+// };
+
+export const loginSchema = z.object({
+  phone: z
+    .string()
+    .regex(/^(?:\+?[1-9]\d{1,14}|0\d{9,14})$/, "Phone number must be in E.164 format (e.g., +1234567890) or start with 0"),
+  password: z
+    .string()
+    .min(2, "Password must be at least 2 characters")
+    .regex(/^[a-zA-Z0-9\s]*$/, "Password must contain only letters, numbers, and spaces")
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;
+
 export const authenticateUser = async (
-  Pno: string,
-  password: string,
+  credentials: LoginInput
 ): Promise<AuthCombined> => {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  try {
+    // Send the request to the login endpoint with the credentials
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),  // Send the entire credentials object
+    });
 
-  const user = TEST_USERS.find(u => u.Pno === Pno);
+    // Handle non-OK responses
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Invalid credentials');
+    }
 
-  if (!user || user.password !== password) {
-    throw new Error('Invalid credentials');
+    // Parse the response from the server
+    const user = await response.json();
+
+    
+
+    // Return the user object without the password
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword as AuthCombined;
+
+  } catch (error) {
+    console.error("Authentication error:", error); // Log any authentication issues
+    throw error; // Rethrow the error to be handled by the caller
   }
-
-  // Return user without password
-  const { password: _, ...userWithoutPassword } = user;
-  return userWithoutPassword as AuthCombined;
 };

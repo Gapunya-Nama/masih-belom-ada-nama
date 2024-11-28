@@ -1,6 +1,5 @@
 "use client";
 
-import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/app/components/navbar";
 import { useAuth } from "@/context/auth-context";
 import { usePathname } from "next/navigation"; 
@@ -15,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Define public routes
-    const publicRoutes = ["/login", "/logout", "/homepage", "/test","/api/user"];
+    const publicRoutes = ["/login", "/logout", "/homepage", "/test","/api/login"];
     const isPublicRoute = publicRoutes.some((route) => pathname?.startsWith(route));
 
     if (!authChecked && isAuthenticated !== undefined) {

@@ -17,15 +17,13 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/hooks/use-toast";
-import { authenticateUser } from "@/lib/auth";
+import { authenticateUser, LoginInput, loginSchema } from "@/lib/auth";
 import { useAuth } from "@/context/auth-context";
 
-const loginSchema = z.object({
-    Pno: z.string().min(10, "Nomor Tlp harus 10 digits").regex(/^\d+$/, "Nomor Telfon hanya boleh memiliki angka"),
-    password: z.string().min(8, "Password minimal 8 karakter"),
-});
-
-
+// const loginSchema = z.object({
+//     Pno: z.string().min(10, "Nomor Tlp harus 10 digits").regex(/^\+[1-9]\d{1,14}$/, "Phone number must be in E.164 format (e.g., +1234567890)"),
+//     password: z.string().min(8, "Password minimal 8 karakter").regex(/^[a-zA-Z\s]*$/, "Name must contain only letters and spaces"),
+// });
 
 export function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
@@ -34,20 +32,30 @@ export function LoginForm() {
     const { toast } = useToast();
     const { login } = useAuth();
 
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm<LoginInput>({
+        resolver: zodResolver(loginSchema),
+      });
+
 
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            Pno: "",
+            phone: "",
             password: "",
         },
     });
 
-    async function onSubmit(values: z.infer<typeof loginSchema>) {
+    async function onSubmit(values: LoginInput) {
         try {
             setIsLoading(true);
-            const user = await authenticateUser(values.Pno, values.password);
-
+            const user = await authenticateUser(values);
+            
+            console.log(user);
+            
             login(user);
 
             toast({
@@ -72,7 +80,7 @@ export function LoginForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                     control={form.control}
-                    name="Pno"
+                    name="phone"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Phone Number</FormLabel>
