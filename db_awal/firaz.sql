@@ -72,43 +72,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION show_sesi_layanan(
-    _subkategori_id UUID
-) RETURNS TABLE (
-    SubkategoriId UUID,
-    Sesi INT,
-    Harga DECIMAL(15, 2)
-) AS $$
+CREATE OR REPLACE FUNCTION CheckMypaySaldo()
+RETURNS TRIGGER
+AS $$
+DECLARE 
+    saldo DECIMAL(15,2);
 BEGIN
-    RETURN QUERY
-    SELECT
-        SubkategoriId,
-        Sesi,
-        Harga
-    FROM
-        SIJARTA.SESI_LAYANAN
-    WHERE
-        SubkategoriId = _subkategori_id;
+    SELECT SaldoMyPay INTO saldo
+    FROM SIJARTA.USER
+    WHERE Id = NEW.IdPelanggan;
+
+    IF saldo < NEW.TotalBiaya THEN
+        RAISE EXCEPTION 'Saldo mypay pelanggan tidak cukup.';
+    END IF;
+
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION show_total_pembayaran(
-    _sesi INT
-) RETURNS DECIMAL(15, 2) AS $$
-BEGIN
-    RETURN (
-        SELECT Harga
-        FROM SIJARTA.SESI_LAYANAN
-        WHERE Sesi = _sesi
-    );
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION show_metode_bayar()
-RETURNS TABLE (ListMetode VARCHAR(100)) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT Nama
-    FROM SIJARTA.METODE;
-END;
-$$ LANGUAGE plpgsql;
+CREATE TRIGGER trg_CheckMypaySaldo
+BEFORE INSERT ON SIJARTA.TR_PEMESANAN_JASA
+FOR EACH ROW
+EXECUTE FUNCTION CheckMypaySaldo();
