@@ -1,5 +1,4 @@
-import { subcategories } from '@/app/subkategorijasa/data/subcategories';
-import { SubCategory } from '@/app/subkategorijasa/types/index';
+import { subcategories, SubCategory } from '@/app/subkategorijasa/data/subcategories';
 
 // Define the Service type
 interface Service {

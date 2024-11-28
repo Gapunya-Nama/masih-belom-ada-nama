@@ -25,7 +25,7 @@ export const useTextAnimation = () => {
 
       if (iterations > originalText.length) {
         clearInterval(interval);
-        element.innerText = originalText; // Restore original text
+        element.innerText = "Made by Unknowns"; // Restore original text
       }
     }, 30);
   };

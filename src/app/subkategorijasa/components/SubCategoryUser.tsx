@@ -16,7 +16,7 @@ export default function SubCategoryUser({ subcategory }: Props) {
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-16"> {/* Added mt-16 */}
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <h1 className="text-3xl font-bold text-[#2ECC71] mb-2">{subcategory.name}</h1>
         <p className="text-gray-600 mb-4">{subcategory.description}</p>

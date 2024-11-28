@@ -17,7 +17,7 @@ export default function Home() {
     return categoryMatch && (searchQuery === "" || subcategoriesMatch);
   });
 
-  const handleSubcategoryClick = (subcategoryId: number) => {
+  const handleSubcategoryClick = (subcategoryId: string) => {
     // Implement navigation to subcategory page
     console.log(`Navigating to subcategory ${subcategoryId}`);
   };
