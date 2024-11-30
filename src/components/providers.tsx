@@ -14,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Define public routes
-    const publicRoutes = ["/login", "/logout", "/homepage", "/test","/api/login"];
+    const publicRoutes = ["/login", "/logout", "/homepage", "/test"];
     const isPublicRoute = publicRoutes.some((route) => pathname?.startsWith(route));
 
     if (!authChecked && isAuthenticated !== undefined) {

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AuthState } from "./roles";
 export type Role = 'user' | 'worker' | 'guest';
-export type Gender = 'Male' | 'Female';
+export type Gender = 'Male' | 'Female' | 'Other';
 
 export interface AuthBase {
   id: string;
