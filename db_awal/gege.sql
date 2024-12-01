@@ -63,4 +63,4 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER check_bank_account_trigger
 BEFORE INSERT ON sijarta.pekerja
 FOR EACH ROW
-EXECUTE FUNCTION check_bank_account_unique();
+EXECUTE FUNCTION sijarta.check_bank_account_unique();

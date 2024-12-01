@@ -1,4 +1,4 @@
-import { AuthCombined } from "./auth";
+import { AuthCombined } from "./dataType/interfaces";
 
 export type Role = 'user' | 'worker' | 'guest';
 

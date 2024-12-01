@@ -1,4 +1,5 @@
 import { query } from './db';
+import { AuthCombined, Transaction } from '../dataType/interfaces';
 
 // Type definitions for function parameters and results
 export interface AuthenticateUserParams {
@@ -6,36 +7,36 @@ export interface AuthenticateUserParams {
   password: string;
 }
 
-export interface UserResult {
-  id: string;
-  nama: string;
-  nohp: string;
-  alamat: string;
-  saldomypay: number;
-  level?: string;
-}
 
-// Function to call PostgreSQL stored procedure
 export async function callStoredProcedure<T>(
   procedureName: string,
   params: any[]
-): Promise<T> {
+): Promise<T | null> {
   const paramPlaceholders = params
     .map((_, index) => `$${index + 1}`)
     .join(', ');
-    
+
   const text = `SELECT * FROM SIJARTA.${procedureName}(${paramPlaceholders})`;
-  
+
   const result = await query(text, params);
-  return result.rows[0];
+  
+  if (result.rows.length === 0) {
+    return null;
+  }
+  
+  if (result.rows.length === 1) {
+    return result.rows[0] as T;  
+  }
+
+  return result.rows as T;
 }
 
-// Example of a specific function call
+
 export async function authenticateUserFunction(
   params: AuthenticateUserParams
-): Promise<UserResult | null> {
+): Promise<AuthCombined | null> {
   try {
-    return await callStoredProcedure<UserResult>(
+    return await callStoredProcedure<AuthCombined>(
       'authenticate_user',
       [params.phone, params.password]
     );
@@ -44,3 +45,18 @@ export async function authenticateUserFunction(
     throw error;
   }
 }
+
+export async function getUserMyPayFunction(
+  id: string
+): Promise<Transaction[] | null> {
+  try {
+    return await callStoredProcedure<Transaction[]>(
+      'get_myPay_transac_history',
+      [id]
+    );
+  } catch (error) {
+    console.error('Error calling getUserMyPayFunction:', error);
+    throw error;
+  }
+}
+
