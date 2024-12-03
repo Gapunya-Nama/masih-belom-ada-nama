@@ -1,8 +1,8 @@
-import { AuthCombined } from "@/lib/auth";
+import { AuthCombined } from "@/lib/dataType/interfaces";
 
 export const guestUser: AuthCombined = {
     id: "",
-    Pno: "",
+    pno: "",
     password: "",
     role: "guest",
     name: "",

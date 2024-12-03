@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { User, AuthState } from "@/lib/roles";
-import { AuthCombined } from "@/lib/auth";
+import { AuthCombined } from "@/lib/dataType/interfaces";
 import { guestUser } from "./guest";
 
 interface AuthContextType extends AuthState {
@@ -19,7 +19,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: false,
   });
 
-  // Load user from localStorage when app initializes
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -29,12 +28,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback((user: AuthCombined) => {
     setAuthState({ user, isAuthenticated: true });
-    localStorage.setItem("user", JSON.stringify(authState)); // Persist user in localStorage
+    localStorage.removeItem("user");
+    localStorage.setItem("user", JSON.stringify(authState)); 
   }, []);
 
   const logout = useCallback((user: AuthCombined) => {
     setAuthState({ user: guestUser, isAuthenticated: false });
-    localStorage.removeItem("user"); // Remove user from localStorage
+    localStorage.removeItem("user"); 
   }, []);
 
   const isGuest = !authState.isAuthenticated && authState.user?.id === "guest";
