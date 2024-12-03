@@ -4,32 +4,27 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { toast } from '@/components/hooks/use-toast';
+import Link from 'next/link';
 
-
-interface Subcategory {
-  id: string;
-  name: string;
-}
 
 interface ServiceCardProps {
   name: string;
-  subcategories: Subcategory[];
-  onSubcategoryClick: (subcategoryId: string) => void;
+  subcategories: string[];
 }
 
-export function ServiceCard({ name, subcategories, onSubcategoryClick }: ServiceCardProps) {
+export function ServiceCard({ name, subcategories}: ServiceCardProps) {
   const { user } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleViewMoreClick = (subcategoryId: string) => {
+  const handleViewMoreClick = (subcategory: string) => {
     if (user && user.role !== 'worker' && user.role !== 'user') {      
       toast({
         title: `Error`,
         description: `Anda perlu login untuk mengakses halaman ini.`,
       });
     } else {
-      router.push(`/subkategorijasa/${subcategoryId}`);
+      router.push(`/subkategorijasa/${subcategory}`);
     }
   };
 
@@ -43,17 +38,15 @@ export function ServiceCard({ name, subcategories, onSubcategoryClick }: Service
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent>
-          <div className="divide-y divide-gray-100">
-            {subcategories.map((subcategory) => (
-              <div key={subcategory.id} className="p-4 flex justify-between items-center">
+        <div className="divide-y divide-gray-100">
+            {subcategories.map((subcategory, index) => (
+              <div key={index} className="p-4 flex justify-between items-center">
+                <Link href={`/subkategorijasa/${subcategory}`} 
+                className="text-left hover:bg-gray-50 transition-colors duration-150 flex-grow">
+                  {subcategory}
+                </Link>
                 <button
-                  onClick={() => onSubcategoryClick(subcategory.id)}
-                  className="text-left hover:bg-gray-50 transition-colors duration-150 flex-grow"
-                >
-                  {subcategory.name}
-                </button>
-                <button
-                  onClick={() => handleViewMoreClick(subcategory.id)}
+                  onClick={() => handleViewMoreClick(subcategory)}
                   className="ml-4 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-150"
                 >
                   Lihat Selengkapnya

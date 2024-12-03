@@ -12,7 +12,14 @@ RETURNS TABLE (
     gender VARCHAR,
     birth_date DATE,
     address VARCHAR,
-    balance DECIMAL(15,2)
+    balance DECIMAL(15,2),
+    level VARCHAR(50),
+    nama_bank VARCHAR(100),
+    nomor_rekening VARCHAR(50),
+    NPWP VARCHAR(20),
+    link_foto VARCHAR(255), 
+    rating FLOAT, 
+    pesanan_selesai INT 
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -28,13 +35,20 @@ BEGIN
         ) AS role,
         u.Nama AS name,
         CASE u.JenisKelamin
-            WHEN 'M' THEN 'Male'::VARCHAR
-            WHEN 'F' THEN 'Female'::VARCHAR
+            WHEN 'L' THEN 'Laki-Laki'::VARCHAR
+            WHEN 'P' THEN 'Perempuan'::VARCHAR
             ELSE 'Other'::VARCHAR
         END AS gender,
         u.TglLahir AS birth_date,
         u.Alamat AS address,
-        u.SaldoMyPay AS balance
+        u.SaldoMyPay AS balance,
+        p.Level AS level,
+        w.NamaBank AS nama_bank,
+        w.NomorRekening AS nomor_rekening,
+        w.NPWP AS NPWP,
+        w.LinkFoto AS link_foto,
+        w.Rating AS rating,
+        w.JmlPsnananSelesai AS pesanan_selesai
     FROM 
         SIJARTA.USER u
         LEFT JOIN SIJARTA.PELANGGAN p ON u.Id = p.Id

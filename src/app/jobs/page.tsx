@@ -6,8 +6,7 @@ import { JobTabs } from "./components/JobTabs";
 
 export default function JobsPage() {
   return (
-    <div className="pt-16">
-    <div className="min-h-screen bg-[#F3F3F3]">
+    <div className="pt-16 min-h-screen bg-[#F3F3F3]">
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8 flex items-center gap-2">
@@ -22,7 +21,6 @@ export default function JobsPage() {
           <JobTabs />
         </Card>
       </div>
-    </div>
     </div>
   );
 }

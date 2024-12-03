@@ -112,3 +112,23 @@ BEGIN
     FROM SIJARTA.METODE;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.get_kategori_jasa()
+RETURNS TABLE (
+    id UUID, 
+    namakategori VARCHAR,
+    namasubkategori VARCHAR[]
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        kj.Id AS id,
+        kj.NamaKategori AS namaKategori,
+        array_agg(skj.NamaSubkategori) AS namasubkategori
+    FROM 
+        SIJARTA.KATEGORI_JASA kj
+    LEFT JOIN SIJARTA.SUBKATEGORI_JASA skj ON kj.id = skj.KategoriJasaId
+    GROUP BY 
+        kj.Id, kj.NamaKategori;
+END;
+$$ LANGUAGE plpgsql;
