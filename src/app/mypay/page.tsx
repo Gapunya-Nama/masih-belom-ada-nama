@@ -15,6 +15,7 @@ import {
 import { TransactionModal } from "./components/TransactionModal";
 import { useAuth } from "@/context/auth-context";
 import { Transaction } from "@/lib/dataType/interfaces";
+import styles from "./components/mypay.module.css";
 
 
 // const dummy_transactions: Transaction[] = [
@@ -71,9 +72,9 @@ export default function MyPay() {
   const [filterCategory, setFilterCategory] = useState("All");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const filterRef = useRef<HTMLDivElement>(null);
-  const {user} = useAuth();
-  
-  
+  const { user } = useAuth();
+
+
 
   // Toggle filter popup on button click
   const toggleFilter = () => {
@@ -109,15 +110,15 @@ export default function MyPay() {
     const validAmount = typeof amount === "number"
       ? amount
       : (typeof amount === "string" && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0);
-  
+
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(validAmount);
   };
-  
-  
+
+
 
   // Filter transactions based on selected criteria
   const filteredTransactions = transactions.filter((transaction) => {
@@ -130,8 +131,7 @@ export default function MyPay() {
 
 
   return (
-    <div className="pt-16">
-    <div className="min-h-screen bg-[#F3F3F3]">
+    <div className="pt-16 min-h-screen bg-[#F3F3F3]">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center gap-2">
           <WalletIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -174,9 +174,8 @@ export default function MyPay() {
           {/* Filter Popup positioned to the left of the button */}
           <div
             ref={filterRef}
-            className={`absolute top-0 right-16 mt-2 p-4 border rounded-lg shadow-md bg-white dark:bg-gray-800 z-10 transition-all duration-300 ease-out transform origin-right ${
-              isFilterOpen ? "scale-100 opacity-100" : "scale-75 opacity-0"
-            }`}
+            className={`absolute top-0 right-16 mt-2 p-4 border rounded-lg shadow-md bg-white dark:bg-gray-800 z-10 transition-all duration-300 ease-out transform origin-right ${isFilterOpen ? "scale-100 opacity-100" : "scale-75 opacity-0"
+              }`}
           >
             <div className="flex flex-col items-start gap-4">
               <input
@@ -232,11 +231,10 @@ export default function MyPay() {
               <TableBody>
                 {filteredTransactions.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell className={`font-medium ${
-                      transaction.amount > 0 
-                        ? "text-green-500 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
-                    }`}>
+                    <TableCell className={`font-medium ${transaction.amount > 0
+                      ? "text-green-500 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                      }`}>
                       {transaction.amount}
                     </TableCell>
                     <TableCell>
@@ -255,11 +253,15 @@ export default function MyPay() {
         </Card>
       </div>
 
-      <TransactionModal 
+      <TransactionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
-    </div>
+      <div className={styles.customShapeDividerBottom}>
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M1200,0H0V120H281.94C572.9,116.24,602.45,3.86,602.45,3.86h0S632,116.24,923,120h277Z" className={styles.shapeFill}></path>
+        </svg>
+      </div>
     </div>
   );
 }

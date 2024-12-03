@@ -22,12 +22,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: sijarta
+    image: sijarta:commit_pertama
     restart: always
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: postgres://gaPunyaNama:masihGapunyaNama@db:5432/dbGapunyanama
+      # Dibawah adalah prod build
+      # DATABASE_URL: postgresql://SIJARTA_owner:DClI4XAv0WuY@ep-weathered-violet-a16j35xm.ap-southeast-1.aws.neon.tech/SIJARTA?sslmode=require
     depends_on:
       - db
 

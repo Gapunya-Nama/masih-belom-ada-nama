@@ -7,7 +7,7 @@ export const guestUser: AuthCombined = {
     role: "guest",
     name: "",
     gender: "Other",
-    birthDate: "",
+    birth_date: "",
     address: "",
     balance: 0,
   };

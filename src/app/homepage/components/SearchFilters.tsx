@@ -8,14 +8,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { KategoriJasa } from '@/lib/dataType/interfaces';
 
-interface Category {
-  id: number;
-  name: string;
-}
+// interface Category {
+//   id: number;
+//   name: string;
+// }
 
 interface SearchFiltersProps {
-  categories: Category[];
+  categories: KategoriJasa[];
   selectedCategory: string;
   searchQuery: string;
   onCategoryChange: (value: string) => void;
@@ -38,8 +39,8 @@ export function SearchFilters({
         <SelectContent>
           <SelectItem value="all">Semua Kategori</SelectItem>
           {categories.map((category) => (
-            <SelectItem key={category.id} value={category.name}>
-              {category.name}
+            <SelectItem key={category.id} value={category.namakategori}>
+              {category.namakategori}
             </SelectItem>
           ))}
         </SelectContent>

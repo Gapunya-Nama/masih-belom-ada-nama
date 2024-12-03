@@ -1,5 +1,5 @@
 import { query } from './db';
-import { AuthCombined, Transaction } from '../dataType/interfaces';
+import { AuthCombined, KategoriJasa, Transaction } from '../dataType/interfaces';
 
 // Type definitions for function parameters and results
 export interface AuthenticateUserParams {
@@ -60,3 +60,26 @@ export async function getUserMyPayFunction(
   }
 }
 
+export async function getKategoriJasa(): Promise<KategoriJasa[] | null> {
+  try {
+    return await callStoredProcedure<KategoriJasa[]>(
+      'get_kategori_jasa',
+      []
+    );
+  } catch (error) {
+    console.error('Error calling getUserMyPayFunction:', error);
+    throw error;
+  }
+}
+
+export async function getSubKategoriJasa(): Promise<KategoriJasa | null> {
+  try {
+    return await callStoredProcedure<KategoriJasa>(
+      'get_kategori_jasa',
+      []
+    );
+  } catch (error) {
+    console.error('Error calling getUserMyPayFunction:', error);
+    throw error;
+  }
+}
