@@ -1,6 +1,6 @@
 import { query } from './db';
-import { AuthCombined, KategoriJasa, Transaction } from '../dataType/interfaces';
-import { v4 } from "uuid";
+import { AuthCombined, KategoriJasa, Transaction, SubCategory } from '../dataType/interfaces';
+// import { v4 } from "uuid";
 
 
 // Type definitions for function parameters and results
@@ -74,14 +74,14 @@ export async function getKategoriJasa(): Promise<KategoriJasa[] | null> {
   }
 }
 
-export async function getSubKategoriJasa(): Promise<SubKategoriJasa | null> {
+export async function getSubKategoriJasa(): Promise<SubCategory[] | null> {
   try {
-    return await callStoredProcedure<KategoriJasa>(
-      'get_kategori_jasa',
+    return await callStoredProcedure<SubCategory[]>(
+      'get_subkategori_jasa',
       []
     );
   } catch (error) {
-    console.error('Error calling getUserMyPayFunction:', error);
+    console.error('Error calling get_subkategori_jasa', error);
     throw error;
   }
 }

@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION add_worker(
+CREATE OR REPLACE FUNCTION SIJARTA.add_worker(
     _pekerja_id UUID,
     _kategori_jasa_id UUID
 ) RETURNS VOID AS $$
@@ -8,7 +8,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION show_testimoni(
+CREATE OR REPLACE FUNCTION SIJARTA.show_testimoni(
     _kategori_id UUID
 ) RETURNS TABLE (
     IdTrPemesanan UUID,
@@ -32,7 +32,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION show_subkategori(
+CREATE OR REPLACE FUNCTION SIJARTA.show_subkategori(
     _kategori_id UUID
 ) RETURNS TABLE (
     Id UUID,
@@ -52,7 +52,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION show_pekerja(
+CREATE OR REPLACE FUNCTION SIJARTA.show_pekerja(
     _kategori_id UUID
 ) RETURNS TABLE (
     PekerjaId UUID,
@@ -72,7 +72,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION CheckMypaySaldo()
+CREATE OR REPLACE FUNCTION SIJARTA.CheckMypaySaldo()
 RETURNS TRIGGER
 AS $$
 DECLARE 
@@ -90,7 +90,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION show_metode_bayar()
+CREATE OR REPLACE FUNCTION SIJARTA.show_metode_bayar()
 RETURNS TABLE (ListMetode VARCHAR(100)) AS $$
 BEGIN
     RETURN QUERY

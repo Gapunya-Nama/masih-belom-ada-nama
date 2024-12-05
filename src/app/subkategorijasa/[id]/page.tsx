@@ -56,7 +56,6 @@ export default function SubCategoryPage() {
       const fetchedsubcategory = await getSubkategori(name as string);
       setSubcategory(fetchedsubcategory);
     };
-
     fetchSubcategory();
   });
 
