@@ -79,3 +79,20 @@ export interface SubCategory {
   workers: Worker[];
   testimonials: Testimonial[];
 }
+
+export interface Voucher {
+  potongan: number;  // DECIMAL(15, 2)
+  mintrpemesanan: number;  // INT
+  kode: string;  // UUID
+  jmlhariberlaku: number;  // INT
+  kuotapenggunaan: number;  // INT
+  harga: number;  // DECIMAL(15, 2)
+}
+
+export interface Promo {
+  potongan: number;  // DECIMAL(15, 2)
+  mintrpemesanan: number;  // INT
+  kode: string;  // UUID
+  tglakhirberlaku: string;  // DATE (ISO String format, e.g. '2024-12-31')
+}
+
