@@ -10,10 +10,8 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="pt-16">
-        <div className="flex justify-center items-center h-screen">
+        <div className="pt-16 flex justify-center items-center min-h-screen">
           <p>{<Loader2 className="mr-2 h-4 w-4 animate-spin" />}</p>
-        </div>
         </div>
       );
   }

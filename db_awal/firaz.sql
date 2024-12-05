@@ -90,7 +90,31 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_CheckMypaySaldo
-BEFORE INSERT ON SIJARTA.TR_PEMESANAN_JASA
-FOR EACH ROW
-EXECUTE FUNCTION CheckMypaySaldo();
+CREATE OR REPLACE FUNCTION show_metode_bayar()
+RETURNS TABLE (ListMetode VARCHAR(100)) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT Nama
+    FROM SIJARTA.METODE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.get_kategori_jasa()
+RETURNS TABLE (
+    id UUID, 
+    namakategori VARCHAR,
+    namasubkategori VARCHAR[]
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        kj.Id AS id,
+        kj.NamaKategori AS namaKategori,
+        array_agg(skj.NamaSubkategori) AS namasubkategori
+    FROM 
+        SIJARTA.KATEGORI_JASA kj
+    LEFT JOIN SIJARTA.SUBKATEGORI_JASA skj ON kj.id = skj.KategoriJasaId
+    GROUP BY 
+        kj.Id, kj.NamaKategori;
+END;
+$$ LANGUAGE plpgsql;

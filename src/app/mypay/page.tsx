@@ -13,19 +13,55 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TransactionModal } from "./components/TransactionModal";
+import { useAuth } from "@/context/auth-context";
+import { Transaction } from "@/lib/dataType/interfaces";
+import styles from "./components/mypay.module.css";
 
-interface Transaction {
-  id: string;
-  amount: number;
-  date: string;
-  category: string;
-}
 
-const transactions: Transaction[] = [
-  { id: "1", amount: 500000, date: "2024-03-20", category: "Top Up" },
-  { id: "2", amount: -150000, date: "2024-03-19", category: "Payment" },
-  { id: "3", amount: -75000, date: "2024-03-18", category: "Transfer" },
-];
+// const dummy_transactions: Transaction[] = [
+//   { id: "1", amount: 500000, date: "2024-03-20", category: "Top Up" },
+//   { id: "2", amount: -150000, date: "2024-03-19", category: "Payment" },
+//   { id: "3", amount: -75000, date: "2024-03-18", category: "Transfer" },
+// ];
+
+
+const userTransaction = async (
+  userId: string
+): Promise<Transaction[]> => {
+  try {
+    const response = await fetch("/api/mypay", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: userId }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Invalid credentials");
+    }
+
+    const transaction = await response.json();
+
+    // Check if the response is a single object (not an array)
+    if (Array.isArray(transaction)) {
+      return transaction;  // Return as-is if it's already an array
+    } else if (transaction && typeof transaction === "object") {
+      // If it's a single object, convert it to an array
+      console.warn("Single transaction object received, converting to array", transaction);
+      return [transaction]; // Wrap the single object in an array
+    } else {
+      console.error("Unexpected response format", transaction);
+      return []; // Return an empty array if it's not the expected format
+    }
+  } catch (error) {
+    console.error("MyPay error:", error);
+    return []; // Return an empty array in case of an error
+  }
+};
+
+
 
 export default function MyPay() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,12 +70,27 @@ export default function MyPay() {
   const [filterFromDate, setFilterFromDate] = useState("");
   const [filterToDate, setFilterToDate] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const filterRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+
+
 
   // Toggle filter popup on button click
   const toggleFilter = () => {
     setIsFilterOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (user?.id) {
+        const fetchedTransactions = await userTransaction(user.id);
+        setTransactions(fetchedTransactions);
+      }
+    };
+
+    fetchTransactions();
+  }, [user?.id]);
 
   // Close filter popup if clicking outside
   useEffect(() => {
@@ -54,26 +105,33 @@ export default function MyPay() {
     };
   }, []);
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | string) => {
+    // Convert string to a number if it's a valid number string
+    const validAmount = typeof amount === "number"
+      ? amount
+      : (typeof amount === "string" && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0);
+
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
-    }).format(amount);
+    }).format(validAmount);
   };
+
+
 
   // Filter transactions based on selected criteria
   const filteredTransactions = transactions.filter((transaction) => {
     const matchAmount = filterAmount === "" || transaction.amount === parseInt(filterAmount);
     const matchFromDate = filterFromDate === "" || new Date(transaction.date) >= new Date(filterFromDate);
     const matchToDate = filterToDate === "" || new Date(transaction.date) <= new Date(filterToDate);
-    const matchCategory = filterCategory === "All" || transaction.category === filterCategory;
+    const matchCategory = filterCategory === "All" || transaction.namakategori === filterCategory;
     return matchAmount && matchFromDate && matchToDate && matchCategory;
   });
 
+
   return (
-    <div className="pt-16">
-    <div className="min-h-screen bg-[#F3F3F3]">
+    <div className="pt-16 min-h-screen bg-[#F3F3F3]">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center gap-2">
           <WalletIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -83,9 +141,9 @@ export default function MyPay() {
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="p-6">
             <h2 className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">Phone Number</h2>
-            <p className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">+62 812-3456-7890</p>
+            <p className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{user?.pno}</p>
             <h2 className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">Available Balance</h2>
-            <p className="text-3xl font-bold text-green-600 dark:text-green-400">{formatCurrency(2750000)}</p>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">{formatCurrency(user?.balance ?? 0)}</p>
           </Card>
 
           <Card className="flex items-center justify-center p-6">
@@ -116,9 +174,8 @@ export default function MyPay() {
           {/* Filter Popup positioned to the left of the button */}
           <div
             ref={filterRef}
-            className={`absolute top-0 right-16 mt-2 p-4 border rounded-lg shadow-md bg-white dark:bg-gray-800 z-10 transition-all duration-300 ease-out transform origin-right ${
-              isFilterOpen ? "scale-100 opacity-100" : "scale-75 opacity-0"
-            }`}
+            className={`absolute top-0 right-16 mt-2 p-4 border rounded-lg shadow-md bg-white dark:bg-gray-800 z-10 transition-all duration-300 ease-out transform origin-right ${isFilterOpen ? "scale-100 opacity-100" : "scale-75 opacity-0"
+              }`}
           >
             <div className="flex flex-col items-start gap-4">
               <input
@@ -174,12 +231,11 @@ export default function MyPay() {
               <TableBody>
                 {filteredTransactions.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell className={`font-medium ${
-                      transaction.amount > 0 
-                        ? "text-green-500 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
-                    }`}>
-                      {formatCurrency(transaction.amount)}
+                    <TableCell className={`font-medium ${transaction.amount > 0
+                      ? "text-green-500 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                      }`}>
+                      {transaction.amount}
                     </TableCell>
                     <TableCell>
                       {new Date(transaction.date).toLocaleDateString("id-ID", {
@@ -188,7 +244,7 @@ export default function MyPay() {
                         day: "numeric",
                       })}
                     </TableCell>
-                    <TableCell>{transaction.category}</TableCell>
+                    <TableCell>{transaction.namakategori}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -197,11 +253,15 @@ export default function MyPay() {
         </Card>
       </div>
 
-      <TransactionModal 
+      <TransactionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
-    </div>
+      <div className={styles.customShapeDividerBottom}>
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M1200,0H0V120H281.94C572.9,116.24,602.45,3.86,602.45,3.86h0S632,116.24,923,120h277Z" className={styles.shapeFill}></path>
+        </svg>
+      </div>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { AuthCombined } from "./dataType/interfaces";
+
 export type Role = 'user' | 'worker' | 'guest';
 
 export interface User {
@@ -8,6 +10,6 @@ export interface User {
 }
 
 export interface AuthState {
-  user: User | null;
+  user: AuthCombined | null;
   isAuthenticated: boolean;
 }
