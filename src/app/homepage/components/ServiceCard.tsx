@@ -10,9 +10,10 @@ import Link from 'next/link';
 interface ServiceCardProps {
   name: string;
   subcategories: string[];
+  subcategoriesId: string[];
 }
 
-export function ServiceCard({ name, subcategories}: ServiceCardProps) {
+export function ServiceCard({ name, subcategories, subcategoriesId}: ServiceCardProps) {
   const { user } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);

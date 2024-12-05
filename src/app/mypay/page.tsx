@@ -37,6 +37,8 @@ const userTransaction = async (
       body: JSON.stringify({ id: userId }),
     });
 
+    console.log("ini response my pay: ", response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Invalid credentials");

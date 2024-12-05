@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from 'react';
-import { SubCategory } from '../data/subcategories';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Star, User } from 'lucide-react';
 import BookingModal from './BookingModal';
 import Link from 'next/link';
+import { SubCategory } from '@/lib/dataType/interfaces';
 
 interface Props {
   subcategory: SubCategory;
@@ -18,14 +18,14 @@ export default function SubCategoryUser({ subcategory }: Props) {
   return (
     <div className="container mx-auto px-4 py-8 mt-16"> {/* Added mt-16 */}
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h1 className="text-3xl font-bold text-[#2ECC71] mb-2">{subcategory.name}</h1>
-        <p className="text-gray-600 mb-4">{subcategory.description}</p>
+        <h1 className="text-3xl font-bold text-[#2ECC71] mb-2">{subcategory.p_namesubkategori}</h1>
+        <p className="text-gray-600 mb-4">{subcategory.p_deskripsi}</p>
         <div className="inline-block bg-[#F3F3F3] px-4 py-2 rounded-full">
           <span className="text-gray-700">{subcategory.categoryName}</span>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 mb-8">
+      {/* <div className="grid md:grid-cols-2 gap-8 mb-8">
         <div>
           <h2 className="text-2xl font-semibold mb-4">Pekerja Tersedia</h2>
           <div className="space-y-4">
@@ -104,13 +104,13 @@ export default function SubCategoryUser({ subcategory }: Props) {
             </Card>
           ))}
         </div>
-      </div>
+      </div> */}
 
-      <BookingModal
+      {/* <BookingModal
         open={!!selectedSession}
         onClose={() => setSelectedSession(null)}
         session={subcategory.sessions.find((s) => s.id === selectedSession)}
-      />
+      /> */}
     </div>
   );
 }

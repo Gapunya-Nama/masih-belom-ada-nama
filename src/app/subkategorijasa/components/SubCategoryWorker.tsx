@@ -1,9 +1,10 @@
 "use client";
 
 import { toast } from '@/components/hooks/use-toast';
-import { SubCategory } from '../data/subcategories';
+// import { SubCategory } from '../data/subcategories';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { SubCategory } from '@/lib/dataType/interfaces';
 import { Star, User } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -20,10 +21,10 @@ export default function SubCategoryWorker({ subcategory }: Props) {
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold text-[#2ECC71] mb-2">{subcategory.name}</h1>
-            <p className="text-gray-600 mb-4">{subcategory.description}</p>
+            <h1 className="text-3xl font-bold text-[#2ECC71] mb-2">{subcategory.p_namesubkategori}</h1>
+            <p className="text-gray-600 mb-4">{subcategory.p_deskripsi}</p>
             <div className="inline-block bg-[#F3F3F3] px-4 py-2 rounded-full">
-              <span className="text-gray-700">{subcategory.categoryName}</span>
+              {/* <span className="text-gray-700">{subcategory.categoryName}</span> */}
             </div>
           </div>
           {!isJoined && (
@@ -32,7 +33,7 @@ export default function SubCategoryWorker({ subcategory }: Props) {
                 setIsJoined(true);
                 toast({
                   title:`Success`,
-                  description: `Berhasil bergabung sebagai pekerja di subkatergori ${subcategory.name}`, 
+                  description: `Berhasil bergabung sebagai pekerja di subkatergori ${subcategory.p_namesubkategori}`, 
                 });
               }}
               className="bg-[#2ECC71] hover:bg-[#27AE60]"

@@ -1,5 +1,6 @@
 import { query } from './db';
-import { AuthCombined, KategoriJasa, Transaction, SubCategory } from '../dataType/interfaces';
+import { AuthCombined, KategoriJasa, SubCategory, Transaction } from '../dataType/interfaces';
+import { v4 } from "uuid";
 // import { v4 } from "uuid";
 
 
@@ -74,11 +75,11 @@ export async function getKategoriJasa(): Promise<KategoriJasa[] | null> {
   }
 }
 
-export async function getSubKategoriJasa(): Promise<SubCategory[] | null> {
+export async function getSubKategoriJasa(nama: string): Promise<SubCategory | null> {
   try {
-    return await callStoredProcedure<SubCategory[]>(
-      'get_subkategori_jasa',
-      []
+    return await callStoredProcedure<SubCategory>(
+      'show_subkategori',
+      [nama]
     );
   } catch (error) {
     console.error('Error calling get_subkategori_jasa', error);

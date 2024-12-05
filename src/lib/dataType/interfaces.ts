@@ -43,6 +43,7 @@ export interface KategoriJasa {
   id: string;
   namakategori: string;
   namasubkategori: string[];
+  idsubkategori: string[];
 }
 
 export interface ServiceSession {
@@ -71,9 +72,9 @@ export interface Testimonial {
 
 export interface SubCategory {
   idKategori: string;
-  id: string;
-  name: string;
-  description: string;
+  p_id: string;
+  p_namesubkategori: string;
+  p_deskripsi: string;
   categoryName: string;
   sessions: ServiceSession[];
   workers: Worker[];

@@ -33,22 +33,22 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION SIJARTA.show_subkategori(
-    _kategori_id UUID
+    nama VARCHAR
 ) RETURNS TABLE (
-    Id UUID,
-    NamaSubkategori VARCHAR(100),
-    Deskripsi TEXT
+    p_Id UUID,
+    p_NamaSubkategori VARCHAR(100),
+    p_Deskripsi TEXT
 ) AS $$
 BEGIN
     RETURN QUERY
     SELECT
-        Id,
-        NamaSubkategori,
-        Deskripsi
+        Id AS p_Id,
+        NamaSubkategori AS p_NamaSubkategori,
+        Deskripsi AS p_Deskripsi
     FROM
         SIJARTA.SUBKATEGORI_JASA
     WHERE
-        KategoriJasaId = _kategori_id;
+        NamaSubkategori = nama;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -104,6 +104,7 @@ RETURNS TABLE (
     id UUID, 
     namakategori VARCHAR,
     namasubkategori VARCHAR[]
+    idsubkategori UUID[]
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -111,10 +112,13 @@ BEGIN
         kj.Id AS id,
         kj.NamaKategori AS namaKategori,
         array_agg(skj.NamaSubkategori) AS namasubkategori
+        array_agg(skj.id) AS idsubkategori
     FROM 
         SIJARTA.KATEGORI_JASA kj
     LEFT JOIN SIJARTA.SUBKATEGORI_JASA skj ON kj.id = skj.KategoriJasaId
+    LEFT JOIN SIJARTA.PEKERJA_KATEGORI_JASA pkj ON kj.id = pkj.KategoriJasaId
     GROUP BY 
         kj.Id, kj.NamaKategori;
 END;
 $$ LANGUAGE plpgsql;
+

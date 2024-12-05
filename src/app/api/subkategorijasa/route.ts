@@ -1,23 +1,24 @@
 import { NextResponse } from "next/server";
-import { submitWorkerRegis } from "@/lib/database/function";
+import { getSubKategoriJasa } from "@/lib/database/function";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const { nama } = body;
+    
+    const subjasa = await getSubKategoriJasa(nama);
 
-    const { params } = body;
     
-    const history = await submitWorkerRegis(params);
     
-    if (!history) {
-        console.error("ini idnya: ",params)
+    if (!subjasa) {
+      console.error("No subcategory found for:", nama);
         return NextResponse.json(
         { message: "Empty:"},
-        { status: 401 }
+        { status: 503 }
       );
     }
-        
-    let hasil = NextResponse.json(history);
+
+    let hasil = NextResponse.json(subjasa);
     return hasil;
   } catch (error: any) {
     console.error('MyPay Error in route:', error);

@@ -117,6 +117,7 @@ export default function Home() {
               key={category.id}
               name={category.namakategori}
               subcategories={category.namasubkategori}
+              subcategoriesId={category.idsubkategori}
             />
           ))}
         </div>
