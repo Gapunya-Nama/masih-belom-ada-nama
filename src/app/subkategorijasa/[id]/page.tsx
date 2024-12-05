@@ -7,39 +7,8 @@ import { toast } from '@/components/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { SubCategory } from '@/lib/dataType/interfaces';
+import { getSubkategori } from './getSubkategori';
 
-
-export const getSubkategori = async (
-  name: string
-): Promise<SubCategory> => {
-  try {
-
-    const response = await fetch("/api/subcategorijasa", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(name),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Invalid credentials');
-    }
-
-
-    const subkategori = await response.json();
-
-    console.log("Ini adalah respons server untuk subkategori: ", subkategori);
-
-    return subkategori;
-
-
-  } catch (error) {
-    console.error("Authentication error:", error);
-    throw error;
-  }
-};
 
 
 
