@@ -26,9 +26,6 @@ export const authenticateUser = async (
       body: JSON.stringify(credentials),  
     });
 
-    
-
-
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Invalid credentials');

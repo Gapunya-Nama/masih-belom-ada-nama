@@ -1,5 +1,7 @@
 import { query } from './db';
 import { AuthCombined, KategoriJasa, Transaction } from '../dataType/interfaces';
+import { v4 } from "uuid";
+
 
 // Type definitions for function parameters and results
 export interface AuthenticateUserParams {
@@ -72,7 +74,7 @@ export async function getKategoriJasa(): Promise<KategoriJasa[] | null> {
   }
 }
 
-export async function getSubKategoriJasa(): Promise<KategoriJasa | null> {
+export async function getSubKategoriJasa(): Promise<SubKategoriJasa | null> {
   try {
     return await callStoredProcedure<KategoriJasa>(
       'get_kategori_jasa',
@@ -80,6 +82,35 @@ export async function getSubKategoriJasa(): Promise<KategoriJasa | null> {
     );
   } catch (error) {
     console.error('Error calling getUserMyPayFunction:', error);
+    throw error;
+  }
+}
+
+export async function submitWorkerRegis(
+  params: AuthCombined
+): Promise<void | null>{
+  try{
+    return await callStoredProcedure<void>(
+      'insert_pekerja',
+      [
+        params.id,
+        params.name,
+        params.gender,
+        params.pno,
+        params.password,
+        params.birth_date,
+        params.address,
+        params.balance,
+        params.bankName,
+        params.accountNumber,
+        params.npwp,
+        params.photoUrl,
+        params.rating,
+        params.completedOrders
+      ]
+    );
+  }
+  catch (error){
     throw error;
   }
 }
