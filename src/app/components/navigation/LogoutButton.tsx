@@ -3,17 +3,17 @@
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
+import { AuthCombined } from '@/lib/dataType/interfaces';
 
 export function LogoutButton() {
+  const { user,logout } = useAuth();
 
   const router = useRouter();
 
   const handleLogout = () => {
 
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('user');
-    document.cookie = 'authToken=; Max-Age=0; path=/;';
-
+    logout(user as AuthCombined);
 
     router.push('/login');
   };
