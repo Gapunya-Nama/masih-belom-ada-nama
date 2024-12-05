@@ -252,11 +252,12 @@ export default function MyPay() {
                         {formatCurrency(transaction.amount)}
                       </TableCell>
                       <TableCell>
-                        {new Date(transaction.date).toLocaleDateString("id-ID", {
+                        {/* {new Date(transaction.date).toLocaleDateString("id-ID", {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
-                        })}
+                        })} */}
+                        {transaction.date}
                       </TableCell>
                       <TableCell>{transaction.namakategori}</TableCell>
                     </TableRow>

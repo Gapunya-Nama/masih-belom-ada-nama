@@ -57,3 +57,44 @@ export async function ServicePaymentMyPayFunction(
     throw error;
   }
 }
+
+export async function WithdrawalMyPayFunction(
+  userId: string,
+  amount: number
+): Promise<void> {
+  const newId = uuidv4(); // Generate a new UUID
+
+  try {
+    await callProcedure(
+      'withdrawal',
+      [newId, userId, amount] // Pass the generated UUID
+    );
+  } catch (error) {
+    console.error('Error calling withdrawal:', error);
+    throw error;
+  }
+}
+
+export async function TransferMyPayFunction(
+  userId: string,
+  phoneNumber: string,
+  amount: number
+): Promise<void> {
+  const newId = uuidv4(); // UUID for sender transaction
+  const newId2 = uuidv4(); // UUID for receiver transaction
+
+  try {
+    console.log("TransferMyPayFunction Params:", {
+      p_id: newId,
+      t_id: newId2,
+      p_userId: userId,
+      t_PhoneNumber: phoneNumber,
+      p_nominal: amount,
+    });
+
+    await callProcedure('transfer_myPay', [newId, newId2, userId, phoneNumber.trim(), amount]);
+  } catch (error) {
+    console.error('Error calling transfer_myPay:', error);
+    throw error;
+  }
+}
