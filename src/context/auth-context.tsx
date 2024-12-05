@@ -23,8 +23,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setAuthState({ user: JSON.parse(storedUser), isAuthenticated: true });
+    } else {
+      setAuthState({ user: guestUser, isAuthenticated: false });
     }
   }, []);
+  
 
   const login = useCallback((user: AuthCombined) => {
     setAuthState({ user, isAuthenticated: true });

@@ -52,9 +52,9 @@ const baseSchema = {
     address: z.string().min(5, "Address must be at least 5 characters"),
 };
 
-const userSchema = z.object(baseSchema);
+export const userSchema = z.object(baseSchema);
 
-const workerSchema = z.object({
+export const workerSchema = z.object({
     ...baseSchema,
     bankName: z.string().min(1, "Bank name is required"),
     accountNumber: z.string().min(10, "Account number must be at least 10 digits"),
@@ -103,6 +103,7 @@ export function RegisterForm({ role }: RegisterFormProps) {
     };
 
     async function onSubmit(values: z.infer<typeof workerSchema>) {
+        
         // Here you would typically handle the registration logic
         console.log(values, role);
 
