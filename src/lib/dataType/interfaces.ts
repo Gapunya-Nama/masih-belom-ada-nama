@@ -14,8 +14,6 @@ export interface AuthBase {
   balance: number;
 }
 
-
-
 export interface AuthUserFields {
   level: string;
 }
