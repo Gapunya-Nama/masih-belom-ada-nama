@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback((user: AuthCombined) => {
     setAuthState({ user, isAuthenticated: true });
     localStorage.removeItem("user");
-    localStorage.setItem("user", JSON.stringify(authState)); 
+    localStorage.setItem("user", JSON.stringify(user)); 
   }, []);
 
   const logout = useCallback((user: AuthCombined) => {

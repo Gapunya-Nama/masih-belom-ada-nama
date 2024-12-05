@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/auth-context";
 
 type TransactionType = "TopUp" | "Payment" | "Transfer" | "Withdrawal";
 
@@ -27,12 +28,16 @@ const banks = [
 ];
 
 export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
+  const { user } = useAuth(); // Access authenticated user and setter
   const [transactionType, setTransactionType] = useState<TransactionType | "">("");
   const [amount, setAmount] = useState("");
   const [selectedService, setSelectedService] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [selectedBank, setSelectedBank] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   // Adjust padding on the body to prevent layout shift
   useEffect(() => {
@@ -50,9 +55,112 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
     }
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onClose();
+    setError(null);
+    setSuccess(null);
+  
+    if (transactionType === "TopUp") {
+      // Validate amount
+      const parsedAmount = parseFloat(amount);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        setError("Please enter a valid amount.");
+        return;
+      }
+
+      if (!user?.id) {
+        setError("User not authenticated.");
+        return;
+      }
+
+      try {
+        setLoading(true);
+        // Send Top Up request to backend
+        const response = await fetch("/api/mypay/top-up", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include cookies for session-based auth
+          body: JSON.stringify({
+            userId: user.id,
+            amount: parsedAmount,
+          }),
+        });
+
+        if (response.ok) {
+          setSuccess("Top Up successful!");
+          onClose(); // Trigger parent to refresh transactions and close modal
+          // Optionally, trigger a user data refresh here
+          // onClose();
+        } else {
+          const data = await response.json();
+          setError(data.message || "An error occurred during Top Up.");
+        }
+      } catch (err: any) {
+        console.error("Top Up Error:", err);
+        setError(err.response?.data?.message || "An error occurred during Top Up.");
+      } finally {
+        setLoading(false);
+      }
+    } else if (transactionType == "Payment") {
+      if (!user?.id) {
+        setError("User not authenticated.");
+        return;
+      }
+
+      // Validate service selection
+      if (!selectedService) {
+        setError("Please select a service.");
+        return;
+      }
+
+      // Find the selected service to get the price
+      const service = services.find((s) => s.id === selectedService);
+      if (!service) {
+        setError("Selected service not found.");
+        return;
+      }
+
+      // Use the predefined service price
+      const parsedPaymentAmount = service.price;
+
+
+      try {
+        setLoading(true);
+        // Send Top Up request to backend
+        const response = await fetch("/api/mypay/payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include cookies for session-based auth
+          body: JSON.stringify({
+            userId: user.id,
+            amount: parsedPaymentAmount,
+          }),
+        });
+
+        if (response.ok) {
+          setSuccess("Service Payment successful!");
+          onClose(); // Trigger parent to refresh transactions and close modal
+          // Optionally, trigger a user data refresh here
+          // onClose();
+        } else {
+          const data = await response.json();
+          setError(data.message || "An error occurred during Service Payment.");
+        }
+      } catch (err: any) {
+        console.error("Top Up Error:", err);
+        setError(err.response?.data?.message || "An error occurred during Service Payment.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Handle other transaction types (Payment, Transfer, Withdrawal)
+      // Implement similarly by creating respective API routes and functions
+      onClose();
+    }
   };
 
   const renderFormContent = () => {
@@ -67,8 +175,14 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
               placeholder="Enter amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              required
             />
-            <Button type="submit" className="w-full">Top Up</Button>
+            {error && <p className="text-red-500">{error}</p>}
+            {success && <p className="text-green-500">{success}</p>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Processing..." : "Top Up"}
+            </Button>
+            {/* <Button type="submit" className="w-full">Top Up</Button> */}
           </div>
         );
 
@@ -183,3 +297,4 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
     </Dialog>
   );
 }
+
