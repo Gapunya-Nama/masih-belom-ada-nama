@@ -49,18 +49,23 @@ export async function authenticateUserFunction(
   }
 }
 
-export async function getUserMyPayFunction(
-  id: string
-): Promise<Transaction[] | null> {
-  try {
-    return await callStoredProcedure<Transaction[]>(
-      'get_myPay_transac_history',
-      [id]
-    );
-  } catch (error) {
-    console.error('Error calling getUserMyPayFunction:', error);
-    throw error;
-  }
+/**
+ * Calls a PostgreSQL stored procedure.
+ * @param procedureName - The name of the procedure to call.
+ * @param params - An array of parameters to pass to the procedure.
+ */
+export async function callProcedure(
+  procedureName: string,
+  params: any[]
+): Promise<void> {
+  // Construct parameter placeholders ($1, $2, ...)
+  const placeholders = params.map((_, index) => `$${index + 1}`).join(', ');
+  
+  // Construct the CALL statement
+  const queryText = `CALL SIJARTA.${procedureName}(${placeholders})`;
+
+  // Execute the CALL statement
+  await query(queryText, params);
 }
 
 export async function getKategoriJasa(): Promise<KategoriJasa[] | null> {
