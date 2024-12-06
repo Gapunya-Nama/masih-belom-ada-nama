@@ -43,13 +43,14 @@ export interface KategoriJasa {
   id: string;
   namakategori: string;
   namasubkategori: string[];
+  idsubkategori: string[];
+  workers: Worker[];
 }
 
-export interface ServiceSession {
+export interface SesiLayanan {
   id: string;
-  name: string;
-  price: number;
-  description: string;
+  sesi: number;
+  harga: number;
 }
 
 export interface Worker {
@@ -70,14 +71,19 @@ export interface Testimonial {
 }
 
 export interface SubCategory {
-  idKategori: string;
   id: string;
-  name: string;
-  description: string;
-  categoryName: string;
-  sessions: ServiceSession[];
-  workers: Worker[];
-  testimonials: Testimonial[];
+  nama: string;
+  deskripsi: string;
+  idkategori: string;
+  namakategori: string;
+}
+
+export interface Pekerja {
+  pekerjaid: string;
+  namapekerja: string;
+  linkfoto: string;
+  rating: number;
+  completedjobs: number;
 }
 
 export interface Voucher {
