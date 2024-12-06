@@ -21,6 +21,7 @@ import useSWR from "swr";
 import { fetchUserTransactions } from "@/lib/fetcher"; // Correct Import Path
 import styles from "./components/mypay.module.css";
 import { useRouter } from "next/navigation"; // Use 'next/navigation' for Next.js 13+
+import { SkeletonLoader } from "../components/loading/SkeletonLoader";
 
 export default function MyPay() {
   const { user } = useAuth(); // Access `user` from Auth context
@@ -30,6 +31,7 @@ export default function MyPay() {
   const [filterFromDate, setFilterFromDate] = useState("");
   const [filterToDate, setFilterToDate] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const filterRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -106,16 +108,37 @@ export default function MyPay() {
   };
 
   // **Redirect to login if user is not authenticated**
-  useEffect(() => {
-    if (user === null) {
-      // Delay the redirect by 500ms to allow `useAuth` to update `user`
-      const timeoutId = setTimeout(() => {
-        router.push("/login");
-      }, 500); // Adjust the delay as needed
+  // useEffect(() => {
+  //   if (user === null) {
+  //     // Delay the redirect by 500ms to allow `useAuth` to update `user`
+  //     const timeoutId = setTimeout(() => {
+  //       router.push("/login");
+  //     }, 500); // Adjust the delay as needed
   
-      return () => clearTimeout(timeoutId); // Cleanup on unmount
-    }
-  }, [user, router]);
+  //     return () => clearTimeout(timeoutId); // Cleanup on unmount
+  //   }
+  // }, [user, router]);
+
+  // useEffect(() => {
+  //   if (user !== null) {
+  //     setIsAuthLoading(false); // User is authenticated
+  //   } else if (user === null && !isAuthLoading) {
+  //     router.push("/login"); // Redirect only when auth is done
+  //   }
+  // }, [user, router, isAuthLoading]);
+  
+  // // Avoid rendering until auth is fully checked
+  // if (isAuthLoading) {
+  //   return <SkeletonLoader variant="avatar" />;
+  // }
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  
+  //   // Wait for `localStorage` to initialize
+  //   if (!storedUser || user?.id === "guest") {
+  //     router.push("/login");
+  //   }
+  // }, [user, router]);  
 
   // **Avoid rendering the component until user is authenticated**
   if (!user) {
@@ -123,8 +146,10 @@ export default function MyPay() {
   }
 
   return (
-    <div className="pt-16 min-h-screen bg-[#F3F3F3]">
-      <div className="container mx-auto px-4 py-8">
+    // <div className="pt-16 min-h-screen bg-[#F3F3F3]">
+      // <div className="container mx-auto px-4 py-8">
+    <div className="pt-16 flex flex-col min-h-screen bg-[#F3F3F3]">
+      <div className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center gap-2">
           <WalletIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">MyPay</h1>
@@ -135,15 +160,23 @@ export default function MyPay() {
             <h2 className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
               Phone Number
             </h2>
-            <p className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-              {user.pno}
-            </p>
+            {isValidating ? (
+              <SkeletonLoader variant="text" />
+            ) : (
+              <p className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
+                {user.pno}
+              </p>
+            )}
             <h2 className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
               Available Balance
             </h2>
-            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-              {formatCurrency(currentBalance)}
-            </p>
+            {isValidating ? (
+              <SkeletonLoader variant="text" />
+            ) : (
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                {formatCurrency(currentBalance)}
+              </p>
+            )}
           </Card>
 
           <Card className="flex items-center justify-center p-6">
@@ -223,7 +256,8 @@ export default function MyPay() {
           </div>
 
           {/* Handle Loading and Error States */}
-          {isValidating && <p>Loading transactions...</p>}
+          {/* {isValidating && <p>Loading transactions...</p>} */}
+          { isValidating && <SkeletonLoader variant="card"  />}
           {error && <p className="text-red-500">{error.message}</p>}
           {!isValidating && !error && filteredTransactions.length === 0 && (
             <p className="text-gray-500">No transactions found.</p>
@@ -272,19 +306,21 @@ export default function MyPay() {
       {/* **Pass the handleModalClose to TransactionModal** */}
       <TransactionModal isOpen={isModalOpen} onClose={handleModalClose} />
 
-      <div className={styles.customShapeDividerBottom}>
+      {/* Footer */}
+      {/* <footer className="w-full bg-gray-100">
         <svg
           data-name="Layer 1"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
+          className="w-full h-16 fill-green-500"
         >
           <path
             d="M1200,0H0V120H281.94C572.9,116.24,602.45,3.86,602.45,3.86h0S632,116.24,923,120h277Z"
             className={styles.shapeFill}
           ></path>
         </svg>
-      </div>
+      </footer> */}
     </div>
   );
 }
