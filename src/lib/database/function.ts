@@ -1,5 +1,5 @@
 import { query } from './db';
-import { AuthCombined, KategoriJasa, SubCategory, Transaction } from '../dataType/interfaces';
+import { AuthCombined, KategoriJasa, MetodeBayar, SubCategory, Transaction } from '../dataType/interfaces';
 import { v4 } from "uuid";
 
 
@@ -87,6 +87,18 @@ export async function getSubKategoriJasa(): Promise<SubCategory | null> {
     );
   } catch (error) {
     console.error('Error calling getUserMyPayFunction:', error);
+    throw error;
+  }
+}
+
+export async function getMetodeBayar(): Promise<MetodeBayar[] | null> {
+  try {
+    return await callStoredProcedure<MetodeBayar[]>(
+      'show_metode_bayar',
+      []
+    );
+  } catch (error) {
+    console.error('Error calling getMetodeBayar:', error);
     throw error;
   }
 }

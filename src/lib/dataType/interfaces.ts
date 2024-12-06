@@ -96,3 +96,8 @@ export interface Promo {
   tglakhirberlaku: string;  // DATE (ISO String format, e.g. '2024-12-31')
 }
 
+export interface MetodeBayar {
+  idmetode: string;
+  namametode: string;
+}
+
