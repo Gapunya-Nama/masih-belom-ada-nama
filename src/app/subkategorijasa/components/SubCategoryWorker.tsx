@@ -21,10 +21,10 @@ export default function SubCategoryWorker({ subcategory }: Props) {
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold text-[#2ECC71] mb-2">{subcategory.p_namesubkategori}</h1>
-            <p className="text-gray-600 mb-4">{subcategory.p_deskripsi}</p>
+            <h1 className="text-3xl font-bold text-[#2ECC71] mb-2">{subcategory.nama}</h1>
+            <p className="text-gray-600 mb-4">{subcategory.deskripsi}</p>
             <div className="inline-block bg-[#F3F3F3] px-4 py-2 rounded-full">
-              {/* <span className="text-gray-700">{subcategory.categoryName}</span> */}
+              <span className="text-gray-700">{subcategory.namakategori}</span>
             </div>
           </div>
           {!isJoined && (

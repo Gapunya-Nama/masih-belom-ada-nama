@@ -1,5 +1,5 @@
 import { query } from './db';
-import { AuthCombined, KategoriJasa, SubCategory, Transaction } from '../dataType/interfaces';
+import { AuthCombined, AuthWorkerFields, KategoriJasa, Pekerja, SubCategory, Transaction } from '../dataType/interfaces';
 import { v4 } from "uuid";
 // import { v4 } from "uuid";
 
@@ -75,11 +75,11 @@ export async function getKategoriJasa(): Promise<KategoriJasa[] | null> {
   }
 }
 
-export async function getSubKategoriJasa(nama: string): Promise<SubCategory | null> {
+export async function getSubKategoriJasa(namaParam: string): Promise<SubCategory | null> {
   try {
     return await callStoredProcedure<SubCategory>(
       'show_subkategori',
-      [nama]
+      [namaParam]
     );
   } catch (error) {
     console.error('Error calling get_subkategori_jasa', error);
@@ -112,6 +112,28 @@ export async function submitWorkerRegis(
     );
   }
   catch (error){
+    throw error;
+  }
+}
+export async function showPekerja(id : string): Promise<Pekerja | null> {
+  try {
+    return await callStoredProcedure<Pekerja>(
+      'show_pekerja',
+      [id]
+    );
+  } catch (error) {
+    console.error('Error calling get_subkategori_jasa', error);
+    throw error;
+  }
+}
+export async function showSesilayanan(id : string): Promise<Pekerja | null> {
+  try {
+    return await callStoredProcedure<Pekerja>(
+      'get_sesilayanan',
+      [id]
+    );
+  } catch (error) {
+    console.error('Error calling get_subkategori_jasa', error);
     throw error;
   }
 }

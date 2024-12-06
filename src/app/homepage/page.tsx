@@ -7,6 +7,7 @@ import { ServiceCard } from "./components/ServiceCard";
 import styles from "./components/homepage.module.css";
 import { KategoriJasa } from "@/lib/dataType/interfaces";
 
+
 const requestKategoriJasa = async (): Promise<KategoriJasa[]> => {
   try {
     const response = await fetch("/api/homepage", {
@@ -116,8 +117,10 @@ export default function Home() {
             <ServiceCard
               key={category.id}
               name={category.namakategori}
-              subcategories={category.namasubkategori}
-              subcategoriesId={category.idsubkategori}
+              subcategories={category.namasubkategori.map((name, index) => ({
+                id: category.idsubkategori[index],
+                name: name,
+              }))}
             />
           ))}
         </div>
