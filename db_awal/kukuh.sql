@@ -139,3 +139,81 @@ BEGIN
     END;
 END;
 $$ LANGUAGE plpgsql;
+
+---- SERVICE
+
+-- Create or replace the function in the SIJARTA schema
+CREATE OR REPLACE FUNCTION SIJARTA.get_available_jobs(
+    pekerja_id UUID,
+    limit_val INT DEFAULT 10,
+    offset_val INT DEFAULT 0
+)
+RETURNS TABLE (
+    Id UUID,
+    TglPemesanan DATE,
+    TglPekerjaan DATE,
+    WaktuPekerjaan TIMESTAMP,
+    TotalBiaya DECIMAL(15, 2),
+    IdPelanggan UUID,
+    NamaPelanggan VARCHAR(255),
+    IdKategoriJasa UUID,
+    Sesi INT,
+    KategoriId UUID,
+    NamaKategori VARCHAR(100),
+    SubkategoriId UUID,
+    NamaSubkategori VARCHAR(100)
+) AS $$
+BEGIN
+    RETURN QUERY
+    WITH LatestStatus AS (
+        SELECT 
+            t.IdTrPemesanan
+        FROM 
+            SIJARTA.TR_PEMESANAN_STATUS t
+        INNER JOIN (
+            SELECT 
+                IdTrPemesanan, 
+                MAX(TglWaktu) AS MaxTglWaktu
+            FROM 
+                SIJARTA.TR_PEMESANAN_STATUS
+            GROUP BY 
+                IdTrPemesanan
+        ) m 
+            ON t.IdTrPemesanan = m.IdTrPemesanan
+            AND t.TglWaktu = m.MaxTglWaktu
+        WHERE 
+            t.IdStatus = '850e8400-e29b-41d4-a716-446655447002'
+    )
+    SELECT 
+        pj.Id,
+        pj.TglPemesanan,
+        pj.TglPekerjaan,
+        pj.WaktuPekerjaan,
+        pj.TotalBiaya,
+        pj.IdPelanggan,
+        u.Nama AS NamaPelanggan,
+        pj.IdKategoriJasa,
+        pj.Sesi,
+        kj.Id AS KategoriId,
+        kj.NamaKategori,
+        sj.Id AS SubkategoriId,
+        sj.NamaSubkategori
+    FROM 
+        LatestStatus latest
+    INNER JOIN 
+        SIJARTA.TR_PEMESANAN_JASA pj 
+        ON pj.Id = latest.IdTrPemesanan
+    INNER JOIN 
+        SIJARTA.SUBKATEGORI_JASA sj 
+        ON pj.IdKategoriJasa = sj.Id
+    INNER JOIN 
+        SIJARTA.KATEGORI_JASA kj 
+        ON sj.KategoriJasaId = kj.Id
+    INNER JOIN 
+        SIJARTA.USER u
+        ON pj.IdPelanggan = u.Id
+    WHERE 
+        pj.IdPekerja = pekerja_id
+    LIMIT limit_val OFFSET offset_val;
+END;
+$$ LANGUAGE plpgsql;

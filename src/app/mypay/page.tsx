@@ -20,6 +20,7 @@ import { Transaction } from "@/lib/dataType/interfaces";
 import useSWR from "swr";
 import { fetchUserTransactions } from "@/lib/fetcher"; // Correct Import Path
 import styles from "./components/mypay.module.css";
+import { SkeletonLoader } from "../components/loading/SkeletonLoader";
 
 export default function MyPay() {
   const { user } = useAuth(); // Access `user` from Auth context
@@ -31,7 +32,6 @@ export default function MyPay() {
   const [filterCategory, setFilterCategory] = useState("All");
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const filterRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   // **Define the SWR fetcher function**
   const fetcher = (userId: string) => fetchUserTransactions(userId);

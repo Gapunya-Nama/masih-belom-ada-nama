@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, WalletIcon, Package, Tag, UserCircle, LogIn, ClipboardList, ClipboardCheck, UserPlus } from 'lucide-react';
+import { Home, WalletIcon, Package, Tag, UserCircle, LogIn, ClipboardList, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/compat/router';
 import { useAuth } from '@/context/auth-context';
 
@@ -16,7 +16,6 @@ export const navLinksUser = [
 export const navLinksWorker = [
   { name: 'Homepage', href: '/homepage', icon: Home },
   { name: "Kelola Pekerjaan Saya", href: '/jobs', icon: ClipboardList},
-  { name: "Kelola Status Pekerjaan", href: '/jobs', icon: ClipboardCheck},
   { name: 'MyPay', href: '/mypay', icon: WalletIcon },
   { name: 'Profile', href: '/profile', icon: UserCircle },
 ]
