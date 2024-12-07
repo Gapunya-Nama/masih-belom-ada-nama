@@ -6,25 +6,36 @@ import { useAuth } from '@/context/auth-context';
 import { toast } from '@/components/hooks/use-toast';
 import Link from 'next/link';
 
+interface Subcategory {
+  id: string;
+  name: string;
+}
 
 interface ServiceCardProps {
   name: string;
-  subcategories: string[];
+  subcategories: Subcategory[];
 }
 
-export function ServiceCard({ name, subcategories}: ServiceCardProps) {
+export function ServiceCard({ name, subcategories }: ServiceCardProps) {
+  console.log("ini di service card: ", subcategories);
   const { user } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleViewMoreClick = (subcategory: string) => {
-    if (user && user.role !== 'worker' && user.role !== 'user') {      
+  // Filter duplikat berdasarkan id subkategori
+  const uniqueSubcategories = subcategories.filter(
+    (subcategory, index, self) =>
+      index === self.findIndex((s) => s.id === subcategory.id)
+  );
+
+  const handleViewMoreClick = (subcategoryId: string) => {
+    if (user && user.role !== 'worker' && user.role !== 'user') {
       toast({
         title: `Error`,
         description: `Anda perlu login untuk mengakses halaman ini.`,
       });
     } else {
-      router.push(`/subkategorijasa/${subcategory}`);
+      router.push(`/subkategorijasa/${subcategoryId}`);
     }
   };
 
@@ -38,15 +49,17 @@ export function ServiceCard({ name, subcategories}: ServiceCardProps) {
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent>
-        <div className="divide-y divide-gray-100">
-            {subcategories.map((subcategory, index) => (
+          <div className="divide-y divide-gray-100">
+            {uniqueSubcategories.map((subcategory, index) => (
               <div key={index} className="p-4 flex justify-between items-center">
-                <Link href={`/subkategorijasa/${subcategory}`} 
-                className="text-left hover:bg-gray-50 transition-colors duration-150 flex-grow">
-                  {subcategory}
+                <Link
+                  href={`/subkategorijasa/${subcategory.id}`}
+                  className="text-left hover:bg-gray-50 transition-colors duration-150 flex-grow"
+                >
+                  {subcategory.name}
                 </Link>
                 <button
-                  onClick={() => handleViewMoreClick(subcategory)}
+                  onClick={() => handleViewMoreClick(subcategory.id)}
                   className="ml-4 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-150"
                 >
                   Lihat Selengkapnya

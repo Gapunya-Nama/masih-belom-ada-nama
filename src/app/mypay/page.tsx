@@ -20,8 +20,6 @@ import { Transaction } from "@/lib/dataType/interfaces";
 import useSWR from "swr";
 import { fetchUserTransactions } from "@/lib/fetcher"; // Correct Import Path
 import styles from "./components/mypay.module.css";
-import { useRouter } from "next/navigation"; // Use 'next/navigation' for Next.js 13+
-import { SkeletonLoader } from "../components/loading/SkeletonLoader";
 
 export default function MyPay() {
   const { user } = useAuth(); // Access `user` from Auth context
