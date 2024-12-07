@@ -217,3 +217,43 @@ BEGIN
     LIMIT limit_val OFFSET offset_val;
 END;
 $$ LANGUAGE plpgsql;
+
+
+-- Create or replace the procedure in the SIJARTA schema
+CREATE OR REPLACE PROCEDURE SIJARTA.kerjakan_pesanan(order_id UUID)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Start a transaction block (optional, as procedures can manage transactions)
+    -- BEGIN;
+
+    -- Check if the order exists
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM SIJARTA.TR_PEMESANAN_JASA 
+        WHERE Id = order_id
+    ) THEN
+        RAISE EXCEPTION 'Order with Id % does not exist.', order_id;
+    END IF;
+
+    -- Check if the status '850e8400-e29b-41d4-a716-446655447003' has already been applied
+    IF EXISTS (
+        SELECT 1 
+        FROM SIJARTA.TR_PEMESANAN_STATUS 
+        WHERE IdTrPemesanan = order_id 
+          AND IdStatus = '850e8400-e29b-41d4-a716-446655447003'
+    ) THEN
+        RAISE NOTICE 'Status "Kerjakan Pesanan" has already been applied to Order Id %.', order_id;
+        RETURN;
+    END IF;
+
+    -- Insert the new status entry
+    INSERT INTO SIJARTA.TR_PEMESANAN_STATUS (IdTrPemesanan, IdStatus, TglWaktu)
+    VALUES (order_id, '850e8400-e29b-41d4-a716-446655447003', NOW());
+
+    RAISE NOTICE 'Status "Kerjakan Pesanan" successfully applied to Order Id %.', order_id;
+
+    -- Commit the transaction block (if you started one)
+    -- COMMIT;
+END;
+$$;

@@ -1,6 +1,6 @@
 // lib/database/functions/jobs.ts
 
-import { callStoredProcedure } from "@/lib/database/function"; // Adjust the path as necessary
+import { callProcedure, callStoredProcedure } from "@/lib/database/function"; // Adjust the path as necessary
 
 // Define the TypeScript interface matching the RETURNS TABLE of your SQL function
 interface AvailableJobs {
@@ -36,6 +36,20 @@ export async function getAvailableJobs(
     return Array.isArray(orders) ? orders : [orders];
   } catch (error) {
     console.error('Error fetching latest orders:', error);
+    throw error;
+  }
+}
+
+export async function KerjakanPesananFunction(
+  transactionId: string,
+): Promise<void> {
+  try {
+    await callProcedure(
+      'kerjakan_pesanan',
+      [transactionId] // Pass the generated UUID
+    );
+  } catch (error) {
+    console.error('Error calling kerjakan_pesanan:', error);
     throw error;
   }
 }
