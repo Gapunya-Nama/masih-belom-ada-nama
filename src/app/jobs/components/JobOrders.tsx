@@ -56,6 +56,7 @@ export function JobOrders() {
   const [orders, setOrders] = useState<JobOrder[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [processingOrderIds, setProcessingOrderIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   // Fetch orders from API
@@ -125,12 +126,66 @@ export function JobOrders() {
   
 
 
-  const handleOrderAction = (orderId: string) => {
-    // Display toast notification
-    toast({
-      title: "Pesanan Dikerjakan",
-      description: `Pesanan dengan ID ${orderId} sedang dikerjakan.`,
+  // const handleOrderAction = (orderId: string) => {
+  //   // Display toast notification
+  //   toast({
+  //     title: "Pesanan Dikerjakan",
+  //     description: `Pesanan dengan ID ${orderId} sedang dikerjakan.`,
+  //   });
+  // };
+  const handleOrderAction = async (orderId: string) => {
+    // Confirm the action with the user
+    const confirm = window.confirm("Apakah Anda yakin ingin memproses pesanan ini?");
+    if (!confirm) return;
+
+    // Add to processing set
+    if (processingOrderIds.has(orderId)) return;
+    setProcessingOrderIds(prev => new Set(prev).add(orderId));
+  
+    try {
+      const response = await fetch('/api/jobs/available_jobs_take', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': `Bearer ${token}`, // Include the JWT token
+        },
+        body: JSON.stringify({ orderId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "Success",
+          description: data.message || "Order processed successfully.",
+          variant: "default",
+        });
+
+        // Optionally, remove the processed order from the list
+        setOrders((prevOrders) => prevOrders.filter(order => order.id !== orderId));
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: errorData.error || "Failed to process the order.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error("Handle Order Action Error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    }
+
+    // After processing
+    setProcessingOrderIds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(orderId);
+      return newSet;
     });
+
   };
 
   const filteredOrders = orders.filter((order) => {
@@ -264,8 +319,9 @@ export function JobOrders() {
                       variant="default"
                       className="bg-green-600 hover:bg-green-700 text-white"
                       onClick={() => handleOrderAction(order.id)}
+                      disabled={processingOrderIds.has(order.id)}
                     >
-                      Kerjakan Pesanan
+                    {processingOrderIds.has(order.id) ? 'Processing...' : 'Kerjakan Pesanan'}
                     </Button>
                   </div>
                 </div>
