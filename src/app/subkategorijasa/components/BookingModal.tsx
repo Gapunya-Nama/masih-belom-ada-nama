@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { ServiceSession } from '../data/subcategories';
+// import { ServiceSession } from '../data/subcategories';
 import {
   Dialog,
   DialogContent,
@@ -22,32 +22,30 @@ import { useRouter } from 'next/navigation';
 interface Props {
   open: boolean;
   onClose: () => void;
-  session: ServiceSession | undefined;
+  sessionId: string;
 }
 
-export default function BookingModal({ open, onClose, session }: Props) {
+export default function BookingModal({ open, onClose, sessionId }: Props) {
   const router = useRouter();
   const [promoCode, setPromoCode] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!session) return;
-    
+    if (!sessionId) return;
+
     setIsSubmitting(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     // Redirect to booking view page
     router.push('/pemesananjasa');
     setIsSubmitting(false);
     onClose();
   };
 
-  if (!session) return null;
-
   const today = new Date().toLocaleDateString('id-ID');
-  const total = session.price; // In a real app, apply promo code discount here
+  const total = 320000; // Contoh nilai, sesuaikan dengan kebutuhan
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

@@ -1,19 +1,20 @@
-"use server"
+"use client"
 
-import { SubCategory } from "../data/subcategories";
+import { SubCategory } from "@/lib/dataType/interfaces";
 
-export const getSubkategori = async (
-    name: string | null
+export const getSubkategori = async ( 
+    name: string
   ): Promise<SubCategory> => {
     try {
   
-      const response = await fetch("/api/subcategorijasa", {
+      const response = await fetch("/api/subkategorijasa", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(name),
+        body: JSON.stringify({ nama: name }),
       });
+
   
       if (!response.ok) {
         const error = await response.json();
@@ -23,7 +24,6 @@ export const getSubkategori = async (
   
       const subkategori = await response.json();
   
-      console.log("Ini adalah respons server untuk subkategori: ", subkategori);
   
       return subkategori;
   

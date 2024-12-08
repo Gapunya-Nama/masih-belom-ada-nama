@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
-import { getSubKategoriJasa } from "@/lib/database/function";
+import { showPekerja } from "@/lib/database/function";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { nama } = body;
+    console.log("Ini body co", body);
+    const { id } = body;
 
-    console.log("ini nama", nama);
+    console.log("ini nama", id);
     
-    const subjasa = await getSubKategoriJasa(nama);
+    const pekerja = await showPekerja(id);
 
-    console.log("ini subjasa", subjasa);
+    console.log("ini pekerja", pekerja);
 
-    let hasil = NextResponse.json(subjasa);
-    return hasil;
+    return NextResponse.json(pekerja);
   } catch (error: any) {
     console.error('MyPay Error in route:', error);
     return NextResponse.json(

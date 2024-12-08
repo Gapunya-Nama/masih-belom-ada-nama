@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { query } from './db';
-import { AuthCombined, KategoriJasa, MetodeBayar, SubCategory, Transaction } from '../dataType/interfaces';
-import { v4 } from "uuid";
+import { AuthCombined, KategoriJasa, MetodeBayar, SubCategory, Pekerja} from '../dataType/interfaces';
+// import { AuthCombined, AuthWorkerFields, KategoriJasa, Pekerja, SubCategory, Transaction } from '../dataType/interfaces';
+// import { v4 } from "uuid";
 
 
 // Type definitions for function parameters and results
@@ -79,14 +81,14 @@ export async function getKategoriJasa(): Promise<KategoriJasa[] | null> {
   }
 }
 
-export async function getSubKategoriJasa(): Promise<SubCategory | null> {
+export async function getSubKategoriJasa(namaParam: string): Promise<SubCategory | null> {
   try {
     return await callStoredProcedure<SubCategory>(
-      'get_kategori_jasa',
-      []
+      'show_subkategori',
+      [namaParam]
     );
   } catch (error) {
-    console.error('Error calling getUserMyPayFunction:', error);
+    console.error('Error calling get_subkategori_jasa', error);
     throw error;
   }
 }
@@ -128,6 +130,36 @@ export async function submitWorkerRegis(
     );
   }
   catch (error){
+    throw error;
+  }
+}
+export async function showPekerja(id : string): Promise<Pekerja | null> {
+  try {
+    return await callStoredProcedure<Pekerja>(
+      'show_pekerja',
+      [id]
+    );
+  } catch (error) {
+    console.error('Error calling get_subkategori_jasa', error);
+    throw error;
+  }
+}
+export async function showSesilayanan(id : string): Promise<Pekerja | null> {
+  try {
+    return await callStoredProcedure<Pekerja>(
+      'get_sesilayanan',
+      [id]
+    );
+  } catch (error) {
+    console.error('Error calling get_subkategori_jasa', error);
+    throw error;
+  }
+}
+export async function addWorkerToCategory(pekerjaId: string, kategoriJasaId: string): Promise<void | null> {
+  try {
+    return await callStoredProcedure('CALL SIJARTA.add_pekerja_kategori_jasa($1, $2)', [pekerjaId, kategoriJasaId]);
+  } catch (error) {
+    console.error('Error adding worker to category:', error);
     throw error;
   }
 }

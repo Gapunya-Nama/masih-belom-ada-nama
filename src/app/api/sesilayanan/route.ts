@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
-import { getSubKategoriJasa } from "@/lib/database/function";
+import { showSesilayanan } from "@/lib/database/function";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { nama } = body;
+    console.log("ini body", body);
+    const { subkategoriId } = body;
 
-    console.log("ini nama", nama);
+    console.log("ini id", subkategoriId);
     
-    const subjasa = await getSubKategoriJasa(nama);
+    const subjasa = await showSesilayanan(subkategoriId);
 
-    console.log("ini subjasa", subjasa);
+    console.log("ini sesilayanan", subjasa);
 
     let hasil = NextResponse.json(subjasa);
     return hasil;
