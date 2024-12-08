@@ -3,17 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Star, User } from 'lucide-react';
 import Link from 'next/link';
-import { Pekerja, SesiLayanan, SubCategory } from '@/lib/dataType/interfaces';
+import { MetodeBayar, Pekerja, SesiLayanan, SubCategory } from '@/lib/dataType/interfaces';
 import BookingModal from './BookingModal';
 
 interface Props {
   subcategory: SubCategory;
   pekerja: Pekerja[] | null;
   sesilayanan: SesiLayanan[] | null;
+  metodebayar: MetodeBayar[];
 }
 
-export default function SubCategoryUser({ subcategory, pekerja, sesilayanan }: Props) {
-  const [selectedSession, setSelectedSession] = useState<string | null>(null);
+export default function SubCategoryUser({ subcategory, pekerja, sesilayanan, metodebayar }: Props) {
+  const [selectedSession, setSelectedSession] = useState<SesiLayanan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
   return (
@@ -69,7 +70,7 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan }: P
                   </p>
                     <Button
                       onClick={() => {
-                        setSelectedSession(session.id);
+                        setSelectedSession(session);
                         setIsModalOpen(true);
                       }}
                       className="bg-[#2ECC71] hover:bg-[#27AE60]"
@@ -85,7 +86,8 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan }: P
             <BookingModal
               open={isModalOpen}
               onClose={() => setIsModalOpen(false)}
-              sessionId={selectedSession}
+              sesilayanan={selectedSession}
+              metodebayar={metodebayar}
             />
           )}
         </div>

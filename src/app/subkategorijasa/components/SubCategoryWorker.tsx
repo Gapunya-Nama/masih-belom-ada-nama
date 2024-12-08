@@ -5,16 +5,17 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { User, Star } from "lucide-react";
-import { Pekerja, SubCategory, SesiLayanan } from "@/lib/dataType/interfaces";
+import { Pekerja, SubCategory, SesiLayanan, MetodeBayar } from "@/lib/dataType/interfaces";
 import { useAuth } from "@/context/auth-context";
 
 interface Props {
   subcategory: SubCategory;
   pekerja: Pekerja[] | null;
   sesilayanan: SesiLayanan[] | null;
+  metodebayar: MetodeBayar[];
 }
 
-export default function SubCategoryWorker({ subcategory, pekerja, sesilayanan }: Props) {
+export default function SubCategoryWorker({ subcategory, pekerja, sesilayanan, metodebayar }: Props) {
   const { user } = useAuth();
   const [isJoined, setIsJoined] = useState(false);
 

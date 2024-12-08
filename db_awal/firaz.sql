@@ -171,3 +171,18 @@ BEGIN
     ON CONFLICT (PekerjaId, KategoriJasaId) DO NOTHING;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.get_metode_bayar()
+RETURNS TABLE (
+    idmetode UUID,
+    namametode VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        mb.Id,
+        mb.Nama
+    FROM
+        SIJARTA.METODE_BAYAR mb;
+END;
+$$ LANGUAGE plpgsql;
