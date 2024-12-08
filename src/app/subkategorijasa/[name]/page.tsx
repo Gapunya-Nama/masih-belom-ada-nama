@@ -59,7 +59,7 @@ export default function SubCategoryPage() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: categoryId, req: 'show' }),
+          body: JSON.stringify({ id: categoryId, command: 'show' }),
         });
 
         if (!response.ok) {
@@ -156,7 +156,7 @@ export default function SubCategoryPage() {
   }
 
   if (user.role === 'worker') {
-    return <SubCategoryWorker subcategory={subcategory} pekerja={pekerja} sesilayanan={sesilayanan} metodebayar={metodePembayaran} />;
+    return <SubCategoryWorker subcategory={subcategory} pekerja={pekerja} sesilayanan={sesilayanan}  />;
   } else if (user.role === 'user') {
     return <SubCategoryUser subcategory={subcategory} pekerja={pekerja} sesilayanan={sesilayanan} metodebayar={metodePembayaran} />;
   }

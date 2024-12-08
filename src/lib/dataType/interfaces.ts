@@ -108,3 +108,17 @@ export interface MetodeBayar {
   namametode: string;
 }
 
+export interface PemesananJasa {
+  id: string;
+  namakategori: string;
+  namasubkategori: string;
+  idkategori: string;
+  idsubkategori: string;
+  namapekerja: string;
+  idpekerja: string;
+  tanggalpemesanan: string;
+  biaya: number;
+  sesi: number;
+  statuspesanan: string;
+}
+
