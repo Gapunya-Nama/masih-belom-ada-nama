@@ -4,6 +4,7 @@ import { showPekerja } from "@/lib/database/function";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log("Ini body co", body);
     const { id } = body;
 
     console.log("ini nama", id);
