@@ -81,8 +81,8 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar }
                 </SelectTrigger>
                 <SelectContent>
                     {metodebayar.map((metode) => (
-                    <SelectItem key={metode.id} value={metode.id}>
-                      {metode.nama_metode}
+                    <SelectItem key={metode.idmetode} value={metode.idmetode}>
+                      {metode.namametode}
                     </SelectItem>
                 ))}
                 </SelectContent>

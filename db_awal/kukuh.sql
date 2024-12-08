@@ -257,3 +257,180 @@ BEGIN
     -- COMMIT;
 END;
 $$;
+
+
+-- Create or replace the function in the SIJARTA schema
+CREATE OR REPLACE FUNCTION SIJARTA.get_taken_jobs( 
+    pekerja_id UUID,
+    limit_val INT DEFAULT 10,
+    offset_val INT DEFAULT 0
+)
+RETURNS TABLE (
+    Id UUID,
+    TglPemesanan DATE,
+    TglPekerjaan DATE,
+    WaktuPekerjaan TIMESTAMP,
+    TotalBiaya DECIMAL(15, 2),
+    IdPelanggan UUID,
+    NamaPelanggan VARCHAR(255),
+    IdKategoriJasa UUID,
+    Sesi INT,
+    KategoriId UUID,
+    NamaKategori VARCHAR(100),
+    SubkategoriId UUID,
+    NamaSubkategori VARCHAR(100),
+    IdStatus UUID,
+    Status VARCHAR(50),
+    IdNextStatus UUID,
+    NextStatus VARCHAR(50)
+) AS $$
+BEGIN
+    RETURN QUERY
+    WITH LatestStatus AS (
+        SELECT 
+            t.IdTrPemesanan,
+            t.IdStatus
+        FROM 
+            SIJARTA.TR_PEMESANAN_STATUS t
+        INNER JOIN (
+            SELECT 
+                IdTrPemesanan, 
+                MAX(TglWaktu) AS MaxTglWaktu
+            FROM 
+                SIJARTA.TR_PEMESANAN_STATUS
+            GROUP BY 
+                IdTrPemesanan
+        ) m 
+            ON t.IdTrPemesanan = m.IdTrPemesanan
+            AND t.TglWaktu = m.MaxTglWaktu
+        WHERE 
+            t.IdStatus > '850e8400-e29b-41d4-a716-446655447002' 
+    )
+    SELECT 
+        pj.Id,
+        pj.TglPemesanan,
+        pj.TglPekerjaan,
+        pj.WaktuPekerjaan,
+        pj.TotalBiaya,
+        pj.IdPelanggan,
+        u.Nama AS NamaPelanggan,
+        pj.IdKategoriJasa,
+        pj.Sesi,
+        kj.Id AS KategoriId,
+        kj.NamaKategori,
+        sj.Id AS SubkategoriId,
+        sj.NamaSubkategori,
+        ls.IdStatus,
+        sp.Status,
+        sp_next.Id AS IdNextStatus,
+        sp_next.Status AS NextStatus
+    FROM 
+        LatestStatus ls
+    INNER JOIN 
+        SIJARTA.TR_PEMESANAN_JASA pj 
+        ON pj.Id = ls.IdTrPemesanan
+    INNER JOIN 
+        SIJARTA.SUBKATEGORI_JASA sj 
+        ON pj.IdKategoriJasa = sj.Id
+    INNER JOIN 
+        SIJARTA.KATEGORI_JASA kj 
+        ON sj.KategoriJasaId = kj.Id
+    INNER JOIN 
+        SIJARTA.USER u
+        ON pj.IdPelanggan = u.Id
+    LEFT JOIN 
+        SIJARTA.STATUS_PESANAN sp 
+        ON ls.IdStatus = sp.Id
+    LEFT JOIN 
+        SIJARTA.STATUS_PESANAN sp_next
+        ON sp_next.Id = (
+            SELECT sp_inner.Id 
+            FROM SIJARTA.STATUS_PESANAN sp_inner
+            WHERE sp_inner.Id > ls.IdStatus
+            ORDER BY sp_inner.Id ASC
+            LIMIT 1
+        )
+    WHERE 
+        pj.IdPekerja = pekerja_id
+    LIMIT limit_val OFFSET offset_val;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Create or replace the function to update job status and return updated job data
+CREATE OR REPLACE FUNCTION SIJARTA.update_status_pesanan(
+    order_id UUID,
+    nextStatus_id UUID
+) 
+RETURNS TABLE (
+    Id UUID,
+    IdStatus UUID,
+    Status VARCHAR(50),
+    IdNextStatus UUID,
+    NextStatus VARCHAR(50)
+) AS $$
+BEGIN
+    -- Check if the order exists
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM SIJARTA.TR_PEMESANAN_JASA 
+        WHERE Id = order_id
+    ) THEN
+        RAISE EXCEPTION 'Order with Id % does not exist.', order_id;
+    END IF;
+
+    -- Check if the status has already been applied to the order
+    IF EXISTS (
+        SELECT 1 
+        FROM SIJARTA.TR_PEMESANAN_STATUS 
+        WHERE IdTrPemesanan = order_id 
+          AND IdStatus = nextStatus_id
+    ) THEN
+        RAISE NOTICE 'Status "%" has already been applied to Order Id %.', nextStatus_id, order_id;
+        -- Exit the function without returning any rows
+        RETURN;
+    END IF;
+
+    -- Insert the new status
+    INSERT INTO SIJARTA.TR_PEMESANAN_STATUS (IdTrPemesanan, IdStatus, TglWaktu)
+    VALUES (order_id, nextStatus_id, NOW());
+
+    -- Return the updated job data
+    RETURN QUERY
+        SELECT 
+            pj.Id,
+            ls.IdStatus,
+            sp.Status,
+            sp_next.Id AS IdNextStatus,
+            sp_next.Status AS NextStatus
+        FROM 
+            SIJARTA.TR_PEMESANAN_JASA pj
+        INNER JOIN 
+            SIJARTA.TR_PEMESANAN_STATUS ls 
+            ON pj.Id = ls.IdTrPemesanan
+        INNER JOIN 
+            SIJARTA.SUBKATEGORI_JASA sj 
+            ON pj.IdKategoriJasa = sj.Id
+        INNER JOIN 
+            SIJARTA.KATEGORI_JASA kj 
+            ON sj.KategoriJasaId = kj.Id
+        INNER JOIN 
+            SIJARTA.USER u
+            ON pj.IdPelanggan = u.Id
+        LEFT JOIN 
+            SIJARTA.STATUS_PESANAN sp 
+            ON ls.IdStatus = sp.Id
+        LEFT JOIN 
+            SIJARTA.STATUS_PESANAN sp_next
+            ON sp_next.Id = (
+                SELECT sp_inner.Id 
+                FROM SIJARTA.STATUS_PESANAN sp_inner
+                WHERE sp_inner.Id > ls.IdStatus
+                ORDER BY sp_inner.Id ASC
+                LIMIT 1
+            )
+        WHERE 
+            pj.Id = order_id
+        LIMIT 1;
+END;
+$$ LANGUAGE plpgsql;

@@ -63,11 +63,12 @@ export interface Worker {
 
 export interface Testimonial {
   id: string;
-  userName: string;
+  nama_pekerja: string;
+  nama_pengguna: string;
   userAvatar: string;
   rating: number;
-  comment: string;
-  date: string;
+  teks_testimoni: string;
+  tgl_testimoni: string;
 }
 
 export interface SubCategory {
@@ -103,6 +104,7 @@ export interface Promo {
 }
 
 export interface MetodeBayar {
-  id: string;
-  nama_metode: string;
+  idmetode: string;
+  namametode: string;
 }
+
