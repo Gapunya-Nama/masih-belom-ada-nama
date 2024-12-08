@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { query } from './db';
-import { AuthCombined, KategoriJasa, MetodeBayar, SubCategory, Pekerja} from '../dataType/interfaces';
-// import { AuthCombined, AuthWorkerFields, KategoriJasa, Pekerja, SubCategory, Transaction } from '../dataType/interfaces';
+import { AuthCombined, AuthWorkerFields, KategoriJasa, MetodeBayar, SubCategory, Pekerja} from '../dataType/interfaces';
+// import { AuthCombined, AuthWorkerFields, KategoriJasa, Pekerja, Pekerja, SubCategory, Transaction } from '../dataType/interfaces';
+// import { v4 } from "uuid";
 // import { v4 } from "uuid";
 
 
@@ -88,7 +89,7 @@ export async function getSubKategoriJasa(namaParam: string): Promise<SubCategory
       [namaParam]
     );
   } catch (error) {
-    console.error('Error calling get_subkategori_jasa', error);
+    console.error('Error calling show_subsubkategori', error);
     throw error;
   }
 }
@@ -100,7 +101,7 @@ export async function getMetodeBayar(): Promise<MetodeBayar[] | null> {
       []
     );
   } catch (error) {
-    console.error('Error calling getMetodeBayar:', error);
+    console.error('Error calling get_metode_bayar', error);
     throw error;
   }
 }
