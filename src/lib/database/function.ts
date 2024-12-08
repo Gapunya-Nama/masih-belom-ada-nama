@@ -158,7 +158,7 @@ export async function showSesilayanan(id : string): Promise<Pekerja | null> {
 }
 export async function addWorkerToCategory(pekerjaId: string, kategoriJasaId: string): Promise<void | null> {
   try {
-    return await callStoredProcedure('CALL SIJARTA.add_pekerja_kategori_jasa($1, $2)', [pekerjaId, kategoriJasaId]);
+    return await callStoredProcedure<void>('add_pekerja_kategori_jasa', [pekerjaId, kategoriJasaId]);
   } catch (error) {
     console.error('Error adding worker to category:', error);
     throw error;
