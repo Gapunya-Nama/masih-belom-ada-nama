@@ -98,8 +98,90 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION SIJARTA.show_metode_bayar()
+RETURNS TABLE(
+    Id UUID,
+    Nama VARCHAR(100)
+) AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT * FROM SIJARTA.METODE_BAYAR;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION cek_saldo_sebelum_beli() 
+RETURNS TRIGGER AS $$
+DECLARE
+  user_saldo NUMERIC(15,2);
+  voucher_harga NUMERIC(15,2);
+BEGIN
+  -- Ambil saldo user
+  SELECT saldo INTO user_saldo FROM users WHERE userid = NEW.userid;
+  IF user_saldo IS NULL THEN
+    RAISE EXCEPTION 'User tidak ditemukan';
+  END IF;
 
--- contoh gagal
--- INSERT INTO SIJARTA.USER VALUES ('550e8400-e29b-41d4-a716-446655440010', 'Cahya Bagus', 'L', '082241213111', 'aileenjh', '2005-06-01', 'Jl. Bogay No. 69, Bogor', 1.00);
--- INSERT INTO SIJARTA.TR_PEMBELIAN_VOUCHER VALUES ('950e8400-e29b-41d4-a716-446655445020', '2024-04-01', '2024-05-01', 0, '550e8400-e29b-41d4-a716-446655440010', 'DISKON202410', '550e8400-e29b-41d4-a716-446655441000');
+  -- Ambil harga voucher
+  SELECT harga INTO voucher_harga FROM voucher WHERE voucherid = NEW.voucherid;
+  IF voucher_harga IS NULL THEN
+    RAISE EXCEPTION 'Voucher tidak ditemukan';
+  END IF;
+
+  -- Cek apakah saldo cukup
+  IF (user_saldo - voucher_harga) < 0 THEN
+    RAISE EXCEPTION 'Saldo tidak cukup untuk membeli voucher ini';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_cek_saldo_sebelum_insert
+BEFORE INSERT ON SIJARTA.TR_PEMBELIAN_VOUCHER
+FOR EACH ROW
+EXECUTE FUNCTION cek_saldo_sebelum_beli();
+
+CREATE OR REPLACE FUNCTION buy_voucher(
+    p_id UUID, p_userid UUID, 
+    p_voucherid VARCHAR, metode_id UUID)
+RETURNS VOID AS $$
+DECLARE
+  v_harga NUMERIC(15,2);
+  JmlHari INT;
+BEGIN
+  -- Mulai proses dalam satu transaksi
+  -- (Secara default fungsi PL/pgSQL dijalankan dalam konteks transaksi yang dapat di-commit atau rollback)
+  -- 1. Coba masukkan transaksi voucher
+  SELECT JmlHariBerlaku INTO JmlHari FROM SIJARTA.VOUCHER V WHERE V.Kode = p_voucherid;
+  INSERT INTO SIJARTA.TR_PEMBELIAN_VOUCHER
+  VALUES (
+    p_id,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP + JmlHari,
+    0,
+    p_userid,
+    p_voucherid,
+    metode_id
+  );
+  -- Jika sampai di sini tidak error, berarti saldo cukup (trigger lolos).
+
+  -- 2. Ambil harga voucher untuk pengurangan saldo
+  SELECT harga INTO v_harga FROM voucher WHERE voucherid = p_voucherid;
+  IF v_harga IS NULL THEN
+    RAISE EXCEPTION 'Voucher dengan id % tidak ditemukan', p_voucherid;
+  END IF;
+
+  -- 3. Update saldo user
+  UPDATE users
+  SET saldo = saldo - v_harga
+  WHERE userid = p_userid;
+
+  -- Jika user tidak ditemukan saat update, maka 0 row yang ter-update. 
+  -- Kita bisa cek ini jika perlu:
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'User dengan id % tidak ditemukan saat pengurangan saldo', p_userid;
+  END IF;
+
+  -- Semua selesai, perubahan akan otomatis commit jika tidak ada error.
+END;
+$$ LANGUAGE plpgsql;
