@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Star, User } from 'lucide-react';
 import Link from 'next/link';
 import { Pekerja, SesiLayanan, SubCategory } from '@/lib/dataType/interfaces';
+import BookingModal from './BookingModal';
 
 interface Props {
   subcategory: SubCategory;
@@ -13,7 +14,8 @@ interface Props {
 
 export default function SubCategoryUser({ subcategory, pekerja, sesilayanan }: Props) {
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
-
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  
   return (
     <div className="container mx-auto px-4 py-8 mt-16"> {/* Added mt-16 */}
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
@@ -28,27 +30,30 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan }: P
         <div>
           <h2 className="text-2xl font-semibold mb-4">Pekerja Tersedia</h2>
           <div className="space-y-4">
-            {Array.isArray(pekerja) && pekerja.map((worker) => (
-              <Link href={`/profile`} key={worker.pekerjaid}>
-                <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer mb-4"> {/* Added mb-4 for margin-bottom */}
-                  <div className="flex items-center space-x-4">
-                    <div className="h-12 w-12 rounded-full bg-[#F3F3F3] flex items-center justify-center">
-                      <User className="h-6 w-6 text-gray-500" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{worker.namapekerja}</h3>
-                      <div className="flex items-center space-x-2">
-                        <Star className="h-4 w-4 text-yellow-400" />
-                        <span className="text-sm">{worker.rating}</span>
-                        <span className="text-sm text-gray-500">
-                          ({worker.completedjobs} pekerjaan selesai)
-                        </span>
+            {Array.isArray(pekerja) && pekerja.length > 0 ? (
+              pekerja.map((worker) => (
+                <Link href={`/profile`} key={worker.pekerjaid}>
+                  <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer mb-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="h-12 w-12 rounded-full bg-[#F3F3F3] flex items-center justify-center">
+                        <User className="h-6 w-6 text-gray-500" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{worker.namapekerja}</h3>
+                        <div className="flex items-center space-x-2">
+                          <Star className="h-4 w-4 text-yellow-400" />
+                          <span>{worker.rating}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                  </Card>
+                </Link>
+              ))
+            ) : (
+              <div className="text-center text-gray-500 mt-4">
+                Tidak ada pekerja untuk kategori ini
+              </div>
+            )}
           </div>
         </div>
         <div>
@@ -58,19 +63,31 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan }: P
               <Card key={session.id} className="p-4">
                 <div>
                   <h3 className="font-semibold">Sesi Layanan {session.sesi}</h3>
+                  <div className="flex justify-between items-center mt-2">
                   <p className="text-[#2ECC71] font-semibold mt-2">
                     Rp {session.harga}
                   </p>
-                  <Button
-                    onClick={() => setSelectedSession(session.id)}
-                    className="bg-[#2ECC71] hover:bg-[#27AE60]"
-                  >
-                    Pesan Jasa
-                  </Button>
+                    <Button
+                      onClick={() => {
+                        setSelectedSession(session.id);
+                        setIsModalOpen(true);
+                      }}
+                      className="bg-[#2ECC71] hover:bg-[#27AE60]"
+                    >
+                      Pesan Jasa
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
           </div>
+          {selectedSession && (
+            <BookingModal
+              open={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              sessionId={selectedSession}
+            />
+          )}
         </div>
       </div>
     

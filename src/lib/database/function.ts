@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { query } from './db';
-import { AuthCombined, AuthWorkerFields, KategoriJasa, Pekerja, SubCategory, Transaction } from '../dataType/interfaces';
-import { v4 } from "uuid";
+import { AuthCombined, AuthWorkerFields, KategoriJasa, MetodeBayar, SubCategory, Pekerja} from '../dataType/interfaces';
+// import { AuthCombined, AuthWorkerFields, KategoriJasa, Pekerja, Pekerja, SubCategory, Transaction } from '../dataType/interfaces';
+// import { v4 } from "uuid";
 // import { v4 } from "uuid";
 
 
@@ -87,7 +89,19 @@ export async function getSubKategoriJasa(namaParam: string): Promise<SubCategory
       [namaParam]
     );
   } catch (error) {
-    console.error('Error calling get_subkategori_jasa', error);
+    console.error('Error calling show_subsubkategori', error);
+    throw error;
+  }
+}
+
+export async function getMetodeBayar(): Promise<MetodeBayar[] | null> {
+  try {
+    return await callStoredProcedure<MetodeBayar[]>(
+      'show_metode_bayar',
+      []
+    );
+  } catch (error) {
+    console.error('Error calling get_metode_bayar', error);
     throw error;
   }
 }
@@ -139,6 +153,14 @@ export async function showSesilayanan(id : string): Promise<Pekerja | null> {
     );
   } catch (error) {
     console.error('Error calling get_subkategori_jasa', error);
+    throw error;
+  }
+}
+export async function addWorkerToCategory(pekerjaId: string, kategoriJasaId: string): Promise<void | null> {
+  try {
+    return await callStoredProcedure('CALL SIJARTA.add_pekerja_kategori_jasa($1, $2)', [pekerjaId, kategoriJasaId]);
+  } catch (error) {
+    console.error('Error adding worker to category:', error);
     throw error;
   }
 }

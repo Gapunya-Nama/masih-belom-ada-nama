@@ -1,3 +1,34 @@
+CREATE OR REPLACE FUNCTION SIJARTA.show_pekerja(
+    _kategori_id UUID
+) RETURNS TABLE (
+    PekerjaId UUID,
+    NamaPekerja VARCHAR(100),
+    LinkFoto VARCHAR(255),
+    Rating FLOAT,
+    CompletedJobs BIGINT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        p.Id AS PekerjaId,
+        u.Nama AS NamaPekerja,
+        p.LinkFoto AS LinkFoto,
+        p.Rating AS Rating,
+        COUNT(tpj.Id) AS CompletedJobs
+    FROM
+        SIJARTA.KATEGORI_JASA kj
+    LEFT JOIN SIJARTA.SUBKATEGORI_JASA skj ON kj.id = skj.KategoriJasaId
+    LEFT JOIN SIJARTA.PEKERJA_KATEGORI_JASA pkj ON kj.id = pkj.KategoriJasaId
+    LEFT JOIN SIJARTA.PEKERJA p ON pkj.PekerjaId = p.Id
+    LEFT JOIN SIJARTA.USER u ON p.Id = u.Id
+    LEFT JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON p.Id = tpj.IdPekerja
+    WHERE
+        kj.Id = _kategori_id
+    GROUP BY
+        p.Id, u.Nama, p.LinkFoto, p.Rating;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION SIJARTA.add_worker(
     _pekerja_id UUID,
     _kategori_jasa_id UUID
@@ -54,37 +85,6 @@ BEGIN
     JOIN SIJARTA.KATEGORI_JASA AS kj ON kj.Id = skj.KategoriJasaId
     WHERE
         skj.Id::VARCHAR(100) = namaParam;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION SIJARTA.show_pekerja(
-    _kategori_id UUID
-) RETURNS TABLE (
-    PekerjaId UUID,
-    NamaPekerja VARCHAR(100),
-    LinkFoto VARCHAR(255),
-    Rating FLOAT,
-    CompletedJobs BIGINT
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        p.Id AS PekerjaId,
-        u.Nama AS NamaPekerja,
-        p.LinkFoto AS LinkFoto,
-        p.Rating AS Rating,
-        COUNT(tpj.Id) AS CompletedJobs
-    FROM
-        SIJARTA.KATEGORI_JASA kj
-    LEFT JOIN SIJARTA.SUBKATEGORI_JASA skj ON kj.id = skj.KategoriJasaId
-    LEFT JOIN SIJARTA.PEKERJA_KATEGORI_JASA pkj ON kj.id = pkj.KategoriJasaId
-    LEFT JOIN SIJARTA.PEKERJA p ON pkj.PekerjaId = p.Id
-    LEFT JOIN SIJARTA.USER u ON p.Id = u.Id
-    LEFT JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON p.Id = tpj.IdPekerja
-    WHERE
-        kj.Id = _kategori_id
-    GROUP BY
-        p.Id, u.Nama, p.LinkFoto, p.Rating;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -151,7 +151,7 @@ CREATE OR REPLACE FUNCTION SIJARTA.get_sesilayanan(
 BEGIN
     RETURN QUERY
     SELECT
-        CONCAT(ss.SubkategoriId::TEXT, '-', ss.sesi::TEXT) AS id, -- Menggabungkan SubkategoriId dan sesi
+        CONCAT(ss.SubkategoriId::TEXT, '-', ss.sesi::TEXT) AS id,
         ss.sesi AS Sesi,
         ss.harga AS Harga
     FROM
@@ -161,3 +161,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION SIJARTA.add_pekerja_kategori_jasa(
+    _pekerja_id UUID,
+    _kategori_jasa_id UUID
+) RETURNS VOID AS $$
+BEGIN
+    INSERT INTO SIJARTA.PEKERJA_KATEGORI_JASA (PekerjaId, KategoriJasaId)
+    VALUES (_pekerja_id, _kategori_jasa_id)
+    ON CONFLICT (PekerjaId, KategoriJasaId) DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;

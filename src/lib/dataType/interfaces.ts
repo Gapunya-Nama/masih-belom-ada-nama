@@ -63,11 +63,12 @@ export interface Worker {
 
 export interface Testimonial {
   id: string;
-  userName: string;
+  nama_pekerja: string;
+  nama_pengguna: string;
   userAvatar: string;
   rating: number;
-  comment: string;
-  date: string;
+  teks_testimoni: string;
+  tgl_testimoni: string;
 }
 
 export interface SubCategory {
@@ -100,5 +101,10 @@ export interface Promo {
   mintrpemesanan: number;  // INT
   kode: string;  // UUID
   tglakhirberlaku: string;  // DATE (ISO String format, e.g. '2024-12-31')
+}
+
+export interface MetodeBayar {
+  idmetode: string;
+  namametode: string;
 }
 
