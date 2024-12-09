@@ -89,6 +89,7 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan, met
               onClose={() => setIsModalOpen(false)}
               sesilayanan={selectedSession}
               metodebayar={metodebayar}
+              subcategory={subcategory}
             />
           )}
         </div>
