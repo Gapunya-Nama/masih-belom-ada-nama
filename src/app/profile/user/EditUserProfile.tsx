@@ -19,6 +19,9 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/auth-context";
+import { editAccount } from "./EditUser";
+import { AuthCombined } from "@/lib/dataType/interfaces";
 
 const userFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -35,6 +38,7 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ onCancel }: UserProfileProps) {
+  const { user,updateUser } = useAuth();
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -46,9 +50,18 @@ export function UserProfile({ onCancel }: UserProfileProps) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof userFormSchema>) {
+  async function onSubmit(values: z.infer<typeof userFormSchema>) {
+    let account_data = [
+      user?.id ?? "",
+      ...Object.values(values)
+    ]
+    let updatedUser = await editAccount(account_data);
+
+    updateUser(updatedUser as Partial<AuthCombined>);
+
+    console.log(updateUser);
+    
     toast.success("Profile updated successfully!");
-    console.log(values);
     onCancel();
   }
 

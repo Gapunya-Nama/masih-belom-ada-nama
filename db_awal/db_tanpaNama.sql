@@ -21,7 +21,7 @@ CREATE TABLE SIJARTA.PEKERJA (
     NamaBank VARCHAR(100), 
     NomorRekening VARCHAR(50), 
     NPWP VARCHAR(20), 
-    LinkFoto VARCHAR(255), 
+    LinkFoto VARCHAR, 
     Rating FLOAT, 
     JmlPsnananSelesai INT 
 ); 
@@ -104,7 +104,7 @@ CREATE TABLE SIJARTA.TR_PEMESANAN_JASA (
     WaktuPekerjaan TIMESTAMP NOT NULL,  
     TotalBiaya DECIMAL(15, 2) NOT NULL CHECK (TotalBiaya >= 0),  
     IdPelanggan UUID REFERENCES SIJARTA.PELANGGAN(Id),  
-    IdPekerja UUID REFERENCES SIJARTA.PEKERJA(Id),  
+    IdPekerja UUID REFERENCES SIJARTA.PEKERJA(Id),
     IdKategoriJasa UUID NOT NULL,  -- Part of the composite key 
     Sesi INT NOT NULL,  -- Part of the composite key 
     IdDiskon VARCHAR(50) REFERENCES SIJARTA.DISKON(Kode),  
@@ -143,7 +143,7 @@ INSERT INTO SIJARTA.USER (id, nama, jeniskelamin, nohp, pwd, tgllahir, alamat, s
     ('550e8400-e29b-41d4-a716-446655440007', 'Siti Nurhaliza', 'P', '081234567897', 'nurhaliza789', '1993-04-18', 'Jl. Kebon Jeruk No. 6, Jakarta', 1500000.00),
     ('550e8400-e29b-41d4-a716-446655440008', 'Dani Saputra', 'L', '081234567898', 'danipass', '1987-06-09', 'Jl. Cikini No. 4, Jakarta', 700000.00),
     ('550e8400-e29b-41d4-a716-446655440009', 'Putri Maharani', 'P', '081234567899', 'putripass123', '1996-10-27', 'Jl. Casablanca No. 8, Jakarta', 850000.00);
-
+    
 INSERT INTO SIJARTA.METODE_BAYAR (id, nama) VALUES 
     ('550e8400-e29b-41d4-a716-446655441000', 'MyPay'),
     ('550e8400-e29b-41d4-a716-446655441001', 'GoPay'),
@@ -420,4 +420,3 @@ INSERT INTO SIJARTA.TESTIMONI (IdTrPemesanan, Tgl, Teks, Rating) VALUES
     ('100e8400-e29b-41d4-a716-446655446014', '2024-02-09', 'Great experience, will use again.', 5),
     ('100e8400-e29b-41d4-a716-446655446015', '2024-02-11', 'Not bad, but could improve timing.', 3),
     ('100e8400-e29b-41d4-a716-446655446016', '2024-02-13', 'Best service I have ever used!', 5);
-

@@ -1,44 +1,3 @@
-CREATE OR REPLACE FUNCTION SIJARTA.show_pekerja(
-    _kategori_id UUID
-) RETURNS TABLE (
-    PekerjaId UUID,
-    NamaPekerja VARCHAR(100),
-    LinkFoto VARCHAR(255),
-    Rating FLOAT,
-    CompletedJobs BIGINT
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        p.Id AS PekerjaId,
-        u.Nama AS NamaPekerja,
-        p.LinkFoto AS LinkFoto,
-        p.Rating AS Rating,
-        COUNT(tpj.Id) AS CompletedJobs
-    FROM
-        SIJARTA.KATEGORI_JASA kj
-    LEFT JOIN SIJARTA.SUBKATEGORI_JASA skj ON kj.id = skj.KategoriJasaId
-    LEFT JOIN SIJARTA.PEKERJA_KATEGORI_JASA pkj ON kj.id = pkj.KategoriJasaId
-    LEFT JOIN SIJARTA.PEKERJA p ON pkj.PekerjaId = p.Id
-    LEFT JOIN SIJARTA.USER u ON p.Id = u.Id
-    LEFT JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON p.Id = tpj.IdPekerja
-    WHERE
-        kj.Id = _kategori_id
-    GROUP BY
-        p.Id, u.Nama, p.LinkFoto, p.Rating;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION SIJARTA.add_worker(
-    _pekerja_id UUID,
-    _kategori_jasa_id UUID
-) RETURNS VOID AS $$
-BEGIN
-    INSERT INTO SIJARTA.PEKERJA_KATEGORI_JASA (PekerjaId, KategoriJasaId)
-    VALUES (_pekerja_id, _kategori_jasa_id);
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE FUNCTION SIJARTA.show_testimoni(
     _kategori_id UUID
 ) RETURNS TABLE (
@@ -106,14 +65,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION SIJARTA.show_metode_bayar()
-RETURNS TABLE (ListMetode VARCHAR(100)) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT Nama
-    FROM SIJARTA.METODE;
-END;
-$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION SIJARTA.get_kategori_jasa()
 RETURNS TABLE (
@@ -171,3 +122,219 @@ BEGIN
     ON CONFLICT (PekerjaId, KategoriJasaId) DO NOTHING;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.get_metode_bayar()
+RETURNS TABLE (
+    idmetode UUID,
+    namametode VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        mb.Id,
+        mb.Nama
+    FROM
+        SIJARTA.METODE_BAYAR mb;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.get_pemesanan_jasa(
+    _id_pelanggan UUID
+)
+RETURNS TABLE (
+    id UUID,
+    namakategori VARCHAR,
+    namasubkategori VARCHAR,
+    idkategori UUID,
+    idsubkategori UUID,
+    namapekerja VARCHAR,
+    idpekerja UUID,
+    tanggalpemesanan DATE,
+    biaya DECIMAL(15,2),
+    sesi INT,
+    statuspesanan VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    WITH LatestStatus AS (
+        SELECT
+            tsp.IdTrPemesanan,
+            tsp.IdStatus,
+            sp.Status AS statuspesanan,
+            ROW_NUMBER() OVER (
+                PARTITION BY tsp.IdTrPemesanan
+                ORDER BY tsp.TglWaktu DESC
+            ) AS rn
+        FROM
+            SIJARTA.TR_PEMESANAN_STATUS tsp
+        JOIN
+            SIJARTA.STATUS_PESANAN sp ON tsp.IdStatus = sp.Id
+    )
+    SELECT
+        tpj.Id AS id,
+        kj.NamaKategori AS namakategori,
+        skj.NamaSubkategori AS namasubkategori,
+        kj.Id AS idkategori,
+        skj.Id AS idsubkategori,
+        u.Nama AS namapekerja,
+        p.Id AS idpekerja,
+        tpj.TglPemesanan AS tanggalpemesanan,
+        tpj.TotalBiaya AS biaya,
+        tpj.Sesi AS sesi,
+        ls.statuspesanan
+    FROM
+        SIJARTA.TR_PEMESANAN_JASA tpj
+    JOIN
+        SIJARTA.PEKERJA p ON tpj.IdPekerja = p.Id
+    JOIN
+        SIJARTA.USER u ON p.Id = u.Id
+    JOIN
+        SIJARTA.SESI_LAYANAN sl ON tpj.IdKategoriJasa = sl.SubkategoriId AND tpj.Sesi = sl.Sesi
+    JOIN
+        SIJARTA.SUBKATEGORI_JASA skj ON sl.SubkategoriId = skj.Id
+    JOIN
+        SIJARTA.KATEGORI_JASA kj ON skj.KategoriJasaId = kj.Id
+    JOIN
+        LatestStatus ls ON tpj.Id = ls.IdTrPemesanan AND ls.rn = 1
+    WHERE
+        tpj.IdPelanggan = _id_pelanggan
+    ORDER BY
+        tpj.TglPemesanan DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.insert_pemesanan_jasa(
+    _tgl_pemesanan DATE,
+    _tgl_pekerjaan DATE,
+    _waktu_pekerjaan TIMESTAMP,
+    _total_biaya DECIMAL(15,2),
+    _id_pelanggan UUID,
+    _id_pekerja UUID,
+    _id_kategori_jasa UUID,
+    _sesi INT,
+    _id UUID,
+    _id_metode_bayar UUID,
+    _id_diskon VARCHAR(50)
+) RETURNS TABLE (
+    id UUID,
+    namakategori VARCHAR,
+    namasubkategori VARCHAR,
+    idkategori UUID,
+    idsubkategori UUID,
+    namapekerja VARCHAR,
+    idpekerja UUID,
+    tanggalpemesanan VARCHAR,
+    biaya DECIMAL(15,2),
+    sesi INT,
+    statuspesanan VARCHAR
+) AS $$
+BEGIN
+    -- Menyisipkan data ke tabel TR_PEMESANAN_JASA
+    INSERT INTO SIJARTA.TR_PEMESANAN_JASA (
+        Id,
+        TglPemesanan,
+        TglPekerjaan,
+        WaktuPekerjaan,
+        TotalBiaya,
+        IdPelanggan,
+        IdPekerja,
+        IdKategoriJasa,
+        Sesi,
+        IdDiskon,
+        IdMetodeBayar
+    ) VALUES (
+        _id,
+        _tgl_pemesanan,
+        _tgl_pekerjaan,
+        _waktu_pekerjaan,
+        _total_biaya,
+        _id_pelanggan,
+        _id_pekerja,
+        _id_kategori_jasa,
+        _sesi,
+        _id_diskon,
+        _id_metode_bayar
+    );
+
+    -- Menyisipkan status awal ke tabel TR_PEMESANAN_STATUS
+    INSERT INTO SIJARTA.TR_PEMESANAN_STATUS (
+        IdTrPemesanan,
+        IdStatus,
+        TglWaktu
+    ) VALUES (
+        _id,
+        (SELECT spn.Id FROM SIJARTA.STATUS_PESANAN spn WHERE Status = 'Menunggu Pembayaran' LIMIT 1),
+        NOW()
+    );
+
+    -- Mengembalikan semua field sesuai dengan interface PemesananJasa
+    RETURN QUERY
+    SELECT
+        pj.Id,
+        kj.NamaKategori,
+        sj.NamaSubkategori,
+        kj.Id AS idkategori,
+        sj.Id AS idsubkategori,
+        u.Nama AS namapekerja,
+        p.Id AS idpekerja,
+        pj.TglPemesanan::VARCHAR,
+        pj.TotalBiaya,
+        pj.Sesi,
+        sp.Status AS statuspesanan
+    FROM
+        SIJARTA.TR_PEMESANAN_JASA pj
+    INNER JOIN SIJARTA.SESI_LAYANAN sl ON pj.IdKategoriJasa = sl.SubkategoriId AND pj.Sesi = sl.Sesi
+    INNER JOIN SIJARTA.SUBKATEGORI_JASA sj ON sl.SubkategoriId = sj.Id
+    INNER JOIN SIJARTA.KATEGORI_JASA kj ON sj.KategoriJasaId = kj.Id
+    LEFT JOIN SIJARTA.PEKERJA p ON pj.IdPekerja = p.Id
+    LEFT JOIN SIJARTA.USER u ON p.Id = u.Id
+    LEFT JOIN (
+        SELECT
+            tps.IdTrPemesanan,
+            sp.Status,
+            ROW_NUMBER() OVER (PARTITION BY tps.IdTrPemesanan ORDER BY tps.TglWaktu DESC) AS rn
+        FROM
+            SIJARTA.TR_PEMESANAN_STATUS tps
+        JOIN
+            SIJARTA.STATUS_PESANAN sp ON tps.IdStatus = sp.Id
+    ) sp ON sp.IdTrPemesanan = pj.Id AND sp.rn = 1
+    WHERE
+        pj.Id = _id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.update_status_pesanan(
+    _id_tr_pemesanan UUID,
+    _id_status UUID,
+    _tgl_waktu TIMESTAMP
+) RETURNS VOID AS $$
+BEGIN
+    INSERT INTO SIJARTA.TR_PEMESANAN_STATUS (IdTrPemesanan, IdStatus, TglWaktu)
+    VALUES (_id_tr_pemesanan, _id_status, _tgl_waktu);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.is_diskon_valid(
+    _kode_diskon VARCHAR(50)
+) RETURNS BOOLEAN AS $$
+DECLARE
+    is_valid BOOLEAN;
+BEGIN
+    -- Periksa apakah kode diskon ada
+    SELECT EXISTS (
+        SELECT 1
+        FROM SIJARTA.DISKON
+        WHERE Kode = _kode_diskon
+    ) INTO is_valid;
+
+    RETURN is_valid;
+END;
+$$ LANGUAGE plpgsql;
+
+DELETE FROM SIJARTA.PEKERJA_KATEGORI_JASA
+WHERE PekerjaId = '550e8400-e29b-41d4-a716-446655440007'
+  AND KategoriJasaId IN (
+    '650e8400-e29b-41d4-a716-446655441002',
+    '650e8400-e29b-41d4-a716-446655441004',
+    '650e8400-e29b-41d4-a716-446655441000'
+  );

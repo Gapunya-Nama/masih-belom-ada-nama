@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 
 const pool = new Pool({
-  // connectionString: 'postgres://gaPunyaNama:masihGapunyaNama@db:5432/dbGapunyanama',
+  // connectionString: 'postgres://gaPunyaNama:masihGapunyaNama@localhost:5433/dbGapunyanama',
   // ssl: false
   
   // Dibawah adalah prod build
