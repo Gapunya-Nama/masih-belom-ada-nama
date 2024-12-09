@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/auth-context";
 import { Star, Wallet } from "lucide-react";
 import Image from "next/image";
 
@@ -12,24 +13,25 @@ interface WorkerProfileViewProps {
 
 export function WorkerProfileView({ onEdit }: WorkerProfileViewProps) {
   // Mock data - in a real app, this would come from your backend
-  const workerData = {
-    name: "Jane Smith",
-    gender: "Female",
-    phone: "+62 812 3456 7890",
-    birthDate: "1992-05-15",
-    address: "456 Worker Street, City",
-    balance: 2500000,
-    bankName: "Bank BCA",
-    accountNumber: "1234567890",
-    npwp: "12.345.678.9-012.345",
-    rating: 4.8,
-    completedOrders: 156,
-    photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&auto=format&fit=crop&crop=face",
-    categories: [
-      "House Cleaning",
-      "Laundry Service"
-    ]
-  };
+  // const workerData = {
+  //   name: "Jane Smith",
+  //   gender: "Female",
+  //   phone: "+62 812 3456 7890",
+  //   birthDate: "1992-05-15",
+  //   address: "456 Worker Street, City",
+  //   balance: 2500000,
+  //   bankName: "Bank BCA",
+  //   accountNumber: "1234567890",
+  //   npwp: "12.345.678.9-012.345",
+  //   rating: 4.8,
+  //   completedOrders: 156,
+  //   photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&auto=format&fit=crop&crop=face",
+  //   categories: [
+  //     "House Cleaning",
+  //     "Laundry Service"
+  //   ]
+  // };
+  const { user } = useAuth();
 
   return (
     <Card className="border-none shadow-none">
@@ -41,44 +43,44 @@ export function WorkerProfileView({ onEdit }: WorkerProfileViewProps) {
                 <div className="space-y-4">
                   <div>
                     <dt className="font-medium text-gray-500 dark:text-gray-400">Name</dt>
-                    <dd className="mt-1 text-base">{workerData.name}</dd>
+                    <dd className="mt-1 text-base">{user?.name}</dd>
                   </div>
 
                   <div>
                     <dt className="font-medium text-gray-500 dark:text-gray-400">Gender</dt>
-                    <dd className="mt-1 text-base">{workerData.gender}</dd>
+                    <dd className="mt-1 text-base">{user?.gender}</dd>
                   </div>
 
                   <div>
                     <dt className="font-medium text-gray-500 dark:text-gray-400">Phone Number</dt>
-                    <dd className="mt-1 text-base">{workerData.phone}</dd>
+                    <dd className="mt-1 text-base">{user?.pno}</dd>
                   </div>
 
                   <div>
                     <dt className="font-medium text-gray-500 dark:text-gray-400">Birth Date</dt>
-                    <dd className="mt-1 text-base">{workerData.birthDate}</dd>
+                    <dd className="mt-1 text-base">{user?.birth_date}</dd>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
                     <dt className="font-medium text-gray-500 dark:text-gray-400">Address</dt>
-                    <dd className="mt-1 text-base">{workerData.address}</dd>
+                    <dd className="mt-1 text-base">{user?.address}</dd>
                   </div>
 
                   <div>
                     <dt className="font-medium text-gray-500 dark:text-gray-400">Bank Name</dt>
-                    <dd className="mt-1 text-base">{workerData.bankName}</dd>
+                    <dd className="mt-1 text-base">{user?.bankName}</dd>
                   </div>
 
                   <div>
                     <dt className="font-medium text-gray-500 dark:text-gray-400">Account Number</dt>
-                    <dd className="mt-1 text-base">{workerData.accountNumber}</dd>
+                    <dd className="mt-1 text-base">{user?.accountNumber}</dd>
                   </div>
 
                   <div>
                     <dt className="font-medium text-gray-500 dark:text-gray-400">NPWP</dt>
-                    <dd className="mt-1 text-base">{workerData.npwp}</dd>
+                    <dd className="mt-1 text-base">{user?.npwp}</dd>
                   </div>
                 </div>
               </div>
@@ -87,7 +89,7 @@ export function WorkerProfileView({ onEdit }: WorkerProfileViewProps) {
             <div className="flex flex-col items-center space-y-4">
               <div className="relative h-48 w-48 overflow-hidden rounded-lg border-2 border-muted">
                 <Image
-                  src={workerData.photoUrl}
+                  src={user?.photoUrl as string}
                   alt="Profile photo"
                   fill
                   className="object-cover"
@@ -96,11 +98,11 @@ export function WorkerProfileView({ onEdit }: WorkerProfileViewProps) {
 
               <div className="flex items-center gap-1">
                 <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                <span className="text-lg font-semibold">{workerData.rating}</span>
+                <span className="text-lg font-semibold">{user?.rating}</span>
               </div>
 
               <p className="text-sm text-muted-foreground">
-                {workerData.completedOrders} Orders Completed
+                {user?.completedOrders} Orders Completed
               </p>
             </div>
           </div>
@@ -110,7 +112,7 @@ export function WorkerProfileView({ onEdit }: WorkerProfileViewProps) {
           <div>
             <h3 className="mb-4 text-lg font-semibold">Service Categories</h3>
             <div className="flex flex-wrap gap-2">
-              {workerData.categories.map((category, index) => (
+              {user?.categories?.map((category, index) => (
                 <div
                   key={index}
                   className="rounded-full bg-green-100 px-4 py-2 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-200"
@@ -133,7 +135,7 @@ export function WorkerProfileView({ onEdit }: WorkerProfileViewProps) {
                   MyPay Balance
                 </p>
                 <p className="text-lg font-semibold">
-                  Rp {workerData.balance.toLocaleString()}
+                  Rp {user?.balance.toLocaleString()}
                 </p>
               </div>
             </div>

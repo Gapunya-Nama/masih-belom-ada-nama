@@ -11,47 +11,109 @@ export async function registerAccount(values: string[]) :Promise <AuthCombined |
     let user: AuthCombined | false = false; 
     let gender: Gender = 'Other';
 
-    try{
-        result = await callStoredProcedure("insert_pelanggan", [
-            p_id,
-            values[0],
-            values[1],
-            values[2],
-            values[3],
-            values[4],
-            values[5],
-            0,
-            "Bronze"
-        ]) || false;
-        if (result) {
-            switch (values[2]) {
-                case 'L': // Male (Laki-Laki)
-                  gender = 'Laki-Laki';
-                  break;
-                case 'P': // Female (Perempuan)
-                  gender = 'Perempuan';
-                  break;
-              }
-            
-            user = {
-                id: p_id,              
-                name: values[0],       
-                password: values[1],
-                role: values[6] as Role,
-                gender: gender,     
-                pno: values[3],      
-                birth_date: values[4],  
-                address: values[5],    
-                balance: 0,            
-                level: "Bronze"        
-            } as AuthCombined;
-        }
+    if (values[6] == "user"){
+        console.log(values[6])
+
     
-        return user;
-    }catch (error){
-        console.log(error);
-        return false;
-    }
+        try{
+            result = await callStoredProcedure("insert_pelanggan", [
+                p_id,
+                values[0],
+                values[1],
+                values[2],
+                values[3],
+                values[4],
+                values[5],
+                0,
+                "Bronze"
+            ]) || false;
+            if (result) {
+                switch (values[2]) {
+                    case 'L': // Male (Laki-Laki)
+                    gender = 'Laki-Laki';
+                    break;
+                    case 'P': // Female (Perempuan)
+                    gender = 'Perempuan';
+                    break;
+                }
+                
+                user = {
+                    id: p_id,              
+                    name: values[0],       
+                    password: values[1],
+                    role: values[6] as Role,
+                    gender: gender,     
+                    pno: values[3],      
+                    birth_date: values[4],  
+                    address: values[5],    
+                    balance: 0,            
+                    level: "Bronze"        
+                } as AuthCombined;
+            }
+        
+            return user;
+        }catch (error){
+            console.log(error);
+            return false;
+        }
+    }else{
+        console.log(values[2]);
+        try{
+            result = await callStoredProcedure("insert_pekerja", [
+                p_id,
+                values[0],
+                values[1],
+                values[2],
+                values[3],
+                values[4],
+                values[5],
+                0,
+                values[6],
+                values[7],
+                values[8],
+                values[9],
+                0.0,
+                0
+            ]) || false;
+            if (result) {
+                console.log(result);
+                switch (values[2]) {
+                    case 'L': // Male (Laki-Laki)
+                    gender = 'Laki-Laki';
+                    break;
+                    case 'P': // Female (Perempuan)
+                    gender = 'Perempuan';
+                    break;
+                }
+                
+                user = {
+                    id: p_id,              
+                    name: values[0],       
+                    password: values[1],
+                    role: values[10] as Role,
+                    gender: gender,     
+                    pno: values[3],      
+                    birth_date: values[4],  
+                    address: values[5],    
+                    balance: 0,   
+                    accountNumber: values[7],
+                    bankName: values[8],
+                    npwp: values[9],
+                    rating: 0,
+                    completedOrders: 0,
+                    photoUrl: values[9],
+                    categories: []
+
+                          
+                } as AuthCombined;
+            }
+        
+            return user;
+        }catch (error){
+            console.log(error);
+            return false;
+        }
+    };
     
 
     

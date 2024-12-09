@@ -63,9 +63,9 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION SIJARTA.insert_pekerja(
     p_id UUID,
     p_Nama VARCHAR,
+    p_Pwd VARCHAR,
     p_JenisKelamin CHAR(1),
     p_NoHP VARCHAR,
-    p_Pwd VARCHAR,
     p_TglLahir DATE,
     p_Alamat VARCHAR,
     p_SaldoMyPay DECIMAL,
