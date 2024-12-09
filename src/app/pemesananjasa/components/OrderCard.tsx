@@ -75,14 +75,14 @@ const OrderCard = ({ order, onCancel, onPayment, onCreateTestimonial }: OrderCar
             Batalkan
           </button>
         )}
-        {/* {showTestimonialButton && (
+        {order.statuspesanan === 'Pekerjaan Selesai' && (
           <button
             onClick={onCreateTestimonial}
             className="px-4 py-2 bg-[#2ECC71] text-white rounded-lg hover:bg-[#27AE60] transition-colors"
           >
             Buat Testimoni
           </button>
-        )} */}
+        )}
       </div>
     </div>
   );

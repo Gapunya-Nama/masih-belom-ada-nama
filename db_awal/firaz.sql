@@ -149,7 +149,7 @@ RETURNS TABLE (
     idsubkategori UUID,
     namapekerja VARCHAR,
     idpekerja UUID,
-    tanggalpemesanan DATE,
+    tanggalpemesanan TIMESTAMP,
     biaya DECIMAL(15,2),
     sesi INT,
     statuspesanan VARCHAR,
@@ -208,8 +208,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION SIJARTA.insert_pemesanan_jasa(
-    _tgl_pemesanan DATE,
-    _tgl_pekerjaan DATE,
+    _tgl_pemesanan TIMESTAMP,
+    _tgl_pekerjaan TIMESTAMP,
     _waktu_pekerjaan TIMESTAMP,
     _total_biaya DECIMAL(15,2),
     _id_pelanggan UUID,
