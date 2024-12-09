@@ -14,7 +14,7 @@ const requestAllPromos = async (): Promise<Promo[]> => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ type: "promo" }),
+      body: JSON.stringify({ action: "getAllPromo" }),
     });
 
     if (!response.ok) {
