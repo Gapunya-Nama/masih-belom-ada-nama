@@ -2,25 +2,18 @@
 
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, ReceiptRussianRuble } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import OrderCard from './components/OrderCard';
 import TestimonialModal from './components/TestimonialModal';
-import { Pekerja, PemesananJasa } from '@/lib/dataType/interfaces';
+import { KategoriJasa, Pekerja, PemesananJasa } from '@/lib/dataType/interfaces';
 import { toast } from '@/components/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
 
 // Filter Options
-const subcategories = [
-  "Semua",
-  "Tukang Ledeng Professional",
-  "Tukang Listrik",
-  "Tukang Cat"
-];
 
 const statuses = [
-  "Semua",
+  "Semua Status Pesanan",
   "Menunggu Pembayaran",
-  "Pembayaran Diterima",
   "Mencari Pekerja Terdekat",
   "Pekerja Ditemukan",
   "Dalam Proses Pekerjaan",
@@ -30,8 +23,7 @@ const statuses = [
 const OrderView = () => {
   const [orders, setOrders] = useState<PemesananJasa[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<PemesananJasa[]>([]);
-  const [selectedSubcategory, setSelectedSubcategory] = useState("Semua");
-  const [selectedStatus, setSelectedStatus] = useState("Semua");
+  const [selectedStatus, setSelectedStatus] = useState("Semua Status Pesanan");
   const [searchQuery, setSearchQuery] = useState("");
   const [showTestimonialModal, setShowTestimonialModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<PemesananJasa | null>(null);
@@ -77,15 +69,35 @@ const OrderView = () => {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    const fetchSesiLayanan = async () => {
+      try {
+        const response = await fetch("/api/kategorijasa", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data sesi kategori jasa");
+        }
+
+        const data: KategoriJasa[] = await response.json();
+      } catch (error) {
+        console.error("Error fetching sesi layanan:", error);
+      }
+    };
+
+    fetchSesiLayanan();
+  }, []);
+
   // Filter Orders Berdasarkan Subkategori, Status, dan Search Query
   useEffect(() => {
     let tempOrders = [...orders];
 
-    if (selectedSubcategory !== "Semua") {
-      tempOrders = tempOrders.filter(order => order.namakategori === selectedSubcategory);
-    }
-
-    if (selectedStatus !== "Semua") {
+    if (selectedStatus !== "Semua Status Pesanan") {
       tempOrders = tempOrders.filter(order => order.statuspesanan === selectedStatus);
     }
 
@@ -98,7 +110,7 @@ const OrderView = () => {
     }
 
     setFilteredOrders(tempOrders);
-  }, [selectedSubcategory, selectedStatus, searchQuery, orders]);
+  }, [selectedStatus, searchQuery, orders]);
 
 // src/app/pemesananjasa/page.tsx
 
@@ -286,22 +298,6 @@ const handleCancelOrder = async (order: PemesananJasa) => {
           {/* Filters */}
           <div className="bg-white rounded-lg shadow p-4 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Subcategory Filter */}
-              <div className="relative">
-                <select
-                  aria-label='subcategory'
-                  value={selectedSubcategory}
-                  onChange={(e) => setSelectedSubcategory(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-gray-300 px-4 py-2 pr-10 focus:border-[#2ECC71] focus:outline-none focus:ring-1 focus:ring-[#2ECC71]"
-                >
-                  {subcategories.map((subcategory) => (
-                    <option key={subcategory} value={subcategory}>
-                      {subcategory}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              </div>
 
               {/* Status Filter */}
               <div className="relative">

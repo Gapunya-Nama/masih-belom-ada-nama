@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { MetodeBayar, Pekerja, SesiLayanan, SubCategory } from '@/lib/dataType/interfaces';
 import BookingModal from './BookingModal';
 import TestimonialCards from '@/app/subkategorijasa/components/TestimonialCards';
+import WorkerDetailModal from './WorkerDetailModal';
 
 interface Props {
   subcategory: SubCategory;
@@ -17,6 +18,18 @@ interface Props {
 export default function SubCategoryUser({ subcategory, pekerja, sesilayanan, metodebayar }: Props) {
   const [selectedSession, setSelectedSession] = useState<SesiLayanan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedWorker, setSelectedWorker] = useState<Pekerja | null>(null);
+  const [isModalWorkerOpen, setIsModalWorkerOpen] = useState<boolean>(false);
+
+  const handleCardClick = (worker: Pekerja) => {
+    setSelectedWorker(worker);
+    setIsModalWorkerOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalWorkerOpen(false);
+    setSelectedWorker(null);
+  };
   
   return (
     <div className="container mx-auto px-4 py-8 mt-16"> {/* Added mt-16 */}
@@ -34,7 +47,11 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan, met
           <div className="space-y-4">
             {Array.isArray(pekerja) && pekerja.length > 0 ? (
               pekerja.map((worker) => (
-                <Link href={`/profile`} key={worker.pekerjaid}>
+                <div
+                  key={worker.pekerjaid}
+                  onClick={() => handleCardClick(worker)}
+                  className="cursor-pointer"
+                >
                   <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer mb-4">
                     <div className="flex items-center space-x-4">
                       <div className="h-12 w-12 rounded-full bg-[#F3F3F3] flex items-center justify-center">
@@ -49,7 +66,7 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan, met
                       </div>
                     </div>
                   </Card>
-                </Link>
+                </div>
               ))
             ) : (
               <div className="text-center text-gray-500 mt-4">
@@ -123,6 +140,9 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan, met
       ))} */}
     {/* </div> */}
   {/* </div> */}
+  {isModalWorkerOpen && selectedWorker && (
+        <WorkerDetailModal worker={selectedWorker} onClose={handleCloseModal} />
+      )}
   </div>
   );
 }
