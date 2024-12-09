@@ -6,12 +6,20 @@ import { KerjakanPesananFunction } from "@/lib/database/function_jobs";
 export async function POST(req: Request) {
   try {
     // Parse the JSON body
-    const { orderId } = await req.json();
+    const { orderId, pekerjaId } = await req.json();
 
     // Validate input
     if (!orderId || typeof orderId !== "string") {
       return NextResponse.json(
         { message: "Invalid or missing orderId." },
+        { status: 400 }
+      );
+    }
+
+    // Validate input
+    if (!pekerjaId || typeof pekerjaId !== "string") {
+      return NextResponse.json(
+        { message: "Invalid or missing pekerjaId." },
         { status: 400 }
       );
     }
@@ -24,9 +32,15 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+    if (!uuidRegex.test(pekerjaId)) {
+      return NextResponse.json(
+        { message: "Invalid UUID format for pekerjaId." },
+        { status: 400 }
+      );
+    }
 
     // Call the KerjakanPesanan function to process the order
-    await KerjakanPesananFunction(orderId);
+    await KerjakanPesananFunction(orderId, pekerjaId);
 
     // Return a success response
     return NextResponse.json(

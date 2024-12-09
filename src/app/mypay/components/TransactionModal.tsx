@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/auth-context";
+import { parse } from "path";
 
 type TransactionType = "TopUp" | "Payment" | "Transfer" | "Withdrawal";
 
@@ -28,7 +29,7 @@ const banks = [
 ];
 
 export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
-  const { user } = useAuth(); // Access authenticated user and setter
+  const { user, updateUser } = useAuth(); // Access authenticated user and setter
   const [transactionType, setTransactionType] = useState<TransactionType | "">("");
   const [amount, setAmount] = useState("");
   const [selectedService, setSelectedService] = useState("");
@@ -59,17 +60,17 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+
+    if (!user?.id) {
+      setError("User not authenticated.");
+      return;
+    }
   
     if (transactionType === "TopUp") {
       // Validate amount
       const parsedAmount = parseFloat(amount);
       if (isNaN(parsedAmount) || parsedAmount <= 0) {
         setError("Please enter a valid amount.");
-        return;
-      }
-
-      if (!user?.id) {
-        setError("User not authenticated.");
         return;
       }
 
@@ -104,11 +105,6 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
         setLoading(false);
       }
     } else if (transactionType == "Payment") {
-      if (!user?.id) {
-        setError("User not authenticated.");
-        return;
-      }
-
       // Validate service selection
       if (!selectedService) {
         setError("Please select a service.");
@@ -156,11 +152,6 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
         setLoading(false);
       }
     } else if (transactionType == "Withdrawal") {
-      if (!user?.id) {
-        setError("User not authenticated.");
-        return;
-      }
-
       // Validate service selection
       if (!selectedBank) {
         setError("Please select a Bank.");
@@ -210,11 +201,6 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
       }
       
     } else if (transactionType == "Transfer") {
-      if (!user?.id) {
-        setError("User not authenticated.");
-        return;
-      }
-
       // Validate service selection
       if (!phoneNumber || isNaN(parseFloat(phoneNumber))) {
         setError("Please input a valid Phone Number.");
@@ -245,6 +231,7 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
 
         if (response.ok) {
           setSuccess("Transfer successful!");
+          updateUser(user);
           onClose(); // Trigger parent to refresh transactions and close modal
           // Optionally, trigger a user data refresh here
           // onClose();
@@ -264,6 +251,8 @@ export function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
       // Implement similarly by creating respective API routes and functions
       onClose();
     }
+    
+    updateUser(user);
   };
 
   const renderFormContent = () => {
