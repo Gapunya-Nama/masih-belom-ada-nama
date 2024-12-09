@@ -61,7 +61,7 @@ export const workerSchema = z.object({
     ...baseSchema,
     bankName: z.string().min(1, "Bank name is required"),
     accountNumber: z.string().min(10, "Account number must be at least 10 digits"),
-    npwp: z.string().min(15, "NPWP must be at least 15 characters"),
+    npwp: z.string().min(15, "NPWP must be at least 15 characters").max(20,"NPWP must not exceed 20 characters"),
     photoUrl: z.string().optional(),
 });
 
