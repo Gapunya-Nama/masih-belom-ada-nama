@@ -2,7 +2,7 @@
 
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, ReceiptRussianRuble } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import OrderCard from './components/OrderCard';
 import TestimonialModal from './components/TestimonialModal';
 import { Pekerja, PemesananJasa } from '@/lib/dataType/interfaces';

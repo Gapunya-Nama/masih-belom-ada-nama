@@ -125,8 +125,8 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION SIJARTA.get_metode_bayar()
 RETURNS TABLE (
-    idmetode UUID,
-    namametode VARCHAR
+    id UUID,
+    nama VARCHAR
 ) AS $$
 BEGIN
     RETURN QUERY
