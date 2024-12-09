@@ -51,7 +51,7 @@ const OrderView = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId: user?.id }),
+          body: JSON.stringify({ userId: user?.id, command: 'show' }),
         });
 
         if (!response.ok) {
@@ -100,10 +100,126 @@ const OrderView = () => {
     setFilteredOrders(tempOrders);
   }, [selectedSubcategory, selectedStatus, searchQuery, orders]);
 
-  const handleCancelOrder = (orderId: string) => {
-    // Implementasikan logika pembatalan pemesanan di sini
-    console.log('Membatalkan pesanan:', orderId);
-    // Contoh: Mengirimkan request ke API untuk membatalkan pemesanan
+// src/app/pemesananjasa/page.tsx
+
+const handleCancelOrder = async (order: PemesananJasa) => {
+  // Confirm the action with the user
+    const confirmAction = window.confirm(
+      "Apakah Anda yakin ingin membatalkan pesanan ini?"
+    );
+    if (!confirmAction) return;
+
+    try {
+      // Set loading state if applicable
+      setIsLoading(true);
+
+      const response = await fetch(`/api/statuspesanan`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idtr: order.id,
+          idstatus:'850e8400-e29b-41d4-a716-446655447007',
+          tglwaktu: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Gagal membatalkan pesanan.");
+      }
+
+      setOrders(prevOrders =>
+        prevOrders.map(o =>
+          o.id === order.id ? { ...o, statuspesanan: "Pemesanan Dibatalkan" } : o
+        )
+      );
+
+      toast({
+          title: "Berhasil",
+          description: "Pesanan telah dibatalkan.",
+          variant: "default",
+        });
+      } catch (error: any) {
+        console.error("Cancel Order Error:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Gagal membatalkan pesanan.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+  };
+
+  const handlePayment = async (order: PemesananJasa) => {
+    // Confirm the action with the user
+    const confirmAction = window.confirm(
+      "Apakah Anda yakin ingin memproses pembayaran ini?"
+    );
+    if (!confirmAction) return;
+    if (user?.balance === undefined) {
+      toast({
+        title: "Error",
+        description: "Saldo pengguna tidak tersedia.",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    const userBalance = Number(user.balance);
+    const orderCost = Number(order.biaya);
+    if(userBalance < orderCost){
+      toast({
+        title: "Error",
+        description: `Saldo  tidak mencukupi. Saldo Anda: ${userBalance} Biaya Pesanan: ${orderCost}`,
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      // Set loading state if applicable
+      setIsLoading(true);
+      console.log("order.id", order.id);
+      const response = await fetch(`/api/statuspesanan`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idtr: order.id,
+          idstatus: '850e8400-e29b-41d4-a716-446655447002',
+          tglwaktu: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Gagal memproses pembayaran.");
+      }
+
+      setOrders(prevOrders =>
+        prevOrders.map(o =>
+          o.id === order.id ? { ...o, statuspesanan: "Mencari Pekerja Terdekat" } : o
+        )
+      );
+
+      toast({
+        title: "Berhasil",
+        description: "Pembayaran telah diproses.",
+        variant: "default",
+      });
+    } catch (error: any) {
+      console.error("Payment Error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Gagal memproses pembayaran.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCreateTestimonial = (order: PemesananJasa) => {
@@ -217,20 +333,23 @@ const OrderView = () => {
           {error && <p className="text-red-500">{error}</p>}
 
           {/* Orders List */}
-          <div className="space-y-4">
-            {filteredOrders.length > 0 ? (
-              filteredOrders.map((order) => (
-                <OrderCard
-                  key={order.id}
-                  order={order}
-                  onCancel={() => handleCancelOrder(order.id)}
-                  onCreateTestimonial={() => handleCreateTestimonial(order)}
-                />
-              ))
-            ) : (
-              <p>Tidak ada pesanan yang ditemukan.</p>
-            )}
-          </div>
+            <div className="space-y-4">
+              {filteredOrders.length > 0 ? (
+                [...filteredOrders]
+                  .sort((a, b) => new Date(b.tanggalpemesanan).getTime() - new Date(a.tanggalpemesanan).getTime())
+                  .map((order) => (
+                    <OrderCard
+                      key={order.id}
+                      order={order}
+                      onCancel={() => handleCancelOrder(order)}
+                      onPayment={() => handlePayment(order)}
+                      onCreateTestimonial={() => handleCreateTestimonial(order)}
+                    />
+                  ))
+              ) : (
+                <p>Tidak ada pesanan yang ditemukan.</p>
+              )}
+            </div>
         </div>
 
         {/* Testimonial Modal */}
