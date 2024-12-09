@@ -1,3 +1,5 @@
+// src/app/components/navigation/Navbar.tsx
+
 'use client';
 
 import { useState } from 'react';
@@ -7,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { UserProfile } from './navigation/NavProfile';
 import { NavLinks } from './navigation/NavLinks';
 import { LogoutButton } from './navigation/LogoutButton';
+import { DialogTitle } from '@radix-ui/react-dialog'; // Import DialogTitle
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'; // Import VisuallyHidden
 
 export default function Navbar() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -32,6 +36,11 @@ export default function Navbar() {
             className="w-[300px] sm:w-[400px] p-0"
             aria-label="Navigation menu"
           >
+            {/* Add DialogTitle for accessibility */}
+            <VisuallyHidden>
+              <DialogTitle>Navigation Menu</DialogTitle>
+            </VisuallyHidden>
+
             <div className="h-full flex flex-col">
               <UserProfile />
               <NavLinks closeSidebar={closeSidebar} />
