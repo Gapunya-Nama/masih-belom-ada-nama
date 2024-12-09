@@ -135,7 +135,7 @@ export function WorkerProfileView({ onEdit }: WorkerProfileViewProps) {
                   MyPay Balance
                 </p>
                 <p className="text-lg font-semibold">
-                  Rp {user?.balance.toLocaleString()}
+                  Rp {user?.balance ? user.balance.toLocaleString() : "0"}
                 </p>
               </div>
             </div>

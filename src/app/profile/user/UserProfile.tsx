@@ -11,16 +11,6 @@ interface UserProfileViewProps {
 }
 
 export function UserProfileView({ onEdit }: UserProfileViewProps) {
-  // Mock data - in a real app, this would come from your backend
-  // const userData = {
-  //   name: "John Doe",
-  //   level: "Gold Member",
-  //   gender: "Male",
-  //   phone: "+62 812 3456 7890",
-  //   birthDate: "1990-01-01",
-  //   address: "123 Main Street, City",
-  //   balance: 1500000,
-  // };
 
   const { user } = useAuth();
 
@@ -87,7 +77,7 @@ export function UserProfileView({ onEdit }: UserProfileViewProps) {
                     MyPay Balance
                   </p>
                   <p className="text-lg font-semibold">
-                    Rp {user?.balance.toLocaleString()}
+                    Rp {user?.balance ? user.balance.toLocaleString() : "0"}
                   </p>
                 </div>
               </div>
