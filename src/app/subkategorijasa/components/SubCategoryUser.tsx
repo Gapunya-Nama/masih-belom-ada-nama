@@ -5,6 +5,7 @@ import { Star, User } from 'lucide-react';
 import Link from 'next/link';
 import { MetodeBayar, Pekerja, SesiLayanan, SubCategory } from '@/lib/dataType/interfaces';
 import BookingModal from './BookingModal';
+import TestimonialCards from '@/app/subkategorijasa/components/TestimonialCards';
 
 interface Props {
   subcategory: SubCategory;
@@ -94,9 +95,11 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan, met
         </div>
       </div>
     
-    <div className="bg-white rounded-lg shadow-lg p-6">
-    <h2 className="text-2xl font-semibold mb-4">Testimoni Pelanggan</h2>
-    <div className="grid md:grid-cols-2 gap-4">
+    {/* <div className="bg-white rounded-lg shadow-lg p-6"> */}
+    {/* <h2 className="text-2xl font-semibold mb-4">Testimoni PelangganU</h2> */}
+    {/* <div className="grid md:grid-cols-2 gap-4">
+          <p>aku sudah bingung</p> */}
+          <TestimonialCards subcategoryId={subcategory.id} />
       {/* {subcategory.testimonials.map((testimonial) => (
         <Card key={testimonial.id} className="p-4">
           <div className="flex items-center space-x-4 mb-2">
@@ -118,8 +121,8 @@ export default function SubCategoryUser({ subcategory, pekerja, sesilayanan, met
           </p>
         </Card>
       ))} */}
-    </div>
-  </div>
+    {/* </div> */}
+  {/* </div> */}
   </div>
   );
 }

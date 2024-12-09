@@ -53,11 +53,12 @@ export async function getAllPromo(): Promise<Promo[] | null> {
     metodeId: string,
   ): Promise<void> {
     const newId = uuidv4(); // Generate a new UUID
+    const newTrId = uuidv4();
   
     try {
       await callStoredProcedure(
         'buy_voucher',
-        [newId, userId, voucherId, metodeId] // Pass the generated UUID
+        [newTrId, newId, userId, voucherId, metodeId] // Pass the generated UUID
       );
     } catch (error) {
       console.error('Error calling buy_voucher:', error);
