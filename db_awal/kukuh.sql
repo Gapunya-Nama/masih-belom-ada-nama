@@ -165,9 +165,11 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    WITH LatestStatus AS (
+    WITH 
+    LatestStatus AS (
         SELECT 
-            t.IdTrPemesanan
+            t.IdTrPemesanan,
+            t.IdStatus
         FROM 
             SIJARTA.TR_PEMESANAN_STATUS t
         INNER JOIN (
@@ -183,6 +185,17 @@ BEGIN
             AND t.TglWaktu = m.MaxTglWaktu
         WHERE 
             t.IdStatus = '850e8400-e29b-41d4-a716-446655447002'
+    ),
+    WorkerSubkategori AS (
+        SELECT 
+            sj.Id AS SubkategoriId
+        FROM 
+            SIJARTA.PEKERJA_KATEGORI_JASA pkj
+        INNER JOIN 
+            SIJARTA.SUBKATEGORI_JASA sj 
+            ON pkj.KategoriJasaId = sj.KategoriJasaId
+        WHERE 
+            pkj.PekerjaId = pekerja_id
     )
     SELECT 
         pj.Id,
@@ -212,12 +225,12 @@ BEGIN
     INNER JOIN 
         SIJARTA.USER u
         ON pj.IdPelanggan = u.Id
-    WHERE 
-        pj.IdPekerja = pekerja_id
+    INNER JOIN 
+        WorkerSubkategori ws
+        ON pj.IdKategoriJasa = ws.SubkategoriId
     LIMIT limit_val OFFSET offset_val;
 END;
 $$ LANGUAGE plpgsql;
-
 
 -- Create or replace the procedure in the SIJARTA schema
 CREATE OR REPLACE PROCEDURE SIJARTA.kerjakan_pesanan(order_id UUID)
