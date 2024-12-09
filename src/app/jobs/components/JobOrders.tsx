@@ -59,6 +59,12 @@ export function JobOrders() {
   const [processingOrderIds, setProcessingOrderIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
+  if (!user) {
+    setError("User not authenticated.");
+    return;
+  }
+  const pekerjaId = user.id;
+  
   // Fetch orders from API
   useEffect(() => {
     if (!user?.id) {
@@ -133,7 +139,7 @@ export function JobOrders() {
   //     description: `Pesanan dengan ID ${orderId} sedang dikerjakan.`,
   //   });
   // };
-  const handleOrderAction = async (orderId: string) => {
+  const handleOrderAction = async (orderId: string, pekerjaId: string) => {
     // Confirm the action with the user
     const confirm = window.confirm("Apakah Anda yakin ingin memproses pesanan ini?");
     if (!confirm) return;
@@ -149,7 +155,7 @@ export function JobOrders() {
           'Content-Type': 'application/json',
           // 'Authorization': `Bearer ${token}`, // Include the JWT token
         },
-        body: JSON.stringify({ orderId }),
+        body: JSON.stringify({ orderId, pekerjaId }),
       });
 
       if (response.ok) {
@@ -318,7 +324,9 @@ export function JobOrders() {
                       size="sm"
                       variant="default"
                       className="bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => handleOrderAction(order.id)}
+                      onClick={() =>
+                        handleOrderAction(order.id, pekerjaId)
+                      }
                       disabled={processingOrderIds.has(order.id)}
                     >
                     {processingOrderIds.has(order.id) ? 'Processing...' : 'Kerjakan Pesanan'}
