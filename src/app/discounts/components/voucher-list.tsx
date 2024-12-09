@@ -108,6 +108,8 @@ export function VoucherList() {
   const [metodeBayars, setMetodeBayars] = useState<MetodeBayar[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedMetode, setSelectedMetode] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchVouchers = async () => {
@@ -137,26 +139,24 @@ export function VoucherList() {
     };
 
     fetchVouchers();
-    // fetchMetodeBayar();
+    fetchMetodeBayar();
   }, []); // Memanggil API hanya sekali saat komponen pertama kali dimuat
 
   const handlePurchase = (voucher: Voucher) => {
     // Simulasi pengecekan saldo
-    const { user } = useAuth();
-    const hasBalance = user?.balance ?? -1;
-
+    const hasBalance = user?.balance ?? -1; // Jika user tidak ditemukan, set saldo ke -1
+  
     if (hasBalance >= voucher.harga) {
-      
       toast.success("Voucher purchased successfully!", {
         description: `Your voucher code ${voucher.kode} has been added to your account.`,
       });
-
     } else {
+      const remainingBalance = voucher.harga - hasBalance; // Hitung kekurangan saldo
       toast.error("Purchase failed", {
-        description: "Insufficient balance to purchase this voucher.",
+        description: `Your current balance is Rp${hasBalance.toLocaleString()}. 
+                      You need an additional Rp${remainingBalance.toLocaleString()}.`,
       });
     }
-
   };
 
   if (loading) {
@@ -188,7 +188,7 @@ export function VoucherList() {
             <div className="space-y-2 flex-1">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Min. Transaction</span>
-                <span className="font-medium">${voucher.mintrpemesanan}</span>
+                <span className="font-medium">Rp{voucher.mintrpemesanan.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Remaining Quota</span>
@@ -197,7 +197,7 @@ export function VoucherList() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Price</span>
                 <span className="font-medium">
-                  {voucher.harga === 0 ? "Gratis" : `$${voucher.harga}`}
+                  Rp{voucher.harga.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -211,24 +211,27 @@ export function VoucherList() {
                     Pilih Metode Bayar yang Sesuai dengan Anda
                   </DialogDescription>
                   <div className="flex flex-col space-y-1.5">
-                    {/* <Label htmlFor="framework">Framework</Label> */}
-                    <Select>
-                      <SelectTrigger id="framework">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectItem value="mypay">MyPay</SelectItem>
-                        <SelectItem value="gopay">GoPay</SelectItem>
-                        <SelectItem value="ovo">OVO</SelectItem>
-                        <SelectItem value="dana">DANA</SelectItem>
-                        <SelectItem value="linkaja">LinkAja</SelectItem>
-                        <SelectItem value="kredit">Kartu Kredit</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                <div className="flex justify-between">
-                  <Button className="bg-red-500">Cancel</Button>
-                  <Button className="bg-green-500">Submit</Button>
+                  <Select value={selectedMetode} onValueChange={setSelectedMetode}>
+                    <SelectTrigger id="metode-bayar">
+                      <SelectValue placeholder="Select Payment Method" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {metodeBayars.map((metode) => (
+                        <SelectItem key={metode.id} value={metode.nama}>
+                          {metode.nama}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-between mt-4">
+                  {/* <Button className="bg-red-500">Cancel</Button> */}
+                  <Button
+                    className="bg-green-500"
+                    onClick={() => handlePurchase(voucher)}
+                  >
+                    Submit
+                  </Button>
                 </div>
               </DialogContent>
               <DialogFooter>

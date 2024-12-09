@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import { User, Star } from "lucide-react";
 import { Pekerja, SubCategory, SesiLayanan } from "@/lib/dataType/interfaces";
 import { useAuth } from "@/context/auth-context";
+import TestimonialCards from '@/app/subkategorijasa/components/TestimonialCards';
+
 
 interface Props {
   subcategory: SubCategory;
@@ -111,12 +113,8 @@ export default function SubCategoryWorker({ subcategory, pekerja, sesilayanan }:
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-semibold mb-4">Testimoni Pelanggan</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* Testimoni Pelanggan dapat diaktifkan kembali jika diperlukan */}
-        </div>
-      </div>
+
+          <TestimonialCards subcategoryId={subcategory.id} />
     </div>
   );
 }

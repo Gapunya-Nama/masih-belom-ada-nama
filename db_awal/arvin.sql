@@ -98,6 +98,39 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION SIJARTA.get_testimoni_by_kategori(idSubKategoriJasa UUID)
+RETURNS TABLE (
+    nama_pengguna VARCHAR,
+    teks_testimoni TEXT,
+    tgl_testimoni DATE,
+    nama_pekerja VARCHAR,
+    rating INT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        up.Nama AS nama_pengguna,  -- Nama pelanggan diambil dari USER
+        t.Teks AS teks_testimoni,
+        t.Tgl AS tgl_testimoni,
+        uw.Nama AS nama_pekerja,  -- Nama pekerja diambil dari USER
+        t.Rating AS rating
+    FROM 
+        SIJARTA.TESTIMONI t
+    JOIN 
+        SIJARTA.TR_PEMESANAN_JASA pjs ON t.IdTrPemesanan = pjs.Id
+    JOIN 
+        SIJARTA.USER up ON pjs.IdPelanggan = up.Id  -- Nama pelanggan diambil dari USER
+    JOIN 
+        SIJARTA.USER uw ON pjs.IdPekerja = uw.Id  -- Nama pekerja diambil dari USER
+    WHERE 
+        pjs.IdKategoriJasa = idSubKategoriJasa
+    ORDER BY 
+        t.Tgl DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- SELECT * FROM SIJARTA.get_testimoni_by_kategori('750e8400-e29b-41d4-a716-446655442000');
+
 CREATE OR REPLACE FUNCTION SIJARTA.show_metode_bayar()
 RETURNS TABLE(
     Id UUID,
