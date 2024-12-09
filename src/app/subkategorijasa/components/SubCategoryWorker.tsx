@@ -19,14 +19,76 @@ interface Props {
 export default function SubCategoryWorker({ subcategory, pekerja, sesilayanan }: Props) {
   const { user } = useAuth();
   const [isJoined, setIsJoined] = useState(false);
+  const [pekerjaList, setPekerjaList] = useState<Pekerja[]>(pekerja || []);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Tentukan apakah pengguna sudah tergabung sebagai pekerja
-  const isUserJoined = pekerja?.some(worker => worker.pekerjaid === user?.id);
+  const isUserJoined = Array.isArray(pekerjaList) && pekerjaList.some(worker => worker.pekerjaid === user?.id);
 
   const handleJoin = async () => {
-    // Implementasi logika bergabung sebagai pekerja
-    // Setelah berhasil, setIsJoined(true);
+    try {
+      const response = await fetch('/api/pekerja', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          command: 'add',
+          id: user?.id,
+          kategoriJasaId: subcategory.idkategori,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setIsJoined(true);
+        console.log('Pekerja berhasil ditambahkan:', data);
+
+        // Ambil ulang daftar pekerja setelah penambahan berhasil
+        fetchPekerjaList();
+      } else {
+        console.error('Gagal menambahkan pekerja:', data.message);
+      }
+    } catch (error) {
+      console.error('Error saat menambahkan pekerja:', error);
+    }
   };
+
+  const fetchPekerjaList = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/pekerja', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          command: 'show',
+          id: subcategory.idkategori,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setPekerjaList(data);
+        console.log('Daftar pekerja diperbarui:', data);
+      } else {
+        console.error('Gagal mengambil daftar pekerja:', data.message);
+      }
+    } catch (error) {
+      console.error('Error saat mengambil daftar pekerja:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Update pekerjaList jika prop pekerja berubah
+    if (pekerja) {
+      setPekerjaList(pekerja);
+    }
+  }, [pekerja]);
 
   // Jika data 'pekerja' masih null, tampilkan loader atau kosong
   if (pekerja === null) {
@@ -60,8 +122,10 @@ export default function SubCategoryWorker({ subcategory, pekerja, sesilayanan }:
         <div>
           <h2 className="text-2xl font-semibold mb-4">Pekerja Tergabung</h2>
           <div className="space-y-4">
-            {pekerja.length > 0 ? (
-              pekerja.map((worker) => (
+            {isLoading ? (
+              <div>Memuat pekerja...</div>
+            ) : pekerjaList.length > 0 ? (
+              pekerjaList.map((worker) => (
                 <Link href={`/profile/${worker.pekerjaid}`} key={worker.pekerjaid}>
                   <Card
                     className={`p-4 hover:shadow-md transition-shadow cursor-pointer mb-4 ${
@@ -103,7 +167,7 @@ export default function SubCategoryWorker({ subcategory, pekerja, sesilayanan }:
                   <h3 className="font-semibold">Sesi Layanan {session.sesi}</h3>
                   <div className="flex justify-between items-center mt-2">
                     <p className="text-[#2ECC71] font-semibold mt-2">
-                      Rp {session.harga}
+                      Rp {session.harga.toLocaleString()}
                     </p>
                   </div>
                 </div>

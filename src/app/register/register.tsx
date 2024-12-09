@@ -32,6 +32,9 @@ import { Card } from "@/components/ui/card";
 import { RoleSelector } from "./components/role-selector";
 import React from "react";
 import Link from "next/link";
+import { cp } from "fs";
+import { registerAccount } from "./components/register";
+import { useAuth } from "@/context/auth-context";
 
 const banks = [
     "GoPay",
@@ -58,7 +61,7 @@ export const workerSchema = z.object({
     ...baseSchema,
     bankName: z.string().min(1, "Bank name is required"),
     accountNumber: z.string().min(10, "Account number must be at least 10 digits"),
-    npwp: z.string().min(15, "NPWP must be at least 15 characters"),
+    npwp: z.string().min(15, "NPWP must be at least 15 characters").max(20,"NPWP must not exceed 20 characters"),
     photoUrl: z.string().optional(),
 });
 
@@ -71,6 +74,7 @@ export function RegisterForm({ role }: RegisterFormProps) {
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const { toast } = useToast();
     const router = useRouter();
+    const { login } = useAuth();
 
     const form = useForm<z.infer<typeof workerSchema>>({
         resolver: zodResolver(role === "worker" ? workerSchema : userSchema),
@@ -104,8 +108,19 @@ export function RegisterForm({ role }: RegisterFormProps) {
 
     async function onSubmit(values: z.infer<typeof workerSchema>) {
         
-        // Here you would typically handle the registration logic
-        console.log(values, role);
+        let account_data = [
+            ...Object.values(values),
+            role ?? 'guest'
+        ]
+        console.log(account_data);
+        let user = await registerAccount(account_data);
+
+        if (!user){
+            throw Error;
+        }
+        
+        login(user);
+        
 
         toast({
             title: "Register successful!",
@@ -117,6 +132,7 @@ export function RegisterForm({ role }: RegisterFormProps) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* <form action={registerAccount} className="space-y-6"> */}
                 <div className="grid gap-4">
                     <FormField
                         control={form.control}

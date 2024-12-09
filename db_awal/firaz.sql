@@ -29,7 +29,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION SIJARTA.add_worker(
+CREATE OR REPLACE FUNCTION SIJARTA.add_pekerja_kategori_jasa(
     _pekerja_id UUID,
     _kategori_jasa_id UUID
 ) RETURNS VOID AS $$
@@ -171,3 +171,89 @@ BEGIN
     ON CONFLICT (PekerjaId, KategoriJasaId) DO NOTHING;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.get_metode_bayar()
+RETURNS TABLE (
+    idmetode UUID,
+    namametode VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        mb.Id,
+        mb.Nama
+    FROM
+        SIJARTA.METODE_BAYAR mb;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.get_pemesanan_jasa(
+    _id_USER UUID
+)
+RETURNS TABLE (
+    id UUID, 
+    namakategori VARCHAR,
+    namasubkategori VARCHAR,
+    idkategori UUID,
+    idsubkategori UUID,
+    namapekerja VARCHAR,
+    idpekerja UUID,
+    tanggalpemesanan DATE,
+    biaya DECIMAL(15,2),
+    sesi INT,
+    statuspesanan VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        pj.Id,
+        kj.NamaKategori,
+        sj.NamaSubkategori,
+        kj.Id AS idkategori,
+        sj.Id AS idsubkategori,
+        u.Nama AS namapekerja,
+        p.Id AS idpekerja,
+        pj.TglPemesanan,
+        pj.TotalBiaya,
+        pj.Sesi,
+        sp.Status AS statuspesanan
+    FROM
+        SIJARTA.TR_PEMESANAN_JASA pj
+    INNER JOIN SIJARTA.SESI_LAYANAN sl ON pj.IdKategoriJasa = sl.SubkategoriId AND pj.Sesi = sl.Sesi
+    INNER JOIN SIJARTA.SUBKATEGORI_JASA sj ON sl.SubkategoriId = sj.Id
+    INNER JOIN SIJARTA.KATEGORI_JASA kj ON sj.KategoriJasaId = kj.Id
+    LEFT JOIN SIJARTA.PEKERJA p ON pj.IdPekerja = p.Id
+    LEFT JOIN SIJARTA.USER u ON p.Id = u.Id
+    LEFT JOIN (
+        SELECT
+            tps.IdTrPemesanan,
+            sp.Status,
+            ROW_NUMBER() OVER (PARTITION BY tps.IdTrPemesanan ORDER BY tps.TglWaktu DESC) AS rn
+        FROM
+            SIJARTA.TR_PEMESANAN_STATUS tps
+        JOIN
+            SIJARTA.STATUS_PESANAN sp ON tps.IdStatus = sp.Id
+    ) sp ON sp.IdTrPemesanan = pj.Id AND sp.rn = 1
+    WHERE
+        pj.IdPelanggan = _id_USER;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.update_status_pesanan(
+    _id_tr_pemesanan UUID,
+    _id_status UUID,
+    _tgl_waktu TIMESTAMP
+) RETURNS VOID AS $$
+BEGIN
+    INSERT INTO SIJARTA.TR_PEMESANAN_STATUS (IdTrPemesanan, IdStatus, TglWaktu)
+    VALUES (_id_tr_pemesanan, _id_status, _tgl_waktu);
+END;
+$$ LANGUAGE plpgsql;
+
+DELETE FROM SIJARTA.PEKERJA_KATEGORI_JASA
+WHERE PekerjaId = '550e8400-e29b-41d4-a716-446655440007'
+  AND KategoriJasaId IN (
+    '650e8400-e29b-41d4-a716-446655441002',
+    '650e8400-e29b-41d4-a716-446655441004',
+    '650e8400-e29b-41d4-a716-446655441000'
+  );

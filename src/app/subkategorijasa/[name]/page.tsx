@@ -6,7 +6,7 @@ import SubCategoryWorker from '../components/SubCategoryWorker';
 import { useAuth } from '@/context/auth-context';
 import { toast } from '@/components/hooks/use-toast';
 import { useParams } from 'next/navigation';
-import { Pekerja, SesiLayanan, SubCategory } from '@/lib/dataType/interfaces';
+import { Pekerja, SesiLayanan, SubCategory, MetodeBayar } from '@/lib/dataType/interfaces';
 import { getSubkategori } from './getSubkategori';
 
 export default function SubCategoryPage() {
@@ -16,6 +16,9 @@ export default function SubCategoryPage() {
   const [subcategory, setSubcategory] = useState<SubCategory>();
   const [pekerja, setPekerja] = useState<Pekerja[] | null>(null);  
   const [sesilayanan, setSesilayanan] = useState<SesiLayanan[] | null>(null);
+  const [metodePembayaran, setMetodePembayaran] = useState<MetodeBayar[]>([]);
+  const [loadingMetode, setLoadingMetode] = useState<boolean>(false);
+  const [errorMetode, setErrorMetode] = useState<string | null>(null);
   const categoryId = subcategory?.idkategori;
   const subcategoryID = subcategory?.id;
 
@@ -56,7 +59,7 @@ export default function SubCategoryPage() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: categoryId, req: 'show' }),
+          body: JSON.stringify({ id: categoryId, command: 'show' }),
         });
 
         if (!response.ok) {
@@ -113,6 +116,36 @@ export default function SubCategoryPage() {
     }
   }, [user]);
 
+  useEffect(() => {
+    const fetchMetodePembayaran = async () => {
+      try {
+        const response = await fetch("/api/metodebayar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Gagal mengambil data metode pembayaran");
+        }
+
+        const data: MetodeBayar[] = await response.json();
+        setMetodePembayaran(data);
+      } catch (error: any) {
+        console.error("Error fetching metode pembayaran:", error);
+        setErrorMetode(error.message || "Gagal mengambil data metode pembayaran");
+      } finally {
+        setLoadingMetode(false);
+      }
+    };
+
+    fetchMetodePembayaran();
+  }, []);
+
+
   // Kondisi Render
   if (!subcategory) {
     return <div>Subkategori tidak ditemukan</div>;
@@ -123,9 +156,9 @@ export default function SubCategoryPage() {
   }
 
   if (user.role === 'worker') {
-    return <SubCategoryWorker subcategory={subcategory} pekerja={pekerja} sesilayanan={sesilayanan} />;
+    return <SubCategoryWorker subcategory={subcategory} pekerja={pekerja} sesilayanan={sesilayanan}  />;
   } else if (user.role === 'user') {
-    return <SubCategoryUser subcategory={subcategory} pekerja={pekerja} sesilayanan={sesilayanan} />;
+    return <SubCategoryUser subcategory={subcategory} pekerja={pekerja} sesilayanan={sesilayanan} metodebayar={metodePembayaran} />;
   }
 
   return <div>Role pengguna tidak dikenali</div>;
