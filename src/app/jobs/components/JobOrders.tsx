@@ -27,27 +27,6 @@ interface JobOrder {
   totalCost: number;
 }
 
-// const jobOrders: JobOrder[] = [
-//   {
-//     id: "1",
-//     subcategory: "Cleaning",
-//     service: "Daily Cleaning",
-//     customerName: "John Doe",
-//     orderDate: "2024-03-20",
-//     serviceDate: "2024-03-21",
-//     totalCost: 150000,
-//   },
-//   {
-//     id: "2",
-//     subcategory: "Laundry",
-//     service: "Sertika",
-//     customerName: "Jane Smith",
-//     orderDate: "2024-03-19",
-//     serviceDate: "2024-03-20",
-//     totalCost: 200000,
-//   },
-// ];
-
 export function JobOrders() {
   const { user } = useAuth(); // Access authenticated user and setter
   const [search, setSearch] = useState("");
@@ -293,14 +272,6 @@ export function JobOrders() {
                         <span className="text-gray-700">Tanggal Pemesanan:</span>{" "}
                         {order.orderDate ? (
                           new Date(order.orderDate).toLocaleDateString("id-ID")
-                        ) : (
-                          "N/A"
-                        )}
-                      </p>
-                      <p>
-                        <span className="text-gray-700">Tanggal Pekerjaan:</span>{" "}
-                        {order.serviceDate ? (
-                          new Date(order.serviceDate).toLocaleDateString("id-ID")
                         ) : (
                           "N/A"
                         )}

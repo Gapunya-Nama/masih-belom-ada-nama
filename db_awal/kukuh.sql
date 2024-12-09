@@ -150,7 +150,7 @@ CREATE OR REPLACE FUNCTION SIJARTA.get_available_jobs(
 )
 RETURNS TABLE (
     Id UUID,
-    TglPemesanan DATE,
+    TglPemesanan TIMESTAMP,
     TglPekerjaan DATE,
     WaktuPekerjaan TIMESTAMP,
     TotalBiaya DECIMAL(15, 2),
@@ -302,7 +302,7 @@ CREATE OR REPLACE FUNCTION SIJARTA.get_taken_jobs(
 )
 RETURNS TABLE (
     Id UUID,
-    TglPemesanan DATE,
+    TglPemesanan TIMESTAMP,
     TglPekerjaan DATE,
     WaktuPekerjaan TIMESTAMP,
     TotalBiaya DECIMAL(15, 2),
