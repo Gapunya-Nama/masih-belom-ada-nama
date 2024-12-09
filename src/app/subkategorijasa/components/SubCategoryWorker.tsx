@@ -1,23 +1,100 @@
-"use client";
+// src/components/SubCategoryWorker.tsx
 
-import { toast } from '@/components/hooks/use-toast';
-// import { SubCategory } from '../data/subcategories';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { SubCategory } from '@/lib/dataType/interfaces';
-import { Star, User } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { User, Star } from "lucide-react";
+import { Pekerja, SubCategory, SesiLayanan } from "@/lib/dataType/interfaces";
+import { useAuth } from "@/context/auth-context";
 
 interface Props {
   subcategory: SubCategory;
+  pekerja: Pekerja[] | null;
+  sesilayanan: SesiLayanan[] | null;
 }
 
-export default function SubCategoryWorker({ subcategory }: Props) {
+export default function SubCategoryWorker({ subcategory, pekerja, sesilayanan }: Props) {
+  const { user } = useAuth();
   const [isJoined, setIsJoined] = useState(false);
+  const [pekerjaList, setPekerjaList] = useState<Pekerja[]>(pekerja || []);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Tentukan apakah pengguna sudah tergabung sebagai pekerja
+  const isUserJoined = Array.isArray(pekerjaList) && pekerjaList.some(worker => worker.pekerjaid === user?.id);
+
+  const handleJoin = async () => {
+    try {
+      const response = await fetch('/api/pekerja', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          command: 'add',
+          id: user?.id,
+          kategoriJasaId: subcategory.idkategori,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setIsJoined(true);
+        console.log('Pekerja berhasil ditambahkan:', data);
+
+        // Ambil ulang daftar pekerja setelah penambahan berhasil
+        fetchPekerjaList();
+      } else {
+        console.error('Gagal menambahkan pekerja:', data.message);
+      }
+    } catch (error) {
+      console.error('Error saat menambahkan pekerja:', error);
+    }
+  };
+
+  const fetchPekerjaList = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/pekerja', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          command: 'show',
+          id: subcategory.idkategori,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setPekerjaList(data);
+        console.log('Daftar pekerja diperbarui:', data);
+      } else {
+        console.error('Gagal mengambil daftar pekerja:', data.message);
+      }
+    } catch (error) {
+      console.error('Error saat mengambil daftar pekerja:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Update pekerjaList jika prop pekerja berubah
+    if (pekerja) {
+      setPekerjaList(pekerja);
+    }
+  }, [pekerja]);
+
+  // Jika data 'pekerja' masih null, tampilkan loader atau kosong
+  if (pekerja === null) {
+    return <div>Loading pekerja...</div>; // Atau spinner loader
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-16">
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <div className="flex justify-between items-start">
           <div>
@@ -27,19 +104,14 @@ export default function SubCategoryWorker({ subcategory }: Props) {
               <span className="text-gray-700">{subcategory.namakategori}</span>
             </div>
           </div>
-          {!isJoined && (
+          {/* Kondisikan render tombol hanya jika pengguna belum tergabung */}
+          {!isUserJoined && (
             <Button
-              onClick={() => {
-                setIsJoined(true);
-                toast({
-                  title:`Success`,
-                  description: `Berhasil bergabung sebagai pekerja di subkatergori ${subcategory.p_namesubkategori}`, 
-                });
-              }}
+              onClick={handleJoin}
               className="bg-[#2ECC71] hover:bg-[#27AE60]"
             >
               Bergabung Sebagai Pekerja
-          </Button>
+            </Button>
           )}
         </div>
       </div>
@@ -48,41 +120,54 @@ export default function SubCategoryWorker({ subcategory }: Props) {
         <div>
           <h2 className="text-2xl font-semibold mb-4">Pekerja Tergabung</h2>
           <div className="space-y-4">
-            {subcategory.workers.map((worker) => (
-              <Link href={`/worker/${worker.id}`} key={worker.id}>
-                <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex items-center space-x-4">
-                    <div className="h-12 w-12 rounded-full bg-[#F3F3F3] flex items-center justify-center">
-                      <User className="h-6 w-6 text-gray-500" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{worker.name}</h3>
-                      <div className="flex items-center space-x-2">
-                        <Star className="h-4 w-4 text-yellow-400" />
-                        <span className="text-sm">{worker.rating}</span>
-                        <span className="text-sm text-gray-500">
-                          ({worker.completedJobs} pekerjaan selesai)
-                        </span>
+            {isLoading ? (
+              <div>Memuat pekerja...</div>
+            ) : pekerjaList.length > 0 ? (
+              pekerjaList.map((worker) => (
+                <Link href={`/profile/${worker.pekerjaid}`} key={worker.pekerjaid}>
+                  <Card
+                    className={`p-4 hover:shadow-md transition-shadow cursor-pointer mb-4 ${
+                      user?.id === worker.pekerjaid ? 'bg-yellow-100' : ''
+                    }`}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="h-12 w-12 rounded-full bg-[#F3F3F3] flex items-center justify-center">
+                        <User className="h-6 w-6 text-gray-500" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{worker.namapekerja}</h3>
+                        <div className="flex items-center space-x-2">
+                          <Star className="h-4 w-4 text-yellow-400" />
+                          <span className="text-sm">{worker.rating}</span>
+                          <span className="text-sm text-gray-500">
+                            ({worker.completedjobs} pekerjaan selesai)
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                  </Card>
+                </Link>
+              ))
+            ) : (
+              <div className="text-center text-gray-500 mt-4">
+                Tidak ada pekerja untuk kategori ini
+              </div>
+            )}
           </div>
         </div>
 
         <div>
           <h2 className="text-2xl font-semibold mb-4">Sesi Layanan Tersedia</h2>
           <div className="space-y-4">
-            {subcategory.sessions.map((session) => (
+            {sesilayanan && sesilayanan.map((session) => (
               <Card key={session.id} className="p-4">
                 <div>
-                  <h3 className="font-semibold">{session.name}</h3>
-                  <p className="text-sm text-gray-600">{session.description}</p>
-                  <p className="text-[#2ECC71] font-semibold mt-2">
-                    Rp {session.price.toLocaleString('id-ID')}
-                  </p>
+                  <h3 className="font-semibold">Sesi Layanan {session.sesi}</h3>
+                  <div className="flex justify-between items-center mt-2">
+                    <p className="text-[#2ECC71] font-semibold mt-2">
+                      Rp {session.harga.toLocaleString()}
+                    </p>
+                  </div>
                 </div>
               </Card>
             ))}
@@ -93,27 +178,7 @@ export default function SubCategoryWorker({ subcategory }: Props) {
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-2xl font-semibold mb-4">Testimoni Pelanggan</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          {subcategory.testimonials.map((testimonial) => (
-            <Card key={testimonial.id} className="p-4">
-              <div className="flex items-center space-x-4 mb-2">
-                <div className="h-10 w-10 rounded-full bg-[#F3F3F3] flex items-center justify-center">
-                  <User className="h-5 w-5 text-gray-500" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">{testimonial.userName}</h3>
-                  <div className="flex items-center">
-                    {Array.from({ length: testimonial.rating }).map((_, i) => (
-                      <Star key={i} className="h-4 w-4 text-yellow-400" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <p className="text-gray-600">{testimonial.comment}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                {new Date(testimonial.date).toLocaleDateString('id-ID')}
-              </p>
-            </Card>
-          ))}
+          {/* Testimoni Pelanggan dapat diaktifkan kembali jika diperlukan */}
         </div>
       </div>
     </div>

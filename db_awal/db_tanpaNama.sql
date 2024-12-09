@@ -420,4 +420,3 @@ INSERT INTO SIJARTA.TESTIMONI (IdTrPemesanan, Tgl, Teks, Rating) VALUES
     ('100e8400-e29b-41d4-a716-446655446014', '2024-02-09', 'Great experience, will use again.', 5),
     ('100e8400-e29b-41d4-a716-446655446015', '2024-02-11', 'Not bad, but could improve timing.', 3),
     ('100e8400-e29b-41d4-a716-446655446016', '2024-02-13', 'Best service I have ever used!', 5);
-
