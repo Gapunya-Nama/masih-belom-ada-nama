@@ -134,7 +134,7 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar, 
         setIsSubmitting(true);
         try {
             const selectedMetodeBayar: MetodeBayar | undefined = metodebayar.find(
-                (metode) => metode.namametode === paymentMethod
+                (metode) => metode.nama === paymentMethod
             );
 
             if (!selectedMetodeBayar) {
@@ -152,7 +152,7 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar, 
                 idKategoriJasa: subcategory.id,
                 sesi: sesilayanan.sesi,
                 idDiskon: promoCode.trim() !== '' ? promoCode.trim() : null,
-                idMetodeBayar: selectedMetodeBayar.idmetode,
+                idMetodeBayar: selectedMetodeBayar.id,
             };
 
             const response = await fetch('/api/pemesananjasa', {
@@ -195,8 +195,8 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar, 
 
     const handlePaymentMethodChange = (value: string) => {
         setPaymentMethod(value);
-        const selected = metodebayar.find(m => m.namametode === value);
-        setIdMetodeBayarState(selected ? selected.idmetode : '');
+        const selected = metodebayar.find(m => m.nama === value);
+        setIdMetodeBayarState(selected ? selected.id : '');
     };
 
     return (
@@ -289,8 +289,8 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar, 
                             </SelectTrigger>
                             <SelectContent>
                                 {metodebayar.map((metode) => (
-                                    <SelectItem key={metode.idmetode} value={metode.namametode}>
-                                        {metode.namametode}
+                                    <SelectItem key={metode.id} value={metode.nama}>
+                                        {metode.nama}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
