@@ -164,3 +164,12 @@ export async function addWorkerToCategory(pekerjaId: string, kategoriJasaId: str
     throw error;
   }
 }
+
+export async function IsDiskonValid(kode: string): Promise<boolean | null> {
+  try {
+    return await callStoredProcedure<boolean>('is_diskon_valid', [kode]);
+  } catch (error) {
+    console.error('Error checking diskon validity:', error);
+    throw error;
+  }
+}

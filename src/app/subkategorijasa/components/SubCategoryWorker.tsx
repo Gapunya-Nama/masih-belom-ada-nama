@@ -165,7 +165,7 @@ export default function SubCategoryWorker({ subcategory, pekerja, sesilayanan }:
                   <h3 className="font-semibold">Sesi Layanan {session.sesi}</h3>
                   <div className="flex justify-between items-center mt-2">
                     <p className="text-[#2ECC71] font-semibold mt-2">
-                      Rp {session.harga.toLocaleString()}
+                      Rp {session.harga}
                     </p>
                   </div>
                 </div>

@@ -12,26 +12,27 @@ interface OrderCardProps {
     tanggalpemesanan: string;
   };
   onCancel: () => void;
+  onPayment: () => void;
   onCreateTestimonial: () => void;
 }
 
-const OrderCard = ({ order, onCancel, onCreateTestimonial }: OrderCardProps) => {
+const OrderCard = ({ order, onCancel, onPayment, onCreateTestimonial }: OrderCardProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Menunggu Pembayaran':
-        return 'text-yellow-600 bg-yellow-50';
-      case 'Mencari Pekerja Terdekat':
-        return 'text-blue-600 bg-blue-50';
-      case 'Pekerja Ditemukan':
-        return 'text-purple-600 bg-purple-50';
-      case 'Pekerja Menuju ke Lokasi':
-        return 'text-indigo-600 bg-indigo-50';
-      case 'Pesanan Selesai':
-        return 'text-green-600 bg-green-50';
-      case 'Dibatalkan':
-        return 'text-red-600 bg-red-50';
-      default:
-        return 'text-gray-600 bg-gray-50';
+        case 'Menunggu Pembayaran':
+          return 'text-orange-600 bg-orange-50'; // Orange indicates attention needed
+        case 'Mencari Pekerja Terdekat':
+          return 'text-blue-600 bg-blue-50'; // Blue represents searching/trust
+        case 'Pekerja Ditemukan':
+          return 'text-teal-600 bg-teal-50'; // Teal signifies success in finding a worker
+        case 'Pekerja Menuju ke Lokasi':
+          return 'text-indigo-600 bg-indigo-50'; // Indigo for progress/movement
+        case 'Pekerjaan Selesai':
+          return 'text-green-600 bg-green-50'; // Green for completion/success
+        case 'Pemesanan Dibatalkan':
+          return 'text-red-600 bg-red-50'; // Red for cancellation/error
+        default:
+          return 'text-gray-600 bg-gray-50'; // Gray for undefined statuses
     }
   };
 
@@ -65,6 +66,14 @@ const OrderCard = ({ order, onCancel, onCreateTestimonial }: OrderCardProps) => 
       </div>
 
       <div className="flex justify-end space-x-4">
+        {order.statuspesanan === 'Menunggu Pembayaran' && (
+          <button
+            onClick={onPayment}
+            className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+          >
+            Bayar Sekarang
+          </button>
+        )}
         {showCancelButton && (
           <button
             onClick={onCancel}
