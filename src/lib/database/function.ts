@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { query } from './db';
-import { AuthCombined, AuthWorkerFields, KategoriJasa, MetodeBayar, SubCategory, Pekerja} from '../dataType/interfaces';
+import { AuthCombined, AuthWorkerFields, KategoriJasa, MetodeBayar, SubCategory, Pekerja, Diskon} from '../dataType/interfaces';
 // import { AuthCombined, AuthWorkerFields, KategoriJasa, Pekerja, Pekerja, SubCategory, Transaction } from '../dataType/interfaces';
 // import { v4 } from "uuid";
 // import { v4 } from "uuid";
@@ -165,9 +165,9 @@ export async function addWorkerToCategory(pekerjaId: string, kategoriJasaId: str
   }
 }
 
-export async function IsDiskonValid(kode: string): Promise<boolean | null> {
+export async function getDiskon(kode: string): Promise<Diskon | null> {
   try {
-    return await callStoredProcedure<boolean>('is_diskon_valid', [kode]);
+    return await callStoredProcedure<Diskon>('get_diskon', [kode]);
   } catch (error) {
     console.error('Error checking diskon validity:', error);
     throw error;

@@ -77,7 +77,7 @@ CREATE TABLE SIJARTA.DISKON (
 
 CREATE TABLE SIJARTA.VOUCHER ( 
     Kode VARCHAR(50) PRIMARY KEY REFERENCES SIJARTA.DISKON(Kode), 
-    JmlHariBerlaku INT NOT NULL CHECK (JmlHariBerlaku >= 0), 
+    JmlHariBerlaku INT NOT NULL CHECK (JmlHariBerlaku >= 0),
     KuotaPenggunaan INT, 
     Harga DECIMAL(15, 2) NOT NULL CHECK (Harga >= 0) 
 ); 
