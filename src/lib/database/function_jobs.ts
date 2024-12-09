@@ -42,11 +42,12 @@ export async function getAvailableJobs(
 
 export async function KerjakanPesananFunction(
   transactionId: string,
+  pekerjaId: string,
 ): Promise<void> {
   try {
     await callProcedure(
       'kerjakan_pesanan',
-      [transactionId] // Pass the generated UUID
+      [transactionId, pekerjaId]
     );
   } catch (error) {
     console.error('Error calling kerjakan_pesanan:', error);

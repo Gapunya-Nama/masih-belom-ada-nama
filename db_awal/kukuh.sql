@@ -150,7 +150,7 @@ CREATE OR REPLACE FUNCTION SIJARTA.get_available_jobs(
 )
 RETURNS TABLE (
     Id UUID,
-    TglPemesanan DATE,
+    TglPemesanan TIMESTAMP,
     TglPekerjaan DATE,
     WaktuPekerjaan TIMESTAMP,
     TotalBiaya DECIMAL(15, 2),
@@ -165,9 +165,11 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    WITH LatestStatus AS (
+    WITH 
+    LatestStatus AS (
         SELECT 
-            t.IdTrPemesanan
+            t.IdTrPemesanan,
+            t.IdStatus
         FROM 
             SIJARTA.TR_PEMESANAN_STATUS t
         INNER JOIN (
@@ -183,6 +185,17 @@ BEGIN
             AND t.TglWaktu = m.MaxTglWaktu
         WHERE 
             t.IdStatus = '850e8400-e29b-41d4-a716-446655447002'
+    ),
+    WorkerSubkategori AS (
+        SELECT 
+            sj.Id AS SubkategoriId
+        FROM 
+            SIJARTA.PEKERJA_KATEGORI_JASA pkj
+        INNER JOIN 
+            SIJARTA.SUBKATEGORI_JASA sj 
+            ON pkj.KategoriJasaId = sj.KategoriJasaId
+        WHERE 
+            pkj.PekerjaId = pekerja_id
     )
     SELECT 
         pj.Id,
@@ -212,21 +225,19 @@ BEGIN
     INNER JOIN 
         SIJARTA.USER u
         ON pj.IdPelanggan = u.Id
-    WHERE 
-        pj.IdPekerja = pekerja_id
+    INNER JOIN 
+        WorkerSubkategori ws
+        ON pj.IdKategoriJasa = ws.SubkategoriId
     LIMIT limit_val OFFSET offset_val;
 END;
 $$ LANGUAGE plpgsql;
 
-
 -- Create or replace the procedure in the SIJARTA schema
-CREATE OR REPLACE PROCEDURE SIJARTA.kerjakan_pesanan(order_id UUID)
-LANGUAGE plpgsql
-AS $$
+CREATE OR REPLACE PROCEDURE SIJARTA.kerjakan_pesanan(
+    order_id UUID,
+    pekerja_id UUID
+) AS $$
 BEGIN
-    -- Start a transaction block (optional, as procedures can manage transactions)
-    -- BEGIN;
-
     -- Check if the order exists
     IF NOT EXISTS (
         SELECT 1 
@@ -236,14 +247,27 @@ BEGIN
         RAISE EXCEPTION 'Order with Id % does not exist.', order_id;
     END IF;
 
-    -- Check if the status '850e8400-e29b-41d4-a716-446655447003' has already been applied
+    -- (Optional) Check if the pekerja is authorized to handle the job's subkategori_jasa
+    IF NOT EXISTS (
+        SELECT 1
+        FROM SIJARTA.TR_PEMESANAN_JASA pj
+        INNER JOIN SIJARTA.SUBKATEGORI_JASA sj ON pj.IdKategoriJasa = sj.Id
+        INNER JOIN SIJARTA.PEKERJA_KATEGORI_JASA pkj ON sj.KategoriJasaId = pkj.KategoriJasaId
+        WHERE pj.Id = order_id
+          AND pkj.PekerjaId = pekerja_id
+    ) THEN
+        RAISE EXCEPTION 'Pekerja with Id % is not authorized to handle the subkategori_jasa for Order Id %.', pekerja_id, order_id;
+    END IF;
+
+    -- Check if the status 'Kerjakan Pesanan' has already been applied
     IF EXISTS (
         SELECT 1 
         FROM SIJARTA.TR_PEMESANAN_STATUS 
         WHERE IdTrPemesanan = order_id 
-          AND IdStatus = '850e8400-e29b-41d4-a716-446655447003'
+          AND IdStatus > '850e8400-e29b-41d4-a716-446655447002'
     ) THEN
         RAISE NOTICE 'Status "Kerjakan Pesanan" has already been applied to Order Id %.', order_id;
+        -- Exit the procedure without making any changes
         RETURN;
     END IF;
 
@@ -251,12 +275,23 @@ BEGIN
     INSERT INTO SIJARTA.TR_PEMESANAN_STATUS (IdTrPemesanan, IdStatus, TglWaktu)
     VALUES (order_id, '850e8400-e29b-41d4-a716-446655447003', NOW());
 
-    RAISE NOTICE 'Status "Kerjakan Pesanan" successfully applied to Order Id %.', order_id;
+    -- Update the TR_PEMESANAN_JASA record with current timestamp and pekerja_id
+    UPDATE SIJARTA.TR_PEMESANAN_JASA
+    SET 
+        TglPekerjaan = NOW(),
+        WaktuPekerjaan = NOW(),
+        IdPekerja = pekerja_id
+    WHERE Id = order_id;
 
-    -- Commit the transaction block (if you started one)
-    -- COMMIT;
+    -- (Optional) Insert a log entry for auditing purposes
+    -- INSERT INTO SIJARTA.LOG_KERJAKAN_PESANAN (OrderId, PekerjaId, Timestamp, Status)
+    -- VALUES (order_id, pekerja_id, NOW(), 'Kerjakan Pesanan Applied');
+
+    -- Raise a success notice
+    RAISE NOTICE 'Status "Kerjakan Pesanan" successfully applied to Order Id % and job details updated.', order_id;
+
 END;
-$$;
+$$ LANGUAGE plpgsql;
 
 
 -- Create or replace the function in the SIJARTA schema
@@ -267,7 +302,7 @@ CREATE OR REPLACE FUNCTION SIJARTA.get_taken_jobs(
 )
 RETURNS TABLE (
     Id UUID,
-    TglPemesanan DATE,
+    TglPemesanan TIMESTAMP,
     TglPekerjaan DATE,
     WaktuPekerjaan TIMESTAMP,
     TotalBiaya DECIMAL(15, 2),
