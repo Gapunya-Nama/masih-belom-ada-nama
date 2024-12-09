@@ -8,6 +8,7 @@ import { guestUser } from "./guest";
 interface AuthContextType extends AuthState {
   login: (user: AuthCombined) => void;
   logout: (user: AuthCombined) => void;
+  updateUser: (updates: Partial<AuthCombined>) => void;
   isGuest: boolean;
 }
 
@@ -40,10 +41,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("user"); 
   }, []);
 
+  const updateUser = useCallback((updates: Partial<AuthCombined>) => {
+    setAuthState((prevState) => {
+      // Ensure `id` is always a string
+      if (!prevState.user?.id) {
+        throw new Error("User ID is missing. Cannot update user without a valid ID.");
+      }
+  
+      const updatedUser: AuthCombined = {
+        ...prevState.user,
+        ...updates,
+        id: prevState.user.id, // Ensure `id` remains unchanged and is a string
+      };
+  
+      // Sync with local storage
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+  
+      // Update state
+      return { ...prevState, user: updatedUser };
+    });
+  }, []);
+  
+
+
   const isGuest = !authState.isAuthenticated && authState.user?.id === "guest";
 
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout, isGuest }}>
+    <AuthContext.Provider value={{ ...authState, login, logout, updateUser, isGuest }}>
       {children}
     </AuthContext.Provider>
   );

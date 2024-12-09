@@ -1,3 +1,4 @@
+"use client"
 import { useRef } from "react";
 
 export const useTextAnimation = () => {
@@ -32,3 +33,19 @@ export const useTextAnimation = () => {
 
   return { elementRef, handleMouseOver };
 };
+
+export function HeadersTitle() {
+  const { elementRef, handleMouseOver } = useTextAnimation();
+  return(
+    <>
+    <h1 className="text-9xl font-bold text-[#2ECC71] py-10">Sijarta</h1><h2
+      ref={elementRef}
+      onMouseOver={handleMouseOver}
+      className="text-4xl font-semibold text-[#000000] hover:scale-105 transition-transform duration-300"
+    >
+      Made by Unknowns
+    </h2>
+    </>
+  );
+  
+}

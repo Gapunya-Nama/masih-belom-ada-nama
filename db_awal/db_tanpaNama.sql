@@ -21,7 +21,7 @@ CREATE TABLE SIJARTA.PEKERJA (
     NamaBank VARCHAR(100), 
     NomorRekening VARCHAR(50), 
     NPWP VARCHAR(20), 
-    LinkFoto VARCHAR(255), 
+    LinkFoto VARCHAR, 
     Rating FLOAT, 
     JmlPsnananSelesai INT 
 ); 
