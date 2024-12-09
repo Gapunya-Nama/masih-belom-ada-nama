@@ -120,5 +120,11 @@ export interface PemesananJasa {
   biaya: number;
   sesi: number;
   statuspesanan: string;
+  namametodebayar: string;
 }
 
+export interface Diskon{
+  id: string;
+  potongan: number;
+  mintrpemesanan: number;
+}

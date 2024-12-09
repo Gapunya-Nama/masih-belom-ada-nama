@@ -152,7 +152,8 @@ RETURNS TABLE (
     tanggalpemesanan DATE,
     biaya DECIMAL(15,2),
     sesi INT,
-    statuspesanan VARCHAR
+    statuspesanan VARCHAR,
+    namametodebayar VARCHAR
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -181,7 +182,8 @@ BEGIN
         tpj.TglPemesanan AS tanggalpemesanan,
         tpj.TotalBiaya AS biaya,
         tpj.Sesi AS sesi,
-        ls.statuspesanan
+        ls.statuspesanan,
+        mb.Nama AS namametodebayar
     FROM
         SIJARTA.TR_PEMESANAN_JASA tpj
     JOIN
@@ -196,6 +198,8 @@ BEGIN
         SIJARTA.KATEGORI_JASA kj ON skj.KategoriJasaId = kj.Id
     JOIN
         LatestStatus ls ON tpj.Id = ls.IdTrPemesanan AND ls.rn = 1
+    JOIN
+        SIJARTA.METODE_BAYAR mb ON tpj.IdMetodeBayar = mb.Id
     WHERE
         tpj.IdPelanggan = _id_pelanggan
     ORDER BY
@@ -314,20 +318,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION SIJARTA.is_diskon_valid(
+CREATE OR REPLACE FUNCTION SIJARTA.get_diskon(
     _kode_diskon VARCHAR(50)
-) RETURNS BOOLEAN AS $$
-DECLARE
-    is_valid BOOLEAN;
+) RETURNS TABLE (
+    potongan NUMERIC(15, 2),
+    mintrpemesanan INT
+) AS $$
 BEGIN
-    -- Periksa apakah kode diskon ada
-    SELECT EXISTS (
-        SELECT 1
-        FROM SIJARTA.DISKON
-        WHERE Kode = _kode_diskon
-    ) INTO is_valid;
-
-    RETURN is_valid;
+    RETURN QUERY
+    SELECT D.potongan, D.MinTrPemesanan
+    FROM SIJARTA.DISKON D
+    WHERE D.Kode = _kode_diskon;
 END;
 $$ LANGUAGE plpgsql;
 

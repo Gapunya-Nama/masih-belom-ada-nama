@@ -19,7 +19,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
-import { MetodeBayar, PemesananJasa, SesiLayanan, SubCategory } from '@/lib/dataType/interfaces';
+import { Diskon, MetodeBayar, PemesananJasa, SesiLayanan, SubCategory } from '@/lib/dataType/interfaces';
 import { toast } from '@/components/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
 
@@ -54,6 +54,7 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar, 
     const [verificationMessage, setVerificationMessage] = useState('');
     const [verificationStatus, setVerificationStatus] = useState<'success' | 'error' | ''>('');
     const [isPromoCodeVerified, setIsPromoCodeVerified] = useState<boolean>(false);
+    const [totalBiaya, setTotalBiaya] = useState<number>(sesilayanan.harga);
 
     useEffect(() => {
         if (!open) {
@@ -61,8 +62,9 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar, 
             setVerificationStatus('');
             setPromoCode('');
             setIsPromoCodeVerified(false);
+            setTotalBiaya(sesilayanan.harga);
         }
-    }, [open]);
+    }, [open, sesilayanan.harga]);
 
     const handleVerifyPromoCode = async () => {
         if (!user) {
@@ -90,11 +92,16 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar, 
                 throw new Error('Gagal memverifikasi kode promo.');
             }
 
-            const data = await response.json();
-            if (data.is_diskon_valid) {
+            const data: Diskon = await response.json();
+            if (data && data.potongan && data.mintrpemesanan) {
                 setVerificationMessage('Diskon berhasil digunakan.');
                 setVerificationStatus('success');
                 setIsPromoCodeVerified(true);
+                setTotalBiaya(sesilayanan.harga - data.potongan);
+            } else if (data.mintrpemesanan > sesilayanan.harga) {
+                setVerificationMessage('Total biaya tidak memenuhi syarat diskon.');
+                setVerificationStatus('error');
+                setIsPromoCodeVerified(false);
             } else {
                 setVerificationMessage('Diskon tidak ditemukan.');
                 setVerificationStatus('error');
@@ -208,19 +215,23 @@ export default function BookingModal({ open, sesilayanan, onClose, metodebayar, 
                             value={tglPemesanan}
                             readOnly
                             required
+                            className="bg-gray-100"
                         />
                     </div>
 
                     {/* Total Biaya */}
                     <div>
                         <label htmlFor="totalBiaya">Total Biaya:</label>
-                        <Input
-                            type="number"
-                            id="totalBiaya"
-                            value={sesilayanan.harga}
-                            readOnly
-                            className="bg-gray-100"
-                        />
+                        <div className="relative">
+                            <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
+                            <Input
+                                type="number"
+                                id="totalBiaya"
+                                value={totalBiaya}
+                                readOnly
+                                className="pl-10 bg-gray-100"
+                            />
+                        </div>
                     </div>
 
                     {/* Sesi */}
