@@ -104,7 +104,7 @@ CREATE TABLE SIJARTA.TR_PEMESANAN_JASA (
     WaktuPekerjaan TIMESTAMP NOT NULL,  
     TotalBiaya DECIMAL(15, 2) NOT NULL CHECK (TotalBiaya >= 0),  
     IdPelanggan UUID REFERENCES SIJARTA.PELANGGAN(Id),  
-    IdPekerja UUID  
+    IdPekerja UUID REFERENCES SIJARTA.PEKERJA(Id),
     IdKategoriJasa UUID NOT NULL,  -- Part of the composite key 
     Sesi INT NOT NULL,  -- Part of the composite key 
     IdDiskon VARCHAR(50) REFERENCES SIJARTA.DISKON(Kode),  
