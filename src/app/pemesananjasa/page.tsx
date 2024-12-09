@@ -2,7 +2,7 @@
 
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown, ReceiptRussianRuble } from 'lucide-react';
 import OrderCard from './components/OrderCard';
 import TestimonialModal from './components/TestimonialModal';
 import { Pekerja, PemesananJasa } from '@/lib/dataType/interfaces';
@@ -38,7 +38,7 @@ const OrderView = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const isFetchedPekerja = useRef<boolean>(false);
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
 
 
   // Fetch Data Pemesanan Jasa dari API menggunakan fetch
@@ -108,6 +108,7 @@ const handleCancelOrder = async (order: PemesananJasa) => {
       "Apakah Anda yakin ingin membatalkan pesanan ini?"
     );
     if (!confirmAction) return;
+    if (!user) return;
 
     try {
       // Set loading state if applicable
@@ -138,7 +139,7 @@ const handleCancelOrder = async (order: PemesananJasa) => {
 
       toast({
           title: "Berhasil",
-          description: "Pesanan telah dibatalkan.",
+          description: `Pesanan telah dibatalkan. ${order.namametodebayar}`,
           variant: "default",
         });
       } catch (error: any) {
@@ -210,6 +211,11 @@ const handleCancelOrder = async (order: PemesananJasa) => {
         description: "Pembayaran telah diproses.",
         variant: "default",
       });
+      if(order.namametodebayar == 'MyPay'){
+        user.balance = Number(user.balance) - Number(order.biaya);
+        updateUser(user);
+      }
+
     } catch (error: any) {
       console.error("Payment Error:", error);
       toast({

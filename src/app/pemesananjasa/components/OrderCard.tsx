@@ -1,16 +1,9 @@
 import React from 'react';
 import { DollarSign, Calendar } from 'lucide-react';
+import { PemesananJasa } from '@/lib/dataType/interfaces';
 
 interface OrderCardProps {
-  order: {
-    id: string;
-    namasubkategori: string;
-    sesi: number;
-    biaya: number;
-    namapekerja: string;
-    statuspesanan: string;
-    tanggalpemesanan: string;
-  };
+  order: PemesananJasa;
   onCancel: () => void;
   onPayment: () => void;
   onCreateTestimonial: () => void;
@@ -71,7 +64,7 @@ const OrderCard = ({ order, onCancel, onPayment, onCreateTestimonial }: OrderCar
             onClick={onPayment}
             className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
           >
-            Bayar Sekarang
+            Bayar dengan {order.namametodebayar}
           </button>
         )}
         {showCancelButton && (

@@ -62,10 +62,8 @@ export interface Worker {
 }
 
 export interface Testimonial {
-  id: string;
   nama_pekerja: string;
   nama_pengguna: string;
-  userAvatar: string;
   rating: number;
   teks_testimoni: string;
   tgl_testimoni: string;
@@ -104,8 +102,8 @@ export interface Promo {
 }
 
 export interface MetodeBayar {
-  idmetode: string;
-  namametode: string;
+  id: string;
+  nama: string;
 }
 
 export interface PemesananJasa {
@@ -120,5 +118,11 @@ export interface PemesananJasa {
   biaya: number;
   sesi: number;
   statuspesanan: string;
+  namametodebayar: string;
 }
 
+export interface Diskon{
+  id: string;
+  potongan: number;
+  mintrpemesanan: number;
+}

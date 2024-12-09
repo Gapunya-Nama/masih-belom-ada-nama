@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { IsDiskonValid } from "@/lib/database/function";
+import { getDiskon } from "@/lib/database/function";
 
 export async function POST(req: Request) {
   try {
@@ -9,11 +9,11 @@ export async function POST(req: Request) {
 
     console.log("ini kode", kode);
     
-    const status = await IsDiskonValid(kode);
+    const diskon = await getDiskon(kode);
 
-    console.log("ini status", status);
+    console.log("ini diskon", diskon);
 
-    let hasil = NextResponse.json(status);
+    let hasil = NextResponse.json(diskon);
     return hasil;
   } catch (error: any) {
     console.error('MyPay Error in route:', error);

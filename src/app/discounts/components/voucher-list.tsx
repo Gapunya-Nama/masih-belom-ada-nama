@@ -27,10 +27,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label"
 import { useAuth } from "@/context/auth-context";
 
-// Fungsi untuk mengambil semua voucher
 const requestAllVoucher = async (): Promise<Voucher[]> => {
   try {
     const response = await fetch("/api/diskon", {
@@ -38,10 +36,9 @@ const requestAllVoucher = async (): Promise<Voucher[]> => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ type: "voucher" }),
+      body: JSON.stringify({ action: "getAllVoucher" }), // ubah ke action getAllVoucher
     });
 
-    // Periksa apakah respons tidak OK
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Failed to fetch voucher");
@@ -49,21 +46,18 @@ const requestAllVoucher = async (): Promise<Voucher[]> => {
 
     const voucher = await response.json();
 
-    // Pastikan kita menangani baik objek tunggal maupun array dengan benar
     if (Array.isArray(voucher)) {
-      return voucher; // Kembalikan apa adanya jika sudah berupa array
+      return voucher;
     } else if (voucher && typeof voucher === "object") {
-      // Jika objek tunggal, ubah menjadi array
       console.warn("Received a single voucher object, converting to array:", voucher);
-      return [voucher]; // Bungkus objek tunggal dalam array
+      return [voucher];
     } else {
       console.error("Unexpected response format, expected an array or object:", voucher);
-      return []; // Kembalikan array kosong untuk format yang tidak diharapkan
+      return [];
     }
   } catch (error) {
-    // Tangani error seperti masalah jaringan atau format respons yang tidak valid
     console.error("Error fetching voucher:", error);
-    throw error; // Lempar ulang error untuk ditangani di tempat lain
+    throw error;
   }
 };
 
@@ -77,7 +71,6 @@ const requestAllMetodeBayar = async (): Promise<MetodeBayar[]> => {
       body: JSON.stringify(""),
     });
 
-    // Periksa apakah respons tidak OK
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Failed to fetch voucher");
@@ -85,21 +78,18 @@ const requestAllMetodeBayar = async (): Promise<MetodeBayar[]> => {
 
     const metode = await response.json();
 
-    // Pastikan kita menangani baik objek tunggal maupun array dengan benar
     if (Array.isArray(metode)) {
-      return metode; // Kembalikan apa adanya jika sudah berupa array
+      return metode;
     } else if (metode && typeof metode === "object") {
-      // Jika objek tunggal, ubah menjadi array
-      console.warn("Received a single voucher object, converting to array:", metode);
-      return [metode]; // Bungkus objek tunggal dalam array
+      console.warn("Received a single metode object, converting to array:", metode);
+      return [metode];
     } else {
       console.error("Unexpected response format, expected an array or object:", metode);
-      return []; // Kembalikan array kosong untuk format yang tidak diharapkan
+      return [];
     }
   } catch (error) {
-    // Tangani error seperti masalah jaringan atau format respons yang tidak valid
-    console.error("Error fetching voucher:", error);
-    throw error; // Lempar ulang error untuk ditangani di tempat lain
+    console.error("Error fetching metodeBayar:", error);
+    throw error;
   }
 };
 
@@ -108,55 +98,82 @@ export function VoucherList() {
   const [metodeBayars, setMetodeBayars] = useState<MetodeBayar[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedMetode, setSelectedMetode] = useState<string>();
+  const { user } = useAuth();
 
   useEffect(() => {
-    const fetchVouchers = async () => {
+    const fetchData = async () => {
       setLoading(true);
-      setError(null); // Reset error sebelum memulai fetch
+      setError(null);
       try {
-        const data = await requestAllVoucher();
-        setVouchers(data); // Menyimpan data voucher ke state
+        const [voucherData, metodeData] = await Promise.all([
+          requestAllVoucher(),
+          requestAllMetodeBayar()
+        ]);
+
+        setVouchers(voucherData);
+        setMetodeBayars(metodeData);
       } catch (err: any) {
-        setError(err.message || "An error occurred while fetching vouchers");
+        setError(err.message || "An error occurred while fetching data");
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchMetodeBayar = async () => {
-      setLoading(true);
-      setError(null); // Reset error sebelum memulai fetch
-      try {
-        const data = await requestAllMetodeBayar();
-        setMetodeBayars(data); // Menyimpan data voucher ke state
-      } catch (err: any) {
-        setError(err.message || "An error occurred while fetching metode bayar");
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchData();
+  }, []);
 
-    fetchVouchers();
-    // fetchMetodeBayar();
-  }, []); // Memanggil API hanya sekali saat komponen pertama kali dimuat
-
-  const handlePurchase = (voucher: Voucher) => {
-    // Simulasi pengecekan saldo
-    const { user } = useAuth();
-    const hasBalance = user?.balance ?? -1;
-
-    if (hasBalance >= voucher.harga) {
-      
-      toast.success("Voucher purchased successfully!", {
-        description: `Your voucher code ${voucher.kode} has been added to your account.`,
-      });
-
-    } else {
-      toast.error("Purchase failed", {
-        description: "Insufficient balance to purchase this voucher.",
-      });
+  const handlePurchase = async (voucher: Voucher) => {
+    if (!user || !user.id) {
+      toast.error("You must be logged in to purchase a voucher.");
+      return;
+    }
+    if (!selectedMetode) {
+      toast.error("Please select a payment method.");
+      return;
     }
 
+    // Cari metodeId dari selectedMetode
+    const selectedMetodeObj = metodeBayars.find((m) => m.nama === selectedMetode);
+    if (!selectedMetodeObj) {
+      toast.error("Invalid payment method selected.");
+      return;
+    }
+
+    // Lakukan request ke endpoint buyVoucher
+    try {
+      const response = await fetch("/api/diskon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "buyVoucher",
+          userId: user.id,
+          voucherId: voucher.kode, // Asumsikan voucherId = voucher.kode
+          metodeId: selectedMetodeObj.id, // Gunakan id dari objek metode bayar
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error("Purchase failed", {
+          description: errorData.message || "Failed to purchase voucher",
+        });
+        return;
+      }
+
+      // Jika sukses
+      toast.success("Voucher purchased successfully!", {
+        description: `Your voucher ${voucher.kode} has been added to your account.`,
+      });
+
+    } catch (err: any) {
+      console.error("Error purchasing voucher:", err);
+      toast.error("Purchase failed", {
+        description: err.message || "An unknown error occurred",
+      });
+    }
   };
 
   if (loading) {
@@ -188,7 +205,7 @@ export function VoucherList() {
             <div className="space-y-2 flex-1">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Min. Transaction</span>
-                <span className="font-medium">${voucher.mintrpemesanan}</span>
+                <span className="font-medium">Rp{voucher.mintrpemesanan.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Remaining Quota</span>
@@ -197,7 +214,7 @@ export function VoucherList() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Price</span>
                 <span className="font-medium">
-                  {voucher.harga === 0 ? "Gratis" : `$${voucher.harga}`}
+                  Rp{voucher.harga.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -207,32 +224,33 @@ export function VoucherList() {
                 <DialogHeader>
                   <DialogTitle>Metode Bayar</DialogTitle>
                 </DialogHeader>
-                  <DialogDescription>
-                    Pilih Metode Bayar yang Sesuai dengan Anda
-                  </DialogDescription>
-                  <div className="flex flex-col space-y-1.5">
-                    {/* <Label htmlFor="framework">Framework</Label> */}
-                    <Select>
-                      <SelectTrigger id="framework">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectItem value="mypay">MyPay</SelectItem>
-                        <SelectItem value="gopay">GoPay</SelectItem>
-                        <SelectItem value="ovo">OVO</SelectItem>
-                        <SelectItem value="dana">DANA</SelectItem>
-                        <SelectItem value="linkaja">LinkAja</SelectItem>
-                        <SelectItem value="kredit">Kartu Kredit</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                <div className="flex justify-between">
-                  <Button className="bg-red-500">Cancel</Button>
-                  <Button className="bg-green-500">Submit</Button>
+                <DialogDescription>
+                  Pilih Metode Bayar yang Sesuai dengan Anda
+                </DialogDescription>
+                <div className="flex flex-col space-y-1.5">
+                  <Select value={selectedMetode} onValueChange={setSelectedMetode}>
+                    <SelectTrigger id="metode-bayar">
+                      <SelectValue placeholder="Select Payment Method" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {metodeBayars.map((metode) => (
+                        <SelectItem key={metode.id} value={metode.nama}>
+                          {metode.nama}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-end mt-4">
+                  <Button
+                    className="bg-green-500"
+                    onClick={() => handlePurchase(voucher)}
+                  >
+                    Submit
+                  </Button>
                 </div>
               </DialogContent>
-              <DialogFooter>
-              </DialogFooter>
+              <DialogFooter></DialogFooter>
             </Dialog>
           </CardContent>
         </Card>
