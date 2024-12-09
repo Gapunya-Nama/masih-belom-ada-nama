@@ -23,7 +23,7 @@ import styles from "./components/mypay.module.css";
 import { SkeletonLoader } from "../components/loading/SkeletonLoader";
 
 export default function MyPay() {
-  const { user } = useAuth(); // Access `user` from Auth context
+  const { user, updateUser } = useAuth(); // Access `user` from Auth context
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filterAmount, setFilterAmount] = useState("");
@@ -105,39 +105,6 @@ export default function MyPay() {
     mutate(); // Trigger SWR to re-fetch transactions
   };
 
-  // **Redirect to login if user is not authenticated**
-  // useEffect(() => {
-  //   if (user === null) {
-  //     // Delay the redirect by 500ms to allow `useAuth` to update `user`
-  //     const timeoutId = setTimeout(() => {
-  //       router.push("/login");
-  //     }, 500); // Adjust the delay as needed
-  
-  //     return () => clearTimeout(timeoutId); // Cleanup on unmount
-  //   }
-  // }, [user, router]);
-
-  // useEffect(() => {
-  //   if (user !== null) {
-  //     setIsAuthLoading(false); // User is authenticated
-  //   } else if (user === null && !isAuthLoading) {
-  //     router.push("/login"); // Redirect only when auth is done
-  //   }
-  // }, [user, router, isAuthLoading]);
-  
-  // // Avoid rendering until auth is fully checked
-  // if (isAuthLoading) {
-  //   return <SkeletonLoader variant="avatar" />;
-  // }
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  
-  //   // Wait for `localStorage` to initialize
-  //   if (!storedUser || user?.id === "guest") {
-  //     router.push("/login");
-  //   }
-  // }, [user, router]);  
-
   // **Avoid rendering the component until user is authenticated**
   if (!user) {
     return null; // Optionally, display a loading indicator or a placeholder
@@ -172,7 +139,7 @@ export default function MyPay() {
               <SkeletonLoader variant="text" />
             ) : (
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                {formatCurrency(currentBalance)}
+                {formatCurrency(user.balance)}
               </p>
             )}
           </Card>
