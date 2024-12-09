@@ -78,7 +78,7 @@ const TestimonialCards: React.FC<Props> = ({ subcategoryId }) => {
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
           {testimonials.map((testimonial) => (
-            <Card className="p-4" key={testimonial.id}>
+            <Card className="p-4">
               <div className="flex items-center space-x-4 mb-2">
                 <div className="h-10 w-10 rounded-full bg-[#F3F3F3] flex items-center justify-center">
                   <User className="h-5 w-5 text-gray-500" />
