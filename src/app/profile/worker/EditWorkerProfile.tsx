@@ -28,6 +28,9 @@ import {
 import { useState } from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
+import { editAccount } from "./EditUser";
+import { useAuth } from "@/context/auth-context";
+import { AuthCombined } from "@/lib/dataType/interfaces";
 
 const workerFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -57,6 +60,7 @@ interface WorkerProfileProps {
 
 export function WorkerProfile({ onCancel }: WorkerProfileProps) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const {user, updateUser} = useAuth();
 
   const form = useForm<z.infer<typeof workerFormSchema>>({
     resolver: zodResolver(workerFormSchema),
@@ -73,235 +77,244 @@ export function WorkerProfile({ onCancel }: WorkerProfileProps) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof workerFormSchema>) {
-    toast.success("Profile updated successfully!");
-    console.log(values);
-    onCancel();
-  }
+  async function onSubmit(values: z.infer<typeof workerFormSchema>) {
+    let account_data = [
+      user?.id ?? "",
+      ...Object.values(values)
+    ]
+    let updatedUser = await editAccount(account_data);
 
-  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-        form.setValue("photoUrl", reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    updateUser(updatedUser as Partial<AuthCombined>);
+
+    console.log(updateUser);
+
+    toast.success("Profile updated successfully!");
+    onCancel();
   };
 
-  return (
-    <Card className="border-none shadow-none">
-      <CardContent className="p-0">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div>
-              <h3 className="text-base font-medium mb-4">Personal Details</h3>
-              <div className="grid gap-6 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="photoUrl"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Profile Photo</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center gap-4">
-                          {photoPreview && (
-                            <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-muted">
-                              <Image
-                                src={photoPreview}
-                                alt="Profile preview"
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                          )}
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={handlePhotoChange}
-                            className="cursor-pointer max-w-sm"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormDescription>
-                        Upload a professional photo for your worker profile
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string);
+      form.setValue("photoUrl", reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Gender</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex space-x-4"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="L" id="worker-L" />
-                            <Label htmlFor="worker-L">Male</Label>
+return (
+  <Card className="border-none shadow-none">
+    <CardContent className="p-0">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div>
+            <h3 className="text-base font-medium mb-4">Personal Details</h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="photoUrl"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Profile Photo</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-4">
+                        {photoPreview && (
+                          <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-muted">
+                            <Image
+                              src={photoPreview}
+                              alt="Profile preview"
+                              fill
+                              className="object-cover"
+                            />
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="P" id="worker-P" />
-                            <Label htmlFor="worker-P">Female</Label>
-                          </div>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="noHP"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="+62" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="birthDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Birth Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
+                        )}
                         <Input
-                          placeholder="Enter your complete address"
-                          {...field}
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePhotoChange}
+                          className="cursor-pointer max-w-sm"
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      Upload a professional photo for your worker profile
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div>
-              <h3 className="text-base font-medium mb-4">Payment Information</h3>
-              <div className="grid gap-6 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="bankName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bank Name</FormLabel>
-                      <Select
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Gender</FormLabel>
+                    <FormControl>
+                      <RadioGroup
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        className="flex space-x-4"
                       >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select your bank" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {banks.map((bank) => (
-                            <SelectItem key={bank} value={bank}>
-                              {bank}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="L" id="worker-L" />
+                          <Label htmlFor="worker-L">Male</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="P" id="worker-P" />
+                          <Label htmlFor="worker-P">Female</Label>
+                        </div>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="accountNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Account Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your account number"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="noHP"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+62" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="npwp"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>NPWP</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your NPWP number" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Your tax identification number
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="birthDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Birth Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your complete address"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
+          </div>
 
-            <div className="flex justify-end gap-4">
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
-              >
-                Save Changes
-              </Button>
+          <div>
+            <h3 className="text-base font-medium mb-4">Payment Information</h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="bankName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bank Name</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your bank" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {banks.map((bank) => (
+                          <SelectItem key={bank} value={bank}>
+                            {bank}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="accountNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your account number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="npwp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>NPWP</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your NPWP number" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Your tax identification number
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
-  );
+          </div>
+
+          <div className="flex justify-end gap-4">
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+            >
+              Save Changes
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </CardContent>
+  </Card>
+);
 }

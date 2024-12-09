@@ -204,3 +204,87 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION SIJARTA.update_pekerja(
+    p_id UUID,
+    p_Nama VARCHAR,
+    p_JenisKelamin CHAR(1),
+    p_NoHP VARCHAR,
+    p_TglLahir DATE,
+    p_Alamat VARCHAR,
+    p_NamaBank VARCHAR,
+    p_NomorRekening VARCHAR,
+    p_NPWP VARCHAR,
+    p_LinkFoto VARCHAR
+)
+RETURNS VOID AS $$
+BEGIN
+    -- Update the user details
+    UPDATE SIJARTA.USER
+    SET
+        Nama = p_Nama,
+        JenisKelamin = p_JenisKelamin,
+        NoHP = p_NoHP,
+        TglLahir = p_TglLahir,
+        Alamat = p_Alamat
+    WHERE Id = p_id;
+
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'User with Id % does not exist.', p_id;
+    END IF;
+
+    -- Update the pekerja details
+    UPDATE SIJARTA.PEKERJA
+    SET
+        NamaBank = p_NamaBank,
+        NomorRekening = p_NomorRekening,
+        NPWP = p_NPWP,
+        LinkFoto = p_LinkFoto
+    WHERE Id = p_id;
+
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Pekerja with Id % does not exist.', p_id;
+    END IF;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Error occurred while updating pekerja: %', SQLERRM;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION SIJARTA.update_pelanggan(
+    p_id UUID,
+    p_Nama VARCHAR,
+    p_JenisKelamin CHAR(1),
+    p_NoHP VARCHAR,
+    p_TglLahir DATE,
+    p_Alamat VARCHAR
+)
+RETURNS VOID AS $$
+BEGIN
+
+    BEGIN
+
+        UPDATE SIJARTA.USER
+        SET
+            Nama = p_Nama,
+            JenisKelamin = p_JenisKelamin,
+            NoHP = p_NoHP,
+            TglLahir = p_TglLahir,
+            Alamat = p_Alamat
+        WHERE Id = p_id;
+
+
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'User with Id % does not exist.', p_id;
+        END IF;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+
+            RAISE EXCEPTION 'Error occurred while updating pelanggan: %', SQLERRM;
+    END;
+END;
+$$ LANGUAGE plpgsql;
+
